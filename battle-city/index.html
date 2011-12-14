@@ -1,0 +1,85 @@
+<html>
+<head>
+    <title>Battle City</title>
+    <style>
+        canvas { border: 4px solid black; }
+    </style>
+
+    <script>
+        const FPS = 120;
+
+        var playerPosX = 0;
+        var playerPosY = 0;
+
+        var bullets = new Array();
+
+        var playerImg = new Image();
+        playerImg.src = "tank.png";
+
+        var canvas = null;
+        var context2D = null;
+        var keys = new Array();
+
+        window.onload = init;
+
+        window.addEventListener('keydown',keyDown,true);
+        window.addEventListener('keyup',keyUp,true);
+        function keyDown(evt){
+            keys[evt.keyCode] = true;
+            if (evt.keyCode == 32) {
+                bullets.push(new Array(playerPosX+playerImg.width+2, playerPosY+playerImg.height/2-5));
+                playSound(shotSound);
+            }
+        }
+        function keyUp(evt){
+            keys[evt.keyCode] = false;
+        }
+
+        function init()
+        {
+            canvas = document.getElementById('canvas');
+            context2D = canvas.getContext('2d');
+            setInterval(draw, 1000 / FPS);
+            playSound(startSound);
+        }
+
+        function draw()
+        {
+            if ((37 in keys && keys[37]) || (65 in keys && keys[65])){ //left
+                playerPosX -= 0.5;
+            }
+            if ((38 in keys && keys[38]) || (87 in keys && keys[87])){ //up
+                playerPosY -= 0.5;
+            }
+            if ((39 in keys && keys[39]) || (68 in keys && keys[68])){ //right
+                playerPosX += 0.5;
+            }
+            if ((40 in keys && keys[40]) || (83 in keys && keys[83])){ //down
+                    playerPosY += 0.5;
+            }
+
+            context2D.clearRect(0, 0, canvas.width, canvas.height);
+            context2D.drawImage(playerImg, playerPosX, playerPosY);
+
+            for(var i in bullets)
+            {
+                context2D.fillRect(bullets[i][0], bullets[i][1], 10, 10);
+                bullets[i][0] += 5;
+            }
+        }
+
+        var startSound = new Audio("start.wav");
+        var shotSound = new Audio("shot.wav");
+
+        function playSound(sound) {
+            sound.currentTime = 0;
+            sound.play();
+        }
+    </script>
+</head>
+<body>
+        <canvas id="canvas" width="900" height="300">
+             Ваш браузер не поддерживает Canvas.
+        </canvas>
+</body>
+</html>

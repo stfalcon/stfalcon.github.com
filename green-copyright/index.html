@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Green copyright</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script>
+            function draw() {
+                var canvas = document.getElementById('canvas');
+                var context = canvas.getContext('2d');
+
+                var centerX = 100;
+                var centerY = 100;
+                var radius= 75;
+                var startingAngle = 0 * Math.PI;
+                var endingAngle = 2 * Math.PI;
+                var counterclockwise = false;
+
+                // значек копирайта
+                context.beginPath();
+                context.fillStyle="green"; // fill color
+                context.lineWidth=18;
+                
+                context.arc(centerX,centerY, radius, startingAngle,
+                        endingAngle,counterclockwise);
+                context.fill();
+                
+                context.beginPath();
+                context.strokeStyle="white"; // line color
+                context.arc(centerX,centerY, radius-25, startingAngle,
+                        endingAngle,counterclockwise);
+                context.stroke();
+                
+                context.beginPath();
+                context.fillStyle="white"; // fill color
+                context.arc(centerX,centerY, radius-50, startingAngle,
+                        endingAngle,counterclockwise);
+                context.fill();
+                
+                context.beginPath();
+                context.moveTo(centerX,centerY);
+                context.lineTo(centerX+50,centerY);
+                context.stroke();
+            }
+        </script>
+    </head>
+    <body onload="draw()">
+        <canvas id="canvas" width="200" height="200">
+            Fallback content, in case the browser does not support Canvas.
+        </canvas>
+    </body>
+</html>
