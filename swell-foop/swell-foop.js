@@ -1,3 +1,7 @@
+/*
+ * @author Stepan Tanasiychuk <ceo@stfalcon.com>
+ */
+
 function init() {
     // настройки
     var cellSize = 40;
@@ -13,19 +17,19 @@ function init() {
     context.fillRect(0, 0, canvas.width, canvas.height);
 
     // инициализация игры
-    var game = new Game(collsCount, rowsCount, cellSize);
-    game.draw(context);
+    var game = new Game(context, collsCount, rowsCount, cellSize);
+    game.draw();
 
     var clicksCount = 0;
 
     // обработчик кликов
     canvas.onclick = function(e) {
         clicksCount++;
-        
+
         var x = (e.pageX - canvas.offsetLeft) / cellSize | 0;
         var y = (e.pageY - canvas.offsetTop)  / cellSize | 0;
         game.click(x, y);
-        game.draw(context);
+        game.draw();
         game.result();
     };
 }
@@ -37,14 +41,17 @@ function getRandomInt(min, max)
 }
 
 // игра
-function Game(collsCount, rowsCount, cellSize) {
+function Game(context, collsCount, rowsCount, cellSize) {
     // ячейки
     data = new Array();
     var maxX = collsCount - 1;
     var maxY = rowsCount - 1;
-    
+
+    // уровень сложности. влияет на колличество цветов
+    var level = 1;
+
     // массив цветов
-    colors = ['red', 'silver', 'white', 'orange'];
+    colors = ['white', 'orange', 'LimeGreen', 'red', 'silver', 'yellow'];
 
     // проверяет цвет ячейки и цвета соседних ячеек
     function clickOnCell(x, y, color, neighboringCells) {
@@ -68,27 +75,27 @@ function Game(collsCount, rowsCount, cellSize) {
     function issetCell(x, y) {
         return (data[x] && data[x][y]);
     }
-    
+
     function isCellColor(x, y) {
         return (issetCell(x,y) && data[x][y]);
     }
-    
+
     // проверяет или цвет ячейки соответсвует заданому
     function checkCellColor(x, y, color) {
         return (issetCell(x, y) && data[x][y] == color);
     }
 
-    // проверяет или столбик пусток
+    // проверяет или столбик пустой
     function isEmptyColl(x) {
         var flag = true;
         // проверяем или в столбике есть цветные ячейки
         for (var y = 0; y <= maxY; y++) {
             flag = isCellColor(x,y) ? false : flag;
         }
-        
+
         return flag;
     }
-    
+
     // ищет и перемещает пустые столбики
     function findAndMoveEmptyColls() {
         for (var n = 0; n <= maxX; n++) {
@@ -117,23 +124,28 @@ function Game(collsCount, rowsCount, cellSize) {
                 }
             }
         }
-//        for (var x = 0; x <= maxX; x++) {
+        // смещает пустые столбики
         findAndMoveEmptyColls();
-//        }
     }
 
     // установка начальных значений
     this.setup = function() {
+        // количество цветов зависит от уровня
+        var colorsCount = 2 + level;
+        if (colorsCount > colors.length) {
+            colorsCount = colors.length;
+        }
+
         for (var x = 0; x < collsCount; x++) {
             data[x] = new Array(rowsCount);
             for (var y = 0; y < rowsCount; y++) {
-                data[x][y] = colors[getRandomInt(0, colors.length-1)];
+                data[x][y] = colors[getRandomInt(0, level + 1)];
             }
         }
     }
 
     // отрисовка игрового поля
-    this.draw = function(context) {
+    this.draw = function() {
         for (var x = 0; x < collsCount; x++) {
             for (var y = 0; y < rowsCount; y++) {
                 context.fillStyle = issetCell(x, y) ? data[x][y] : "black";
@@ -172,11 +184,13 @@ function Game(collsCount, rowsCount, cellSize) {
             rebuildData();
         }
     }
-    
+
     // проверка поражения или победы
     this.result = function() {
         if (data[0][maxY] == null) {
             alert('YOU WON!!!');
+            level++;
+            this.dialog();
         } else {
             // вариантов ходов нету
             var fail = true;
@@ -191,10 +205,18 @@ function Game(collsCount, rowsCount, cellSize) {
                     }
                 }
             }
-            
+
             if (fail) {
                 alert('YOU LOST..');
-            }        
+                this.dialog();
+            }
+        }
+    }
+
+    this.dialog = function() {
+        if (confirm("Start new game?")) {
+            this.setup();
+            this.draw();
         }
     }
 
