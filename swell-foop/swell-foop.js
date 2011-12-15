@@ -188,7 +188,7 @@ function Game(context, collsCount, rowsCount, cellSize) {
     // проверка поражения или победы
     this.result = function() {
         if (data[0][maxY] == null) {
-            alert('YOU WON!!!');
+            alert('YOU WON!!! Level #' + level);
             level++;
             this.dialog();
         } else {
@@ -207,7 +207,7 @@ function Game(context, collsCount, rowsCount, cellSize) {
             }
 
             if (fail) {
-                alert('YOU LOST..');
+                alert('YOU LOST.. Level #' + level);
                 this.dialog();
             }
         }
