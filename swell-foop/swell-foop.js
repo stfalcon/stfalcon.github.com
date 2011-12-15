@@ -214,10 +214,12 @@ function Game(context, collsCount, rowsCount, cellSize) {
     }
 
     this.dialog = function() {
-        if (confirm("Start new game?")) {
-            this.setup();
-            this.draw();
-        }
+        this.setup();
+        this.draw();
+//        if (confirm("Start new game?")) {
+//            this.setup();
+//            this.draw();
+//        }
     }
 
     this.setup();
