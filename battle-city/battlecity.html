@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script src="atom.js"></script>
+        <script src="libcanvas.js"></script>
+    </head>
+    <body>
+        <canvas></canvas>
+
+        <script>
+            LibCanvas.extract();
+
+            window.BattleCity = {
+                config: {
+                    fps: 20
+                }
+            };
+
+            // загрузка dom
+            atom.dom(function () {
+                // создаем новый контроллер
+                new BattleCity.Controller('canvas');
+            });
+
+            BattleCity.Controller = atom.Class({
+
+                levels: [
+                    [
+                        "**          **          **",
+                        "**          **          **",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==##==  ==  ==  ",
+                        "  ==  ==  ==##==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==          ==  ==  ",
+                        "  ==  ==          ==  ==  ",
+                        "          ==  ==          ",
+                        "          ==  ==          ",
+                        "==  ====          ====  ==",
+                        "##  ====          ====  ##",
+                        "          ==  ==          ",
+                        "          ======          ",
+                        "  ==  ==  ======  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==  ==  ==  ==  ==  ",
+                        "  ==  ==          ==  ==  ",
+                        "  ==  ==          ==  ==  ",
+                        "  ==  ==   ====   ==  ==  ",
+                        "           =**=           ",
+                        "           =**=           ",
+                    ]
+                ],
+                level: 1,
+
+                initialize: function (canvas) {
+                    this.libcanvas = new LibCanvas(canvas, {
+                            fps: BattleCity.config.fps,
+                            clear: "black",
+                            // не начинать до полной загрузки изображения
+                            preloadImages: { player : 'tank.png', textures : 'textures.png' }
+                        })
+                        // слушаем нажатия клавиш
+                        .listenKeyboard([ 'aup', 'adown', 'aleft', 'aright' ])
+                        // ready - вызывается, когда все изображения загружены и libcanvas готов к отрисовке.
+                        .addEvent('ready', this.start.bind(this))
+                        .start(); // запуск
+                    this.textures = [];
+                },
+
+                start: function () {
+                    var libcanvas = this.libcanvas,
+                        field = new BattleCity.Field(), // игровое поле
+                        player = new BattleCity.Player() // игрок
+                            .controls('aup', 'adown', 'aleft', 'aright');
+
+                    var data = this.levels[this.level-1];
+
+                    for (var y = 0; y < 26; y++) {
+                        s = data[y];
+                        for (var x = 0; x < 26; x++) {
+                            var image = null;
+                            switch(s.charAt(x)) {
+                                case '#': image = new BattleCity.Wall(x*16, y*16); break;
+                                case '=': image = new BattleCity.Breaks(x*16, y*16); break;
+                                case '*': image = new BattleCity.Trees(x*16, y*16); break;
+////                                case '-': image = ice; break;
+////                                case '@': if (!playerPosX && !playerPosY) {image = player; playerPosX = x*32; playerPosY = y*32;} break;
+                            }
+                            
+                            if (image != null) {
+                                this.textures.push(image);
+                                this.libcanvas.addElement(image);
+                            }
+                        }
+                    }
+
+                    field.addTextures(this.textures);
+                    libcanvas.addElement(field)
+                        // добавляем элементы, которые реализуют интерфейс Drawable
+                        // для автоматической отрисовки каждый кадр
+                        .addElement(player.appendTo(field))
+                        .size(field, true)
+                        .addFunc(function (time) { // time время, которое прошло с предыдущего вызова функции
+                            libcanvas.update();
+                        });
+                }
+            });
+
+            // игровое поле
+            BattleCity.Field = atom.Class({
+                Implements: [ Drawable ], // отрисовывать
+
+                width : 416,
+                height: 416,
+
+                addTextures: function(textures) {
+                    this.textures = textures;
+                },
+
+                draw: function () {
+//                    this.libcanvas.ctx.fillAll('black');
+                }
+
+            });
+
+            BattleCity.Wall = atom.Class({
+                Implements: [ Drawable ], // отрисовывать
+
+                width : 16,
+                height: 16,
+
+                spriteX: 0,
+                spriteY: 0,
+
+                initialize: function (x, y) {
+                    this.x = x;
+                    this.y = y;
+
+                    this.addEvent('libcanvasSet', function () {
+                        this.image = this.libcanvas.getImage('textures')
+                                         .sprite(this.spriteX, this.spriteY, 32, 32);
+                    });
+                },
+
+                draw: function () {
+                        this.shape = new Rectangle(
+                            this.x, this.y, this.width, this.height
+                        );
+                        this.libcanvas.ctx.drawImage( this.image, this.shape );
+                }
+            });
+
+            BattleCity.Breaks = atom.Class({
+                Extends: BattleCity.Wall,
+                spriteX: 64,
+                spriteY: 0
+            });
+            BattleCity.Trees = atom.Class({
+                Extends: BattleCity.Wall,
+                spriteX: 128,
+                spriteY: 0
+            });
+
+            BattleCity.Player = atom.Class({
+                Implements: [ Drawable ], // отрисовывать
+
+                width : 26,
+                height: 26,
+
+                angle: 0, // угол поворота спрайта
+                speed: 4, // скорость перемещения игрока
+
+                initialize: function () {
+                    // во время конструирования объекта свойства libcanvas ещё нету,
+                    // потому необходимо дождаться события libcanvasSet и только
+                    // потом орудовать с libcanvas
+                    this.addEvent('libcanvasSet', function () {
+                        // картинку берем с спрайта
+                        this.image = this.libcanvas.getImage('player');//.sprite(0, 0, 64, 64);
+                    });
+                },
+
+                // повернуть танк
+                rotate: function (angle) {
+                    if (this.angle != angle) {
+                        // выровнять координаты
+                        var x = 0, y = 0;
+                        if (this.angle == 0 && (angle == 270 || angle == 90)) {
+                            y = -(this.shape.center.y - (this.shape.center.y / 8 | 0) * 8);
+                        } else if (this.angle == 180 && (angle == 270 || angle == 90)) {
+                            y = this.shape.center.y - (this.shape.center.y / 8 | 0) * 8;
+                        } else if (this.angle == 90 && (angle == 0 || angle == 180)) {
+                            x = this.shape.center.x - (this.shape.center.x / 8 | 0) * 8;
+                        } else if (this.angle == 270 && (angle == 0 || angle == 180)) {
+                            x = -(this.shape.center.x - (this.shape.center.x / 8 | 0) * 8);
+                        }
+                        this.shape.move([x, y]);
+
+                        this.angle = angle;
+                    }
+                },
+
+                // управление танком
+                controls: function (up, down, left, right) {
+                    this.addEvent('libcanvasSet', function () {
+                        // меняем направление движения и угол наклона спрайта
+                        // в зависимости от нажатой клавиши
+                        var lc = this.libcanvas.addFunc(function (time) {
+                            // @todo порефакторить эту логику
+                            if (lc.getKey(up)) {
+                                this.move(0, -this.speed);
+                                this.rotate(0);
+                            } else if (lc.getKey(down)) {
+                                this.move(0, this.speed);
+                                this.rotate(180);
+                            } else if (lc.getKey(left)) {
+                                this.move(-this.speed, 0);
+                                this.rotate(270);
+                            } else if (lc.getKey(right)) {
+                                this.move(this.speed, 0);
+                                this.rotate(90);
+                            }
+                            // @todo -->
+                        }.bind(this));
+                    });
+                    return this;
+                },
+
+                // перемещение игрока
+                move: function (x, y) {
+                    clone = this.shape.clone();
+
+                    this.shape.move([x, y]);
+
+                    // следим, чтобы игрок не выходил за пределы игрового поля
+                    // @todo порефакторить эту логику
+                    var top = this.shape.from.y, bottom = this.shape.to.y - this.field.height;
+                    var left = this.shape.from.x, right = this.shape.to.x - this.field.width;
+
+                    if (top    < 0) this.shape = clone;
+                    if (bottom > 0) this.shape = clone;
+                    if (left < 0) this.shape = clone;
+                    if (right > 0) this.shape = clone;
+                    // @todo -->
+
+                    // следим, чтобы игрок не наезжал на препятствия
+                    var shape = this.getShape();
+                    for (var i = this.field.textures.length; i--;) {
+                        if (!(this.field.textures[i] instanceof BattleCity.Trees)
+                            && shape.intersect(this.field.textures[i].getShape())
+                        ) {
+                            this.shape = clone;
+                            break;
+                        }
+                    }
+                },
+
+                // привязка игрока к полю
+                appendTo: function (field) {
+                    // форма квадрат?
+                    this.shape = new Rectangle(
+                        128+(32-this.width)/2, field.height-32+(32-this.height)/2, this.width, this.height
+                    );
+                    // сохраняем поле в локальной переменной
+                    this.field = field;
+                    return this;
+                },
+
+                draw: function () {
+                    this.libcanvas.ctx.drawImage({
+                            image: this.image,
+                            draw : this.shape,
+                            angle: (this.angle).degree()
+                    });
+                }
+
+            });
+        </script>
+    </body>
+</html>
