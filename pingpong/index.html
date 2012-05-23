@@ -1,0 +1,78 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Ping Pong</title>
+        <meta charset="utf-8">
+        <style>
+            #playground{
+                background: #e0ffe0;
+                width: 400px;
+                height: 200px;
+                position: relative;
+                overflow: hidden;
+            }
+            #ball {
+                background: #fbb;
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                left: 150px;
+                top: 100px;
+                border-radius: 10px;
+            }
+            .paddle {
+                background: #bbf;
+                left: 50px;
+                top: 70px;
+                position: absolute;
+                width: 30px;
+                height: 70px;
+            }
+            #paddleB {
+                left: 320px;
+            }
+            #playground{
+                background: #e0ffe0 url(images/pixel_grid.jpg);
+                width: 400px;
+                height: 200px;
+                position: relative;
+                overflow: hidden;
+            }
+            #playground{
+                position: relative;
+            }
+            #ball {
+                position: absolute;
+            }
+            .paddle {
+                position: absolute;
+            }
+        </style>
+
+    </head>
+    <body>
+        <header>
+            <h1>Ping Pong</h1>
+        </header>
+        <div id="scoreboard">
+            <div class="score">Player A : <span id="scoreA">0</span></div>
+            <div class="score">Player B : <span id="scoreB">0</span></div>
+        </div>
+        <div id="game">
+            <div id="playground">
+                <div id="paddleA" class="paddle"></div>
+                <div id="paddleB" class="paddle"></div>
+                <div id="ball"></div>
+            </div>
+        </div>
+        <footer>
+<!--            This is an example of creating a Ping Pong Game.-->
+        </footer>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script src="js/html5games.pingpong.js"></script>
+    </body>
+</html>
