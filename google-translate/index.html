@@ -2,34 +2,79 @@
 <head>
     <title>English books reader</title>
 
+    <style type="text/css">
+        article#content {
+            float: left;
+            width: 70%;
+            padding-right: 2em;
+        }
+    </style>
+
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://raw.github.com/hiddentao/google-tts/master/google-tts.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
             // огортаємо окремі слова (в параграфах) тегом span, щоб можна
             // було отримати текст слова на яке клікнули
-            $("p").each(function() {
+            $("#content p").each(function() {
                 var self = $(this);
                 self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
             });
 
             // функція яка опрацьовує клік по слову
-            $("p span").click(function() {
-                var word = $(this).text(),  
-                    target = 'ru'; // на яку мову перекладаємо
+            $("#content p span").click(function() {
+                var word = $(this).text();
 
-                // звертаємось до API Яндекс перекладача
-                var url="http://translate.yandex.net/api/v1/tr.json/translate?lang="+target+"&text="+encodeURI(word);
-
-                $.get(url, function(data) {
-                    console.log(data.text);
-                }, "json");
+                getTranslateFromYandexTranslate(word);
+                getTranslateFromForvo(word);
             });
         });
+
+        // отримати переклад слова з допомогою Яндекс перекладача
+        function getTranslateFromYandexTranslate(word) {
+            var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=ru&text="+encodeURI(word);
+
+            $.get(url, function(data) {
+                var translate = data.text[0];
+
+                $('#sidebar').append("<div><b>"+word+"</b> - <i>" + translate + "</i></div>");
+            }, "json");
+        }
+
+        // // отримати звучання слова з допомогою Google Dictionary (в mp3)
+        // function getVoiceFromGoogleDictionary(word) {
+        //     var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=en&callback=?";
+        //     $.getJSON(url, {}, function(data) {
+        //         voice = data.primaries[0].terms[2].text;
+        //     });
+        // }
+
+        // function getTranslateFromGoogleDictionary(word) {
+        //     var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=ru&callback=?";
+        //     $.getJSON(url, {}, function(data) {
+        //         console.log(data.primaries[0].terms[2].text);
+        //         console.log(data);
+        //     });
+        // }
+
+        function getTranslateFromForvo(word) {
+            var url = "http://apifree.forvo.com/key/3a28a419d2d3f2b197f2a721174730ca/format/json/callback/processingForvoData/action/standard-pronunciation/word/" + word + "?callback=?";
+
+            $.getJSON(url, {}, function(data) {});
+        }
+
+        function processingForvoData(data) {
+            var mp3path = data.items[0].pathmp3;
+            var oggpath = data.items[0].pathogg;
+
+            var audio = new Audio(oggpath);
+            audio.play();
+        }
     </script>
 </head>
 <body>
-    <article id="book">
+    <article id="content">
         <h1>The Horse and His Boy</h1>
 
         <h2>CHAPTER ONE</h2>
@@ -50,5 +95,8 @@
 
         <p>The stranger demanded hospitality for the night which of course the fisherman dared not refuse. All the best they had was set before the Tarkaan for supper (and he didnt think much of it) and Shasta, as always happened when the fisherman had company, was given a hunk of bread and turned out of the cottage. On these occasions he usually slept with the donkey in its little thatched stable. But it was much too early to go to sleep yet, and Shasta, who had never learned that it is wrong to listen behind doors, sat down with his ear to a crack in the wooden wall of the cottage to hear what the grown-ups were talking about. And this is what he heard.</p>
     </article>
+    <aside id="sidebar">
+        <h2>Pocket dictionary:</h2>
+    </aside>
 </body>
 </html>
