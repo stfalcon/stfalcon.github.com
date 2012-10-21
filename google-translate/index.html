@@ -5,65 +5,102 @@
     <style type="text/css">
         article#content {
             float: left;
-            width: 70%;
-            padding-right: 2em;
+            width: 400px;
+            padding-left: 100px;
+        }
+        aside#sidebar {
+            position: fixed;
+            left: 550px;
+            width: 300px;
+        }
+        a.play, a.close {
+            text-decoration: none;
+            color: blue;
         }
     </style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script type="text/javascript" src="https://raw.github.com/hiddentao/google-tts/master/google-tts.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            // огортаємо окремі слова (в параграфах) тегом span, щоб можна
-            // було отримати текст слова на яке клікнули
+            // split text to individual words and wrap them in <span></span> tags
             $("#content p").each(function() {
                 var self = $(this);
                 self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
             });
 
-            // функція яка опрацьовує клік по слову
+            // click to word and translate it
             $("#content p span").click(function() {
                 var word = $(this).text();
 
                 getTranslateFromYandexTranslate(word);
-                getTranslateFromForvo(word);
+            });
+
+            // hear the word
+            $("a.play").live("click", function(event) {
+                var word = $(this).parent().find("b").text();
+                getVoiceFromForvo(word);
+                return false;
+            });
+
+            // mouse hover word. show "close" button
+            $("div.word").live("mouseenter", function(){
+                $(this).append("<span class='close'> [<a class='close' href='#'>x</a>] </span>");
+            });
+
+            // mouse leave word. remove "close" button
+            $("div.word").live("mouseleave", function(){
+                $(this).find("span.close").remove();
+            });
+
+            // click on word "close" button
+            $("#dictionary .word a.close").live("click", function(event) {
+                $(this).parent().parent().remove(); // remove word from dictionary
+                if($('#dictionary .word').length < 2) {
+                    $("#sidebar p.close-all").remove(); // remove "close all" button
+                }
+
+                return false;
+            });
+
+            // click on dictionary "close all" button
+            $("#sidebar p.close-all a.close").live("click", function(event) {
+                $.each($("#dictionary .word"), function() {
+                    $(this).remove(); // remove words from dictionary
+                });
+                $(this).parent().remove(); // remove "close all" button
+                return false;
             });
         });
 
-        // отримати переклад слова з допомогою Яндекс перекладача
+        // get word translate from translate.yandex.net
         function getTranslateFromYandexTranslate(word) {
-            var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=ru&text="+encodeURI(word);
+            var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=uk&text="+encodeURI(word);
 
             $.get(url, function(data) {
-                var translate = data.text[0];
+                if (typeof data.text != 'undefined') {
+                    var translate = data.text[0];
+                    var appendText = "<div class='word'><a class='play' href='#'>&raquo;</a> <b>"+word+"</b> - <i>" + translate + "</i></div>";
 
-                $('#sidebar').append("<div><b>"+word+"</b> - <i>" + translate + "</i></div>");
+                    $('#dictionary').append(appendText);
+
+                    if($('#dictionary .word').length == 2) {
+                        $('#sidebar').append("<p class='close-all'>[ <a class='close' href='#'>close all</a> ]</p>");
+                    }
+                } else {
+                    alert("Word \""+word+"\" is not found :(");
+                }
             }, "json");
         }
 
-        // // отримати звучання слова з допомогою Google Dictionary (в mp3)
-        // function getVoiceFromGoogleDictionary(word) {
-        //     var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=en&callback=?";
-        //     $.getJSON(url, {}, function(data) {
-        //         voice = data.primaries[0].terms[2].text;
-        //     });
-        // }
-
-        // function getTranslateFromGoogleDictionary(word) {
-        //     var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=ru&callback=?";
-        //     $.getJSON(url, {}, function(data) {
-        //         console.log(data.primaries[0].terms[2].text);
-        //         console.log(data);
-        //     });
-        // }
-
-        function getTranslateFromForvo(word) {
+        // get word voice from forvo.com and play it
+        function getVoiceFromForvo(word) {
             var url = "http://apifree.forvo.com/key/3a28a419d2d3f2b197f2a721174730ca/format/json/callback/processingForvoData/action/standard-pronunciation/word/" + word + "?callback=?";
 
             $.getJSON(url, {}, function(data) {});
         }
 
+        // play word voice
         function processingForvoData(data) {
             var mp3path = data.items[0].pathmp3;
             var oggpath = data.items[0].pathogg;
@@ -71,9 +108,25 @@
             var audio = new Audio(oggpath);
             audio.play();
         }
+
+//        // отримати звучання слова з допомогою Google Dictionary (в mp3)
+//        function getVoiceFromGoogleDictionary(word) {
+//             var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=en&callback=?";
+//             $.getJSON(url, {}, function(data) {
+//                 voice = data.primaries[0].terms[2].text;
+//                 console.log(data);
+//                 console.log(voice);
+//             });
+//        }
+
+//        function getCodeForFlashAudioPlayer(filepath) {
+//            // if (-1 < pos = filepath.indexOf('.mp3')) {}
+//            return '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="15" height="15"><PARAM NAME=movie VALUE="http://www.strangecube.com/audioplay/online/audioplay.swf?file='+filepath+'&auto=no&sendstop=yes&repeat=1&buttondir=http://www.strangecube.com/audioplay/online/alpha_buttons/negative_small&bgcolor=0xffffff&mode=playstop"><PARAM NAME=quality VALUE=high><PARAM NAME=wmode VALUE=transparent><embed src="http://www.strangecube.com/audioplay/online/audioplay.swf?file='+filepath+'&auto=no&sendstop=yes&repeat=1&buttondir=http://www.strangecube.com/audioplay/online/alpha_buttons/negative_small&bgcolor=0xffffff&mode=playstop" quality=high wmode=transparent width="15" height="15" align="" TYPE="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object>'
+//        }
     </script>
 </head>
 <body>
+
     <article id="content">
         <h1>The Horse and His Boy</h1>
 
@@ -97,6 +150,7 @@
     </article>
     <aside id="sidebar">
         <h2>Pocket dictionary:</h2>
+        <div id="dictionary"></div>
     </aside>
 </body>
 </html>
