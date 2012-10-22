@@ -22,6 +22,13 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
+
+            $("#menu li").click(function(){
+                alert('sdfsdf');
+                book = $(contents).find('section').eq(this.id).html();
+                $('article#content').html(book);
+            });
+
             function readSingleFile(evt) {
                 //Retrieve the first (and only!) File from the FileList object
                 var f = evt.target.files[0];
@@ -30,6 +37,17 @@
                     var r = new FileReader();
                     r.onload = function(e) {
                         var contents = e.target.result;
+                        titles = $(contents).find('section');
+
+                        // create menu from section titles
+                        var html = '<menu>';
+                        for (var i = 0; i < titles.length; i++){
+                            html += '<li id="'+ i +'">' + titles.find('title').eq(i).text() + '</li>';
+                        }
+                        html += '</menu id="menu">';
+                        $('article#content').before(html);
+                        console.log(html);
+
                         book = $(contents).find('section').html();
                         $('article#content').html(book);
 
@@ -51,6 +69,8 @@
                     alert("Failed to load file");
                 }
             }
+
+
 
             // file upload listener
             document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
