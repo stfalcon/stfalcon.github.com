@@ -5,13 +5,12 @@
     <style type="text/css">
         article#content {
             float: left;
-            width: 400px;
-            padding-left: 100px;
+            width: 70%;
         }
         aside#sidebar {
             position: fixed;
-            left: 550px;
-            width: 300px;
+            right: 0px;
+            width: 27%;
         }
         a.play, a.close {
             text-decoration: none;
@@ -23,18 +22,38 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            // split text to individual words and wrap them in <span></span> tags
-            $("#content p").each(function() {
-                var self = $(this);
-                self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
-            });
+            function readSingleFile(evt) {
+                //Retrieve the first (and only!) File from the FileList object
+                var f = evt.target.files[0];
 
-            // click to word and translate it
-            $("#content p span").click(function() {
-                var word = $(this).text();
+                if (f) {
+                    var r = new FileReader();
+                    r.onload = function(e) {
+                        var contents = e.target.result;
+                        book = $(contents).find('section').html();
+                        $('article#content').html(book);
 
-                getTranslateFromYandexTranslate(word);
-            });
+                        // split text to individual words and wrap them in <span></span> tags
+                        $("#content p").each(function() {
+                            var self = $(this);
+                            self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
+                        });
+
+                        // click to word and translate it
+                        $("#content p span").click(function() {
+                            var word = $(this).text();
+
+                            getTranslateFromYandexTranslate(word);
+                        });
+                    }
+                    r.readAsText(f);
+                } else {
+                    alert("Failed to load file");
+                }
+            }
+
+            // file upload listener
+            document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
 
             // hear the word
             $("a.play").live("click", function(event) {
@@ -55,9 +74,9 @@
 
             // click on word "close" button
             $("#dictionary .word a.close").live("click", function(event) {
-                $(this).parent().parent().remove(); // remove word from dictionary
-                if($('#dictionary .word').length < 2) {
-                    $("#sidebar p.close-all").remove(); // remove "close all" button
+                $(this).parent().parent().remove();
+                if($('#dictionary .word').length == 2) {
+                    $("#sidebar p.close-all").remove(); // remove
                 }
 
                 return false;
@@ -66,16 +85,16 @@
             // click on dictionary "close all" button
             $("#sidebar p.close-all a.close").live("click", function(event) {
                 $.each($("#dictionary .word"), function() {
-                    $(this).remove(); // remove words from dictionary
+                    $(this).remove();
                 });
-                $(this).parent().remove(); // remove "close all" button
+                $(this).parent().remove();
                 return false;
             });
         });
 
         // get word translate from translate.yandex.net
         function getTranslateFromYandexTranslate(word) {
-            var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=uk&text="+encodeURI(word);
+            var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=ru&text="+encodeURI(word);
 
             $.get(url, function(data) {
                 if (typeof data.text != 'undefined') {
@@ -126,27 +145,8 @@
     </script>
 </head>
 <body>
-
     <article id="content">
-        <h1>The Horse and His Boy</h1>
-
-        <h2>CHAPTER ONE</h2>
-
-        <h3>HOW SHASTA SET OUT ON HIS TRAVELS</h3>
-
-        <p>THIS is the story of an adventure that happened in Narnia and Calormen and the lands between, in the Golden Age when Peter was High King in Narnia and his brother and his two sisters were King and Queens under him.</p>
-
-        <p>In those days, far south in Calormen on a little creek of the sea, there lived a poor fisherman called Arsheesh, and with him there lived a boy who called him Father. The boys name was Shasta. On most days Arsheesh went out in his boat to fish in the morning, and in the afternoon he harnessed his donkey to a cart and loaded the cart with fish and went a mile or so southward to the village to sell it. If it had sold well he would come home in a moderately good temper and say nothing to Shasta, but if it had sold badly he would find fault with him and perhaps beat him. There was always something to find fault with for Shasta had plenty of work to do, mending and washing the nets, cooking the supper, and cleaning the cottage in which they both lived.</p>
-
-        <p>Shasta was not at all interested in anything that lay south of his home because he had once or twice been to the village with Arsheesh and he knew that there was nothing very interesting there. In the village he only met other men who were just like his father - men with long, dirty robes, and wooden shoes turned up at the toe, and turbans on their heads, and beards, talking to one another very slowly about things that sounded dull. But he was very interested in everything that lay to the North because no one ever went that way and he was never allowed to go there himself. When he was sitting out of doors mending the nets, and all alone, he would often look eagerly to the North. One could see nothing but a grassy slope running up to a level ridge and beyond that the sky with perhaps a few birds in it.</p>
-
-        <p>Sometimes if Arsheesh was there Shasta would say, O my Father, what is there beyond that hill? And then if the fisherman was in a bad temper he would box Shastas ears and tell him to attend to his work. Or if he was in a peaceable mood he would say, O my son, do not allow your mind to be distracted by idle questions. For one of the poets has said, `Application to business is the root of prosperity, but those who ask questions that do not concern them are steering the ship of folly towards the rock of indigence.</p>
-
-        <p>Shasta thought that beyond the hill there must be some delightful secret which his father wished to hide from him. In reality, however, the fisherman talked like this because he didnt know what lay to the North. Neither did he care. He had a very practical mind.</p>
-
-        <p>One day there came from the South a stranger who was unlike any man that Shasta had seen before. He rode upon a strong dappled horse with flowing mane and tail and his stirrups and bridle were inlaid with silver. The spike of a helmet projected from the middle of his silken turban and he wore a shirt of chain mail. By his side hung a curving scimitar, a round shield studded with bosses of brass hung at his back, and his right hand grasped a lance. His face was dark, but this did not surprise Shasta because all the people of Calormen are like that; what did surprise him was the mans beard which was dyed crimson, and curled and gleaming with scented oil. But Arsheesh knew by the gold on the strangers bare arm that he was a Tarkaan or great lord, and he bowed kneeling before him till his beard touched the earth and made signs to Shasta to kneel also.</p>
-
-        <p>The stranger demanded hospitality for the night which of course the fisherman dared not refuse. All the best they had was set before the Tarkaan for supper (and he didnt think much of it) and Shasta, as always happened when the fisherman had company, was given a hunk of bread and turned out of the cottage. On these occasions he usually slept with the donkey in its little thatched stable. But it was much too early to go to sleep yet, and Shasta, who had never learned that it is wrong to listen behind doors, sat down with his ear to a crack in the wooden wall of the cottage to hear what the grown-ups were talking about. And this is what he heard.</p>
+        <input type="file" id="fileinput" />
     </article>
     <aside id="sidebar">
         <h2>Pocket dictionary:</h2>
