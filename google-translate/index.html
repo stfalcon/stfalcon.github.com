@@ -4,6 +4,7 @@
 
     <style type="text/css">
         article#content {
+            clear:both;
             float: left;
             width: 70%;
         }
@@ -16,18 +17,26 @@
             text-decoration: none;
             color: blue;
         }
+        menu {
+            color:#6495ed;
+            font-size: 9px;
+            float:left;
+            cursor:pointer;
+        }
+        menu li:hover{
+            color: #0e1aff;
+        }
+        #cover{
+            margin:0 40px;
+            float:left;
+        }
+
     </style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
-
-            $("#menu li").click(function(){
-                alert('sdfsdf');
-                book = $(contents).find('section').eq(this.id).html();
-                $('article#content').html(book);
-            });
 
             function readSingleFile(evt) {
                 //Retrieve the first (and only!) File from the FileList object
@@ -44,11 +53,25 @@
                         for (var i = 0; i < titles.length; i++){
                             html += '<li id="'+ i +'">' + titles.find('title').eq(i).text() + '</li>';
                         }
-                        html += '</menu id="menu">';
+                        html += '</menu>';
+
+                        // insert menu
                         $('article#content').before(html);
                         console.log(html);
 
-                        book = $(contents).find('section').html();
+                        // binding menu click and inserting paragraph
+                        $("menu li").click(function(){
+                            book = $(contents).find('section').eq(this.id).html();
+                            $('article#content').html(book);
+                         });
+
+                        // insert cover
+                        cover = $(contents).find('binary').html();
+                        html='<div id="cover"><img src="data:image/jpg;base64,' + cover +'"></div> ';
+                        $('article#content').before(html);
+
+                        // insert first
+                        book = $(contents).find('section').eq(0).html();
                         $('article#content').html(book);
 
                         // split text to individual words and wrap them in <span></span> tags
@@ -63,6 +86,8 @@
 
                             getTranslateFromYandexTranslate(word);
                         });
+
+
                     }
                     r.readAsText(f);
                 } else {
