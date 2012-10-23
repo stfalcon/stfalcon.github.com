@@ -3,10 +3,13 @@
     <title>English books reader</title>
 
     <style type="text/css">
-        article#content {
+        section#main{
             clear:both;
             float: left;
             width: 70%;
+        }
+        article#content {
+
         }
         aside#sidebar {
             position: fixed;
@@ -38,6 +41,8 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
+            var bookTitle,html,contents;
+
             function readSingleFile(evt) {
                 //Retrieve the first (and only!) File from the FileList object
                 var f = evt.target.files[0];
@@ -45,54 +50,67 @@
                 if (f) {
                     var r = new FileReader();
                     r.onload = function(e) {
-                        var contents = e.target.result;
+                        contents = e.target.result;
+
+                        //load book sections
                         titles = $(contents).find('section');
 
                         // create menu from section titles
-                        var html = '<menu>';
+                        html =  '<select id="sections">';
                         for (var i = 0; i < titles.length; i++){
-                            html += '<li id="'+ i +'">' + titles.find('title').eq(i).text() + '</li>';
+                            html += '<option value="'+ i +'">' + titles.find('title').eq(i).text() + '</option>';
                         }
-                        html += '</menu>';
+                        html += '</select>';
 
-                        // insert menu
-                        $('article#content').before(html);
-                        console.log(html);
+                        // inserting h1 title
+                        bookTitle = $(contents).find('title').eq(0).text();
+                        $('#main > h1').html(bookTitle);
 
-                        // binding menu click and inserting paragraph
-                        $("menu li").click(function(){
-                            book = $(contents).find('section').eq(this.id).html();
-                            $('article#content').html(book);
-                         });
+                        // insert select with book titles
+                        $('#paragraphs').html(html);
 
-                        // insert cover
-                        cover = $(contents).find('binary').html();
-                        html='<div id="cover"><img src="data:image/jpg;base64,' + cover +'"></div> ';
-                        $('article#content').before(html);
-
-                        // insert first
-                        book = $(contents).find('section').eq(0).html();
-                        $('article#content').html(book);
-
-                        // split text to individual words and wrap them in <span></span> tags
-                        $("#content p").each(function() {
-                            var self = $(this);
-                            self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
-                        });
-
-                        // click to word and translate it
-                        $("#content p span").click(function() {
-                            var word = $(this).text();
-
-                            getTranslateFromYandexTranslate(word);
-                        });
-
-
+                        // load first paragraph
+                        loadContent();
                     }
                     r.readAsText(f);
                 } else {
                     alert("Failed to load file");
                 }
+            }
+
+            $('#paragraphs').change(function() {
+                loadContent();
+            });
+
+            function loadContent(){
+                var subTitle,sectionVal,html;
+
+                // title of paragraph
+                subTitle       = $('#sections :selected').text();
+
+                // current paragraph selected
+                sectionVal  = $('#sections :selected').val();
+
+                book = '<h2>' +subTitle+ '</h2>';
+
+                // load selected paragraph from file
+                book += $(contents).find('section').eq(sectionVal).html();
+
+                // load paragraph with heading to page
+                $('article#content').html(book);
+
+                // split text to individual words and wrap them in <span></span> tags
+                $("#content p").each(function() {
+                    var self = $(this);
+                    self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
+                });
+
+                // click to word and translate it
+                $("#content p span").click(function() {
+                    var word = $(this).text();
+
+                    getTranslateFromYandexTranslate(word);
+                });
             }
 
 
@@ -190,9 +208,14 @@
     </script>
 </head>
 <body>
-    <article id="content">
+    <section id="main">
         <input type="file" id="fileinput" />
-    </article>
+        <hr />
+        <h1></h1>
+        <nav id="paragraphs"></nav>
+        <article id="content">
+        </article>
+    </section>
     <aside id="sidebar">
         <h2>Pocket dictionary:</h2>
         <div id="dictionary"></div>
