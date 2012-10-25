@@ -23,20 +23,6 @@
             text-decoration: none;
             color: blue;
         }
-        menu {
-            color:#6495ed;
-            font-size: 9px;
-            float:left;
-            cursor:pointer;
-        }
-        menu li:hover{
-            color: #0e1aff;
-        }
-        #cover{
-            margin:0 40px;
-            float:left;
-        }
-
     </style>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -44,7 +30,9 @@
     <script type="text/javascript">
         $(document).ready(function() {
 
-            var bookTitle,html,contents;
+            var bookTitle, chapterTitle, content;
+
+            var fontSize;
 
             function readSingleFile(evt) {
                 //Retrieve the first (and only!) File from the FileList object
@@ -53,24 +41,24 @@
                 if (f) {
                     var r = new FileReader();
                     r.onload = function(e) {
-                        contents = e.target.result;
+                        content = e.target.result;
 
-                        //load book sections
-                        titles = $(contents).find('section');
+                        //load book chapters
+                        var chapters = $(content).find('section');
 
-                        // create menu from section titles
-                        html =  '<select id="sections">';
-                        for (var i = 0; i < titles.length; i++){
-                            html += '<option value="'+ i +'">' + titles.find('title').eq(i).text() + '</option>';
+                        // create menu from chapters titles
+                        var html =  '<select id="chapters">';
+                        for (var i = 0; i < chapters.length; i++){
+                            html += '<option value="'+ i +'">' + chapters.find('title').eq(i).text() + '</option>';
                         }
                         html += '</select>';
 
                         // inserting h1 title
-                        bookTitle = $(contents).find('title').eq(0).text();
+                        bookTitle = $(content).find('title').eq(0).text();
                         $('#main > h1').html(bookTitle);
 
                         // insert select with book titles
-                        $('#paragraphs').html(html);
+                        $('nav').append(html);
 
                         // load first paragraph
                         loadContent();
@@ -81,26 +69,26 @@
                 }
             }
 
-            $('#paragraphs').change(function() {
+            $('#nav').change(function() {
                 loadContent();
             });
 
             function loadContent(){
-                var subTitle,sectionVal,html;
+                var chapterId;
 
-                // title of paragraph
-                subTitle       = $('#sections :selected').text();
+                // title of chapter
+                chapterTitle = $('#chapters :selected').text();
 
-                // current paragraph selected
-                sectionVal  = $('#sections :selected').val();
+                // current chapter id
+                chapterId  = $('#chapters :selected').val();
 
-                book = '<h2>' +subTitle+ '</h2>';
+                var html = '<h2>' +chapterTitle+ '</h2>';
 
                 // load selected paragraph from file
-                book += $(contents).find('section').eq(sectionVal).html();
+                html += $(content).find('section').eq(chapterId).html();
 
                 // load paragraph with heading to page
-                $('article#content').html(book);
+                $('article#content').html(html);
 
                 // split text to individual words and wrap them in <span></span> tags
                 $("#content p").each(function() {
@@ -215,9 +203,11 @@
         <input type="file" id="fileinput" />
         <hr />
         <h1></h1>
-        <nav id="paragraphs"></nav>
-        <article id="content">
-        </article>
+        <nav id="nav"></nav>
+        <div id="book">
+            <article id="content">
+            </article>
+        </div>
     </section>
     <aside id="sidebar">
         <h2>Pocket dictionary:</h2>

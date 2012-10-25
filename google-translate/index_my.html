@@ -1,0 +1,257 @@
+<html>
+<head>
+    <title>English books reader</title>
+
+    <style type="text/css">
+        section#heading {
+            clear:both;
+            float: left;
+            width: 70%;
+            overflow: hidden;
+        }
+        #main{
+            position:relative;
+            font-size: 10px;
+        }
+        aside#sidebar {
+            position: fixed;
+            right: 0px;
+            width: 27%;
+        }
+        a.play, a.close {
+            text-decoration: none;
+            color: blue;
+        }
+        h1 {font-size: 13px;}
+        h2 {font-size: 11px;}
+
+        #content {
+            height:350px;
+            overflow: hidden;
+
+        }
+    </style>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        var bookTitle,html,contents;
+
+        var top = 0;
+
+        var content = $('#content');
+        var main = $('#main');
+
+        function readSingleFile(evt) {
+            //Retrieve the first (and only!) File from the FileList object
+            var f = evt.target.files[0];
+
+            if (f) {
+                var r = new FileReader();
+                r.onload = function(e) {
+                    contents = e.target.result;
+
+                    //load book sections
+                    chapters = $(contents).find('section');
+
+                    // create menu from section titles
+                    html =  '<select id="sections">';
+                    for (var i = 0; i < chapters.length; i++){
+                        html += '<option value="'+ i +'">' + chapters.find('title').eq(i).text() + '</option>';
+                    }
+                    html += '</select>';
+
+                    // inserting h1 title
+                    bookTitle = $(contents).find('title').eq(0).text();
+                    $('#heading > h1').html(bookTitle);
+
+                    // insert select with book titles
+                    $('#paragraphs').html(html);
+
+                    // load first paragraph
+                    loadContent();
+                }
+                r.readAsText(f);
+            } else {
+                alert("Failed to load file");
+            }
+        }
+
+        $('#paragraphs').change(function() {
+            loadContent();
+        });
+
+        function loadContent(){
+            var subTitle,sectionVal,html;
+
+            // title of paragraph
+            chapterTitle       = $('#sections :selected').text();
+
+            // current paragraph selected
+            sectionVal  = $('#sections :selected').val();
+
+            book = '<h2>' +chapterTitle+ '</h2>';
+
+            // load selected paragraph from file
+            book += $(contents).find('section').eq(sectionVal).html();
+
+            // load paragraph with heading to page
+            $('#main').html(book);
+
+            // split text to individual words and wrap them in <span></span> tags
+            $("#main p").each(function() {
+                var self = $(this);
+                self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
+            });
+
+            // click to word and translate it
+            $("#main p span").click(function() {
+                var word = $(this).text();
+
+                getTranslateFromYandexTranslate(word);
+            });
+        }
+
+        $('#next').click(function(){
+            top -=content.height();
+            $('#main').css('top',top);
+        });
+
+        $('#prev').click(function(){
+            top +=content.height();
+            $('#main').css('top',top);
+        });
+
+        $('#resize').click(function(){
+            countPages();
+        });
+
+        $(document).resize(function(){
+            alert('sdasd');
+        });
+
+        function countPages(){
+            main_height = main.height();
+            content_height = content.height() || main_height;
+            pages_count = Math.ceil(main_height / content_height);
+
+            $('#pages_count').text(pages_count);
+        };
+
+        // file upload listener
+        document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
+        // hear the word
+        $("a.play").live("click", function(event) {
+            var word = $(this).parent().find("b").text();
+            getVoiceFromForvo(word);
+            return false;
+        });
+
+        // mouse hover word. show "close" button
+        $("div.word").live("mouseenter", function(){
+            $(this).append("<span class='close'> [<a class='close' href='#'>x</a>] </span>");
+        });
+
+        // mouse leave word. remove "close" button
+        $("div.word").live("mouseleave", function(){
+            $(this).find("span.close").remove();
+        });
+
+        // click on word "close" button
+        $("#dictionary .word a.close").live("click", function(event) {
+            $(this).parent().parent().remove();
+            if($('#dictionary .word').length == 2) {
+                $("#sidebar p.close-all").remove(); // remove
+            }
+
+            return false;
+        });
+
+        // click on dictionary "close all" button
+        $("#sidebar p.close-all a.close").live("click", function(event) {
+            $.each($("#dictionary .word"), function() {
+                $(this).remove();
+            });
+            $(this).parent().remove();
+            return false;
+        });
+    });
+
+    // get word translate from translate.yandex.net
+    function getTranslateFromYandexTranslate(word) {
+        var url="http://translate.yandex.net/api/v1/tr.json/translate?lang=ru&text="+encodeURI(word);
+
+        $.get(url, function(data) {
+            if (typeof data.text != 'undefined') {
+                var translate = data.text[0];
+                var appendText = "<div class='word'><a class='play' href='#'>&raquo;</a> <b>"+word+"</b> - <i>" + translate + "</i></div>";
+
+                $('#dictionary').append(appendText);
+
+                if($('#dictionary .word').length == 2) {
+                    $('#sidebar').append("<p class='close-all'>[ <a class='close' href='#'>close all</a> ]</p>");
+                }
+            } else {
+                alert("Word \""+word+"\" is not found :(");
+            }
+        }, "json");
+    }
+
+    // get word voice from forvo.com and play it
+    function getVoiceFromForvo(word) {
+        var url = "http://apifree.forvo.com/key/3a28a419d2d3f2b197f2a721174730ca/format/json/callback/processingForvoData/action/standard-pronunciation/word/" + word + "?callback=?";
+
+        $.getJSON(url, {}, function(data) {});
+    }
+
+    // play word voice
+    function processingForvoData(data) {
+        var mp3path = data.items[0].pathmp3;
+        var oggpath = data.items[0].pathogg;
+
+        var audio = new Audio(oggpath);
+        audio.play();
+    }
+
+//        // отримати звучання слова з допомогою Google Dictionary (в mp3)
+//        function getVoiceFromGoogleDictionary(word) {
+//             var url = "http://www.google.com/dictionary/json?q="+word+"&sl=en&tl=en&callback=?";
+//             $.getJSON(url, {}, function(data) {
+//                 voice = data.primaries[0].terms[2].text;
+//                 console.log(data);
+//                 console.log(voice);
+//             });
+//        }
+
+//        function getCodeForFlashAudioPlayer(filepath) {
+//            // if (-1 < pos = filepath.indexOf('.mp3')) {}
+//            return '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=10,0,0,0" width="15" height="15"><PARAM NAME=movie VALUE="http://www.strangecube.com/audioplay/online/audioplay.swf?file='+filepath+'&auto=no&sendstop=yes&repeat=1&buttondir=http://www.strangecube.com/audioplay/online/alpha_buttons/negative_small&bgcolor=0xffffff&mode=playstop"><PARAM NAME=quality VALUE=high><PARAM NAME=wmode VALUE=transparent><embed src="http://www.strangecube.com/audioplay/online/audioplay.swf?file='+filepath+'&auto=no&sendstop=yes&repeat=1&buttondir=http://www.strangecube.com/audioplay/online/alpha_buttons/negative_small&bgcolor=0xffffff&mode=playstop" quality=high wmode=transparent width="15" height="15" align="" TYPE="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer"></embed></object>'
+//        }
+</script>
+</head>
+<body>
+    <section id="heading">
+        <input type="file" id="fileinput" />
+        <hr />
+        <h1></h1>
+        <nav id="paragraphs"></nav>
+        <article id="content">
+           <div id="viewport">
+             <div id="main">
+             </div>
+           </div>
+        </article>
+        <hr />
+        <button id="prev">PREV</button> |
+        <button id="next">NEXT</button>
+        <button id="resize">RESIZE</button>| <span id="pages_count">0</span>
+    </section>
+    <aside id="sidebar">
+        <h2>Pocket dictionary:</h2>
+        <div id="dictionary"></div>
+    </aside>
+</body>
+</html>
