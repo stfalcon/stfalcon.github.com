@@ -29,7 +29,6 @@
             font-size: 0.8em;
         }
         #wrap_content{
-            height:300px;
             overflow: hidden;
             line-height: 16px;
             font-size: 12px;
@@ -104,12 +103,12 @@
 
             $('#content_1').html(html);
             $('#content_1').toggle();
-            $('#content_1').css('top',top-wrapHeight);
-
+            columnSync()
         });
 
         $(window).resize(function (){
             resize();
+            columnSync()
         });
 
         /*
@@ -123,7 +122,15 @@
             return Math.max(1,res);
         };
 
-        function init(){
+        function columnSync(){
+
+            $('#content_1').css('top',top-wrapHeight);
+        }
+
+        function init(cache){
+            var bookHeight = $(window).height()-($(window).height()/3)
+            $('#wrap_content').height(bookHeight);
+
             //load book chapters
             var chapters = $(content).find('section');
             // count pages
@@ -153,9 +160,21 @@
             $('#pages').text(bookPages);
             $('#count_chapters').text(countChapters);
 
+            //cache book to localstorage
+            if (cache != 1){
+                if (isLocalStorageAvailable()){
+                    localStorage.setItem('book', content);
+                    alert('book save on cache');
+                }
+            }
+
+
         };
 
         function resize (){
+            var bookHeight = $(window).height()-($(window).height()/3)
+                $('#wrap_content').height(bookHeight);
+
             var contentHeight = $('#content').height();
             var wrapHeight = $('#wrap_content').height();
 
@@ -165,7 +184,8 @@
             $('#cur_sub_page').text(parseInt(curSubPage)+1);
             $('#cur_chapter').text(parseInt(curChapter) + 1);
 
-            setWrapHeight();
+
+            correctWrapHeight();
         };
 
         function loadContent(){
@@ -187,7 +207,7 @@
             translation();
         }
 
-        function setWrapHeight(){
+        function correctWrapHeight(){
             var wh = $('#wrap_content').height();
             var lh = $('#content').css('line-height');
                 lh = parseInt(lh.replace('px',''));
@@ -225,6 +245,11 @@
 
                 getTranslateFromYandexTranslate(word);
             });
+        }
+
+        function isLocalStorageAvailable(){
+            try {return 'localStorage' in window && window['localStorage'] !== null;} catch (e) {
+                return false;}
         }
 
         // file upload listener
@@ -265,6 +290,13 @@
             $(this).parent().remove();
             return false;
         });
+
+        if (isLocalStorageAvailable()){
+            content = localStorage.getItem('book');
+            if (content) {
+                init(1);
+            }
+        }
     });
 
     // get word translate from translate.yandex.net
@@ -324,6 +356,7 @@
         <button id="prev">PREV</button> |
         <button id="next">NEXT</button><br />
         <button id="column_2">2 column</button> <br /><hr />
+        <button id="click">CLICK</button> <br /><hr />
         <span id="count_chapters">|</span> - Chapters<br />
         <span id="cur_chapter">|</span> - curChapter<br /><hr />
         <span id="pages">|</span> - Pages<br />
