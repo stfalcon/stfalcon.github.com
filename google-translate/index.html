@@ -6,7 +6,7 @@
         section#main{
             clear:both;
             float: left;
-            width: 60%;
+            width: 600px;
             padding-left: 200px;
         }
         body {
@@ -25,13 +25,13 @@
         }
 
         #book{
-            padding:15px;
+            padding:5px;
             font-size: 0.8em;
         }
         #wrap_content{
             overflow: hidden;
-            line-height: 16px;
-            font-size: 12px;
+            line-height: 22px;
+            font-size: 16px;
         }
         #content{
             position:relative;
@@ -46,13 +46,6 @@
 
         h1,h2 { display:none; }
 
-        #info {
-            position: fixed;
-            left: 15px;
-            width: 150px;
-            font-size: 12px;
-        }
-
     </style>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
@@ -60,81 +53,51 @@
 <script type="text/javascript">
     $(document).ready(function() {
 
-        var countChapters, curChapter, bookPages, curPage, bookTitle, chapterTitle, content;
+        var countChapters, curChapter, bookPages = 0, curPage, bookTitle, chapterTitle, content;
         var countSubPages, curSubPage = 0;
         var fontSize, lineHeight, wrapHeight;
+        var curLine = 1, columns = 0, HeightLineX;
+
 
         var top = 0;
 
         var content = $('#content');
         var main = $('#wrap_content');
 
-        $('#nav').change(function() {
-            loadContent();
-            resize();
-        });
+        initSizes();
 
-        $('#next').click(function(){
-            curSubPage += 1;
-            top -=wrapHeight;
-            $('#content').css('top',top);
-            $('#content_1').css('top',top-wrapHeight);
-
-            resize();
-        });
-
-        $('#prev').click(function(){
-            curSubPage -= 1;
-            top +=wrapHeight;
-            $('#content').css('top',top);
-            $('#content_1').css('top',top-wrapHeight);
-
-            resize();
-        });
-
-        $('#column_2').click(function(){
-            var html = $('#content').html();
-            if ($('#content_1').is(":hidden")) {
-                $('#content').css('width','45%');
-            }
-            else{
-                $('#content').css('width','100%');
-            }
-
-            $('#content_1').html(html);
-            $('#content_1').toggle();
-            columnSync()
-        });
-
-        $(window).resize(function (){
-            resize();
-            columnSync()
-        });
-
-        /*
-        return count pages, minimum 1
-        @var chapter id
-        @return count chapter page (symbols/4000)
+        /**
+         * sets width end height page and components
          */
-        function countPages(i){
-            var countSymbols = $(content).find('section').eq(i).text();
-            var res = Math.floor(countSymbols.length / 4000);
-            return Math.max(1,res);
-        };
+        function initSizes(){
+            //getting screen resolution
+            var screenW = $(window).width();
+            var screenH = $(window).height();
 
-        function columnSync(){
+            $('#wrap_content').height(screenH * 0.6);//60%
+            $('#wrap_content').width(screenW * 0.6);//60%
 
-            $('#content_1').css('top',top-wrapHeight);
+            $('#main').css('padding-left',(screenW * 0.10) + 'px');
+            $('#main').width(screenW * 0.6);
+
+            $('#sidebar').width(screenW * 0.25);
+            $('#sidebar').css('left',(screenW * 0.75) + 'px');
+
+            //console.log('w - ' + screenW,'h - '+ screenH);
+            correctWrapHeight();
+        }
+
+        if (isLocalStorageAvailable()){
+            content = localStorage.getItem('book');
+            if (content) {
+                init(1);
+            }
         }
 
         function init(cache){
-            var bookHeight = $(window).height()-($(window).height()/3)
-            $('#wrap_content').height(bookHeight);
-
             //load book chapters
             var chapters = $(content).find('section');
-            // count pages
-            bookPages = 0;
+
             // create menu from chapters titles
             var html =  '<select id="chapters">';
             for (var i = 0; i < chapters.length; i++){
@@ -151,15 +114,7 @@
             $('#main > h1').html(bookTitle);
 
             // added to DOM 'select' with book titles
-            $('nav').html(html);
-
-            $('#chapters').trigger('change');
-
-            resize();
-
-            $('#pages').text(bookPages);
-            $('#count_chapters').text(countChapters);
-
+            $('#nav').html(html);
             //cache book to localstorage
             if (cache != 1){
                 if (isLocalStorageAvailable()){
@@ -168,39 +123,109 @@
                 }
             }
 
+            loadSettings();
+            loadContent();
+            resize();
+        }
 
+        function loadSettings(){
+            if (isLocalStorageAvailable()){
+                top = localStorage.getItem('top');
+                curChapter = localStorage.getItem('curChapter');
+                $('#chapters option').eq(curChapter).attr("selected", "selected");
+                columns =  localStorage.getItem('columns');
+                curSubPage = localStorage.getItem('curSubPage');
+                loadContent();
+                resize();
+                setContentPosition();
+            }
+        }
+
+        function saveSettings(){
+            if (isLocalStorageAvailable()){
+                localStorage.setItem('top', top);
+                localStorage.setItem('curChapter', curChapter);
+                localStorage.setItem('curSubPage', curSubPage);
+                localStorage.setItem('columns', columns);
+            }
+        }
+
+        $(window).resize(function (){
+            saveLinePosition()
+
+            initSizes();
+            resize();
+
+            loadLinePosition()
+            correctWrapHeight();
+
+            columnSync()
+        });
+
+        function setContentPosition(){
+            $('#content').css('top',top);
+            $('#content_1').css('top',top-wrapHeight);
+        }
+
+        /*
+        return count pages, minimum 1
+        @var chapter id
+        @return count chapter page (symbols/4000)
+         */
+        function countPages(i){
+            var countSymbols = $(content).find('section').eq(i).text();
+            var res = Math.floor(countSymbols.length / 4000);
+            return Math.max(1,res);
         };
 
-        function resize (){
-            var bookHeight = $(window).height()-($(window).height()/3)
-                $('#wrap_content').height(bookHeight);
+        function columnSync(){
+            $('#content_1').css('top',top-wrapHeight);
+        }
 
+        function saveLinePosition(){
+            var lh = $('#content').css('line-height').replace('px','');
+            var contentHeight = $('#content').height();
+            var lines = contentHeight / lh;
+                curLine = Math.abs(top / lh) || 0;
+                HeightLineX = lines / curLine;
+//            console.log('s - Lines =' + lines);
+//            console.log('s - curLine =' + curLine);
+//            console.log('s - x =' + HeightLineX);
+        }
+
+        function loadLinePosition(){
+            var lh = $('#content').css('line-height').replace('px','');
+            var contentHeight = $('#content').height();
+            var lines = contentHeight / lh;
+                curLine = lines / HeightLineX;
+                top = -(curLine * lh);
+            //var x = Math.round(top_ / lh);
+                //top = x * lh;
+
+            setContentPosition();
+//            console.log('l - Lines =' + lines);
+//            console.log('l - curLine =' + curLine);
+//            console.log('l - x =' + HeightLineX);
+//            console.log('l - top =' + top);
+        }
+
+        function resize (){
             var contentHeight = $('#content').height();
             var wrapHeight = $('#wrap_content').height();
 
             countSubPages = Math.ceil(contentHeight / wrapHeight);
-
-            $('#sub_pages').text(countSubPages);
-            $('#cur_sub_page').text(parseInt(curSubPage)+1);
-            $('#cur_chapter').text(parseInt(curChapter) + 1);
-
-
+            loadInfo();
             correctWrapHeight();
         };
 
         function loadContent(){
-
             // title of chapter
             chapterTitle = $('#chapters :selected').text();
-
             // current chapter id
             curChapter  = $('#chapters :selected').val();
-
             var html = '<h2>' +chapterTitle+ '</h2>';
-
             // load selected paragraph from file
             html += $(content).find('section').eq(curChapter).html();
-
             // load paragraph with heading to page
             $('article#content').html(html);
 
@@ -209,12 +234,21 @@
 
         function correctWrapHeight(){
             var wh = $('#wrap_content').height();
-            var lh = $('#content').css('line-height');
-                lh = parseInt(lh.replace('px',''));
-            var res = Math.floor(wh/lh);
+            var lh = $('#content').css('line-height').replace('px','');
 
+            var res = Math.round(wh/lh);
             wrapHeight = (res * lh);
+
+//            top = (Math.round(top / lh) * lh);
             $('#wrap_content').css('height',wrapHeight );
+        }
+
+        function loadInfo(){
+            $('#pages').text(bookPages);
+            $('#count_chapters').text(countChapters);
+            $('#sub_pages').text(countSubPages);
+            $('#cur_sub_page').text(parseInt(curSubPage)+1);
+            $('#cur_chapter').text(parseInt(curChapter) + 1);
         }
 
         function readSingleFile(evt) {
@@ -224,23 +258,20 @@
                 var r = new FileReader();
                 r.onload = function(e) {
                     content = e.target.result;
-                    // init Application
                     init();
                 }
                 r.readAsText(f);
-            } else {
-                alert("Failed to load file");
-            }
+            } else {alert("Failed to load file");}
         }
 
         function translation(){
             // split text to individual words and wrap them in <span></span> tags
-            $("#content p").each(function() {
+            $("#wrap_content p").each(function() {
                 var self = $(this);
                 self.html(self.text().replace(/\b(\w+)\b/g, "<span>$1</span>"));
             });
             // click to word and translate it
-            $("#content p span").click(function() {
+            $("#wrap_content p span").click(function() {
                 var word = $(this).text();
 
                 getTranslateFromYandexTranslate(word);
@@ -251,6 +282,66 @@
             try {return 'localStorage' in window && window['localStorage'] !== null;} catch (e) {
                 return false;}
         }
+
+        $('#nav').change(function() {
+            curSubPage = 0;
+            top = 0;
+            loadContent();
+            resize();
+            saveSettings();
+        });
+
+        $('#next').click(function(){
+            if ((curSubPage+1) < countSubPages){
+                curSubPage += 1;
+                if (columns) top -=(wrapHeight * 2)
+                else top -=wrapHeight;
+                setContentPosition()
+                resize();
+            }
+            saveSettings();
+        });
+
+        $('#prev').click(function(){
+            if (curSubPage > 0){
+                curSubPage -= 1;
+                if (columns) top +=(wrapHeight * 2)
+                else top +=wrapHeight;
+                setContentPosition();
+                resize();
+            }
+            saveSettings();
+        });
+
+        $('#column_2').click(function(){
+
+            if (columns) columns = 0
+                else columns = 1;
+
+            saveLinePosition();
+
+            var html = $('#content').html();
+            if ($('#content_1').is(":hidden")) {
+                $('#content').css('width','45%');
+            }
+            else{
+                $('#content').css('width','100%');
+            }
+
+            $('#content_1').html(html);
+            $('#content_1').toggle();
+
+            loadLinePosition()
+
+            columnSync()
+            translation()
+            saveSettings();
+        });
+
+        $('#click').click(function (){
+            $('#chapters option').eq(6).attr("selected", "selected");
+            $('#nav').change();
+        });
 
         // file upload listener
         document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
@@ -291,12 +382,7 @@
             return false;
         });
 
-        if (isLocalStorageAvailable()){
-            content = localStorage.getItem('book');
-            if (content) {
-                init(1);
-            }
-        }
+
     });
 
     // get word translate from translate.yandex.net
@@ -352,24 +438,16 @@
 </script>
 </head>
 <body>
-    <div id="info">
-        <button id="prev">PREV</button> |
-        <button id="next">NEXT</button><br />
-        <button id="column_2">2 column</button> <br /><hr />
-        <button id="click">CLICK</button> <br /><hr />
-        <span id="count_chapters">|</span> - Chapters<br />
-        <span id="cur_chapter">|</span> - curChapter<br /><hr />
-        <span id="pages">|</span> - Pages<br />
-        <span id="cur_page">|</span> - curPage<br />
-        <span id="sub_pages">|</span> - subPages<br />
-        <span id="cur_sub_page">|</span> - curSubPage<br /><hr />
-    </div>
     <section id="main">
         <input type="file" id="fileinput" />
         <hr />
-        <h1></h1>
+        <h1>Book title</h1>
         <nav id="nav"></nav>
         <div id="book">
+           <button id="prev">PREV</button> |
+           <button id="next">NEXT</button> |
+           <button id="column_2">2 column</button> |
+           <button id="click">CLICK</button> | <hr />
            <div id="wrap_content">
              <article id="content">
              </article>
@@ -381,6 +459,14 @@
     <aside id="sidebar">
         <h2>Pocket dictionary:</h2>
         <div id="dictionary"></div>
+        <hr />
+        <span id="count_chapters">|</span> - Chapters<br />
+        <span id="cur_chapter">|</span> - curChapter<br /><hr />
+        <span id="pages">|</span> - Pages<br />
+        <span id="cur_page">|</span> - curPage<br />
+        <span id="sub_pages">|</span> - subPages<br />
+        <span id="cur_sub_page">|</span> - curSubPage<br /><hr />
+
     </aside>
 </body>
 </html>
