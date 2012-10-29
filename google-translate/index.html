@@ -132,6 +132,7 @@
                 $('#chapters option').eq(curChapter).attr("selected", "selected");
                 columns =  localStorage.getItem('columns');
                 curSubPage = localStorage.getItem('curSubPage');
+                wrapHeight = localStorage.getItem('wrapHeight');
                 loadContent();
                 resize();
                 setContentPosition();
@@ -144,6 +145,7 @@
                 localStorage.setItem('curChapter', curChapter);
                 localStorage.setItem('curSubPage', curSubPage);
                 localStorage.setItem('columns', columns);
+                localStorage.setItem('wrapHeight', wrapHeight);
             }
         }
 
@@ -293,6 +295,7 @@
                 curSubPage += 1;
                 if (columns) top -=(wrapHeight * 2)
                 else top -=wrapHeight;
+                console.log(wrapHeight);
                 setContentPosition()
                 resize();
             }
