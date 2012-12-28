@@ -1,0 +1,292 @@
+<!--
+EaselJS experiments
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <script>
+            // this sets the namespace for CreateJS to the window object, so you can instantiate objects without specifying
+            // the namespace: "new Graphics()" instead of "new createjs.Graphics()"
+            // this is a quick way to make projects built on pervious versions of EaselJS run without extensive modifications
+            var createjs = window;
+        </script>
+
+        <!-- <script type="text/javascript" src="assets/preloadjs-0.2.0.min.js"></script>
+         <script type="text/javascript" src="assets/soundjs-0.3.0.min.js"></script>-->
+
+        <!-- Import EaselJS Framework -->
+        <script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+
+        <script src="./src/easeljs/Helper.js"></script>
+
+        <script>
+            var canvas;			//Main canvas
+            var stage;			//Main display stage
+
+            var sprSheet = new SpriteSheet({
+                "frames": {
+                    "width": 64,
+                    "numFrames": 5,
+                    "regX": 0,
+                    "regY": 0,
+                    "height": 64
+                },
+                "images": ["assets/textures.png"]
+            });
+
+            var tankImg = new Image();
+            var  tank = new Bitmap(tankImg);
+            var tankPos = 13;
+
+            var wallImg;
+            var wall;
+
+            var emptyB;
+
+            var breakesImg;
+            var breakes;
+
+            var KEYCODE_ENTER = 13;		//usefull keycode
+            var KEYCODE_SPACE = 32;		//usefull keycode
+            var KEYCODE_UP = 38;		//usefull keycode
+            var KEYCODE_DOWN = 40;	        //usefull keycode
+            var KEYCODE_LEFT = 37;		//usefull keycode
+            var KEYCODE_RIGHT = 39;		//usefull keycode
+            var KEYCODE_W = 87;			//usefull keycode
+            var KEYCODE_A = 65;			//usefull keycode
+            var KEYCODE_S = 83;			//usefull keycode
+            var KEYCODE_D = 68;			//usefull keycode
+
+            var shootHeld = false;		//is the user holding a shoot command
+            var lfHeld = false;			//is the user holding a turn left command
+            var rtHeld = false;			//is the user holding a turn right command
+            var fwdHeld = false ;		//is the user holding a forward command
+            var bwdHeld = false ;		//is the user holding a backward command
+
+            var speed = 2;
+
+            var textTiles = Array.matrix(26, 26, "|");
+            var tiles = Array.matrix(26, 26, "|");
+
+            //register key functions
+            document.onkeydown = handleKeyDown;
+            document.onkeyup = handleKeyUp;
+
+            function init() {
+                if (window.top != window) {
+                    document.getElementById("header").style.display = "none";
+                }
+
+                canvas = document.getElementById("gameCanvas");
+                stage = new Stage(canvas);
+                stage.update(); 	//update the stage to show text
+
+                loadLevel(0);
+
+                wallImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 1);
+                wall = new Bitmap(wallImg);
+                wall.scaleX = 0.25;
+                wall.scewX = 0.25;
+                wall.scaleY = 0.25;
+                //wall.x = -32;
+
+                breakesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 0);
+                breakes = new Bitmap(breakesImg);
+                breakes.scaleX = 0.25;
+                breakes.scaleY = 0.25;
+                // breakes.y = 32;
+
+                //                for (var i=0; i<4; i++) {
+                //                    wall = wall.clone();
+                //                    wall.x += 32;
+                //                    stage.addChild(wall);
+                //                }
+                //
+                //                for (var i=0; i<4; i++) {
+                //                    breakes = breakes.clone();
+                //                    breakes.y += 32;
+                //                    stage.addChild(breakes);
+                //                }
+
+                //stage.addChild(wall);
+
+                tankImg.src = 'assets/tank.png';
+                tank.x = tank.y = tank.regX = tank.regY = tankPos;
+                stage.addChild(tank);
+
+
+                // add a text object to output the current FPS:
+                fpsLabel = new createjs.Text("-- fps","bold 12px Arial","#FFF");
+                stage.addChild(fpsLabel);
+                fpsLabel.x = canvas.width - 50;
+                fpsLabel.y = 10;
+
+                // start the tick and point it at the window so we can do some work before updating the stage:
+                createjs.Ticker.addListener(window);
+                createjs.Ticker.setFPS(40);
+            }
+
+            function tick() {
+                if(fwdHeld) {
+                    tank.y -= speed;
+                    tank.rotation = 0;
+                } else if(bwdHeld) {
+                    tank.y += speed;
+                    tank.rotation = 180;
+                } else if(lfHeld) {
+                    tank.x -= speed;
+                    tank.rotation = 270;
+                } else if(rtHeld) {
+                    tank.x += speed;
+                    tank.rotation = 90;
+                }
+
+                if(tank.x < 0 + tankPos) {
+                    tank.x = tankPos;
+                } else if (tank.x > canvas.width -  tankPos) {
+                    tank.x = canvas.width - tankPos;
+                } else if (tank.y <  0 + tankPos) {
+                    tank.y = tank.y = tankPos;
+                } else if (tank.y > canvas.height -  tankPos) {
+                    tank.y = canvas.height - tankPos;
+                }
+
+                fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
+
+                // draw the updates to stage:
+                stage.update();
+            }
+
+            //allow for WASD and arrow control scheme
+            function handleKeyDown(e) {
+                //cross browser issues exist
+                if(!e){ var e = window.event; }
+                switch(e.keyCode) {
+                    case KEYCODE_SPACE:	shootHeld = true;  console.log('x position: ' +( tank.x-tank.regX) + ' y position: ' + (tank.y-tank.regY)); return false;
+                    case KEYCODE_A:
+                    case KEYCODE_LEFT:	lfHeld = true; return false;
+                    case KEYCODE_D:
+                    case KEYCODE_RIGHT: rtHeld = true; return false;
+                    case KEYCODE_W:
+                    case KEYCODE_UP:	fwdHeld = true; return false;
+                    case KEYCODE_S:
+                    case KEYCODE_DOWN:	bwdHeld = true; return false;
+                    case KEYCODE_ENTER:	 if(canvas.onclick == handleClick){ handleClick(); }return false;
+                }
+            }
+
+            function handleKeyUp(e) {
+                //cross browser issues exist
+                if(!e){ var e = window.event; }
+                switch(e.keyCode) {
+                    case KEYCODE_SPACE:	shootHeld = false; break;
+                    case KEYCODE_A:
+                    case KEYCODE_LEFT:	lfHeld = false; break;
+                    case KEYCODE_D:
+                    case KEYCODE_RIGHT: rtHeld = false; break;
+                    case KEYCODE_W:
+                    case KEYCODE_UP:	fwdHeld = false; break;
+                    case KEYCODE_S:
+                    case KEYCODE_DOWN:	bwdHeld = false; break;
+                }
+            }
+
+            function loadLevel(levelIndex) {
+                var levelUrl = window.location.href.replace('index.html', '') + "levels/" + levelIndex + ".txt";
+                try {
+                    var request = new XMLHttpRequest();
+                    request.open('GET', levelUrl, true);
+
+                    // Little closure
+                    var instance = this;
+                    request.onreadystatechange = function () {
+                        instance.onLevelReady(this);
+                    };
+                    request.send(null);
+                }
+                catch (e) {
+                    console.log(e);
+                    // Probably an access denied if you try to run from the file:// context
+                    // Loading the hard coded error level to have at least something to play with
+                    //this.LoadThisTextLevel(hardcodedErrorTextLevel);
+                }
+            }
+
+            function onLevelReady(eventResult) {
+                //console.log(eventResult.readyState);
+                var newTextLevel = "";
+
+                if (eventResult.readyState == 4) {
+                    // If everything was OK
+                    if (eventResult.status == 200) {
+                        newTextLevel = eventResult.responseText.replace(/[\n\r\t]/g, '');
+                        console.log(newTextLevel);
+                    } else {
+                        console.log('Error', eventResult.statusText);
+                        // Loading a hard coded level in case of error
+                        //newTextLevel = hardcodedErrorTextLevel;
+                    }
+
+                    loadThisTextLevel(newTextLevel);
+                    //console.log(textTiles);
+                }
+            }
+
+            function loadThisTextLevel(level) {
+                parseLevelLines(level);
+
+                                // Loop over every tile position,
+                                for (var i = 0; i < 26; i++) {
+                                    for (var j = 0; j < 26; j++) {
+                                        loadTile(textTiles[i][j], j, i);
+                                    }
+                                }
+            }
+
+            function parseLevelLines(levelLine) {
+                for (var i = 0; i < 26; i++) {
+                    for (var j = 0; j < 26; j++) {
+                        textTiles[i][j] = levelLine.charAt((i * 26) + j);
+                    }
+                }
+            }
+
+            function loadTile(tileType, x, y) {
+                switch (tileType) {
+                    // Blank space
+                    case '.':
+                        break;
+
+                case '=':
+                    console.log("x: " + x + " y: " + y);
+                    wall = wall.clone();
+                    wall.x = x*16;
+                    wall.y = y*16;
+                    stage.addChild(wall);
+                    break;
+
+               case '#':
+                    console.log("x: " + x + " y: " + y);
+                    breakes = breakes.clone();
+                    breakes.x = x*16;
+                    breakes.y = y*16;
+                    stage.addChild(breakes);
+                    break;
+
+        }
+    }
+
+
+        </script>
+    </head>
+    <body onload="init();">
+        <div class="canvasHolder">
+            <canvas id="gameCanvas" width="416" height="416" style="background-color:black">
+                Your browser doesn't support canvas.
+            </canvas>
+        </div>
+    </body>
+</html>
