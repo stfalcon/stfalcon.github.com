@@ -49,6 +49,9 @@ EaselJS experiments
             var breakesImg;
             var breakes;
 
+            var treesImg;
+            var trees;
+
             var KEYCODE_ENTER = 13;		//usefull keycode
             var KEYCODE_SPACE = 32;		//usefull keycode
             var KEYCODE_UP = 38;		//usefull keycode
@@ -89,7 +92,6 @@ EaselJS experiments
                 wallImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 1);
                 wall = new Bitmap(wallImg);
                 wall.scaleX = 0.25;
-                wall.scewX = 0.25;
                 wall.scaleY = 0.25;
                 //wall.x = -32;
 
@@ -98,6 +100,11 @@ EaselJS experiments
                 breakes.scaleX = 0.25;
                 breakes.scaleY = 0.25;
                 // breakes.y = 32;
+
+                treesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 2);
+                trees = new Bitmap(treesImg);
+                trees.scaleX = 0.25;
+                trees.scaleY = 0.25;
 
                 //                for (var i=0; i<4; i++) {
                 //                    wall = wall.clone();
@@ -114,7 +121,9 @@ EaselJS experiments
                 //stage.addChild(wall);
 
                 tankImg.src = 'assets/tank.png';
-                tank.x = tank.y = tank.regX = tank.regY = tankPos;
+                tank.regX = tank.regY = tankPos;
+                tank.x=145;
+                tank.y=canvas.height-13;
                 stage.addChild(tank);
 
 
@@ -223,7 +232,7 @@ EaselJS experiments
                     // If everything was OK
                     if (eventResult.status == 200) {
                         newTextLevel = eventResult.responseText.replace(/[\n\r\t]/g, '');
-                        console.log(newTextLevel);
+                        // console.log(newTextLevel);
                     } else {
                         console.log('Error', eventResult.statusText);
                         // Loading a hard coded level in case of error
@@ -238,12 +247,12 @@ EaselJS experiments
             function loadThisTextLevel(level) {
                 parseLevelLines(level);
 
-                                // Loop over every tile position,
-                                for (var i = 0; i < 26; i++) {
-                                    for (var j = 0; j < 26; j++) {
-                                        loadTile(textTiles[i][j], j, i);
-                                    }
-                                }
+                // Loop over every tile position,
+                for (var i = 0; i < 26; i++) {
+                    for (var j = 0; j < 26; j++) {
+                        loadTile(textTiles[i][j], j, i);
+                    }
+                }
             }
 
             function parseLevelLines(levelLine) {
@@ -260,24 +269,31 @@ EaselJS experiments
                     case '.':
                         break;
 
-                case '=':
-                    console.log("x: " + x + " y: " + y);
-                    wall = wall.clone();
-                    wall.x = x*16;
-                    wall.y = y*16;
-                    stage.addChild(wall);
-                    break;
+                    case '=':
+                        // console.log("x: " + x + " y: " + y);
+                        wall = wall.clone();
+                        wall.x = x*16;
+                        wall.y = y*16;
+                        stage.addChild(wall);
+                        break;
 
-               case '#':
-                    console.log("x: " + x + " y: " + y);
-                    breakes = breakes.clone();
-                    breakes.x = x*16;
-                    breakes.y = y*16;
-                    stage.addChild(breakes);
-                    break;
+                    case '#':
+                        //console.log("x: " + x + " y: " + y);
+                        breakes = breakes.clone();
+                        breakes.x = x*16;
+                        breakes.y = y*16;
+                        stage.addChild(breakes);
+                        break;
 
-        }
-    }
+                    case '*':
+                        //console.log("x: " + x + " y: " + y);
+                        trees = trees.clone();
+                        trees.x = x*16;
+                        trees.y = y*16;
+                        stage.addChild(trees);
+                        break;
+                }
+            }
 
 
         </script>
