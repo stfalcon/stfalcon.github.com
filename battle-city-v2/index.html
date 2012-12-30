@@ -28,11 +28,11 @@ EaselJS experiments
 
             var sprSheet = new SpriteSheet({
                 "frames": {
-                    "width": 64,
-                    "numFrames": 5,
+                    "width": 32,
+                    "numFrames": 10,
                     "regX": 0,
                     "regY": 0,
-                    "height": 64
+                    "height": 32
                 },
                 "images": ["assets/textures.png"]
             });
@@ -89,36 +89,20 @@ EaselJS experiments
 
                 loadLevel(0);
 
-                wallImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 1);
+                wallImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 2);
                 wall = new Bitmap(wallImg);
-                wall.scaleX = 0.25;
-                wall.scaleY = 0.25;
-                //wall.x = -32;
+                wall.scaleX = 0.5;
+                wall.scaleY = 0.5;
 
                 breakesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 0);
                 breakes = new Bitmap(breakesImg);
-                breakes.scaleX = 0.25;
-                breakes.scaleY = 0.25;
-                // breakes.y = 32;
+                breakes.scaleX = 0.5;
+                breakes.scaleY = 0.5;
 
-                treesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 2);
+                treesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 4);
                 trees = new Bitmap(treesImg);
-                trees.scaleX = 0.25;
-                trees.scaleY = 0.25;
-
-                //                for (var i=0; i<4; i++) {
-                //                    wall = wall.clone();
-                //                    wall.x += 32;
-                //                    stage.addChild(wall);
-                //                }
-                //
-                //                for (var i=0; i<4; i++) {
-                //                    breakes = breakes.clone();
-                //                    breakes.y += 32;
-                //                    stage.addChild(breakes);
-                //                }
-
-                //stage.addChild(wall);
+                trees.scaleX = 0.5;
+                trees.scaleY = 0.5;
 
                 tankImg.src = 'assets/tank.png';
                 tank.regX = tank.regY = tankPos;
@@ -130,9 +114,8 @@ EaselJS experiments
                 // add a text object to output the current FPS:
                 fpsLabel = new createjs.Text("-- fps","bold 12px Arial","#FFF");
                 stage.addChild(fpsLabel);
-                fpsLabel.x = canvas.width - 50;
+                fpsLabel.x = canvas.width - 100;
                 fpsLabel.y = 10;
-
                 // start the tick and point it at the window so we can do some work before updating the stage:
                 createjs.Ticker.addListener(window);
                 createjs.Ticker.setFPS(40);
