@@ -73,6 +73,8 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
 
             var speed = 2;
 
+            var hit = false;
+
             var textTiles = Array.matrix(26, 26, "|");
             var tiles = Array.matrix(26, 26, "|");
 
@@ -155,17 +157,25 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                     var childTile = tileHolder.getChildAt(i);
                     // var pt = childTile.globalToLocal(tank.x, tank.y);
                     var pt = tank.localToLocal(0,0,childTile);
-                    if (childTile.hitTest(pt.x, pt.y)) { 
-                        console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
+                    if (childTile.hitTest(pt.x, pt.y)) {
+                        //console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
                         if(tank.x>childTile.x && tank.rotation == 270) {
-                            tank.x = childTile.x + 26;
+                            //tank.x = childTile.x + 26;
                         } else if (tank.x<childTile.x && tank.rotation == 90) {
-                            tank.x = childTile.x - 13;
+                            //tank.x = childTile.x - 13;
                         } else if (tank.y>childTile.y && tank.rotation == 0) {
                             tank.y = childTile.y + 26;
                         } else if (tank.y<childTile.y && tank.rotation == 180) {
                             tank.y = childTile.y - 13;
                         }
+                    }
+
+                    if (childTile.x < tank.x && tank.x < childTile.x + 32 && childTile.y < tank.y + 8  && tank.y < childTile.y + 32 && tank.rotation == 270) {
+                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                         tank.x = childTile.x + 30;
+                    } else if (childTile.x > tank.x && tank.x > childTile.x - 16 && childTile.y < tank.y + 8  && tank.y < childTile.y + 32 && tank.rotation == 90) {
+                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.x = childTile.x - 13;
                     }
                 }
 
@@ -180,7 +190,9 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                 //cross browser issues exist
                 if(!e){ var e = window.event; }
                 switch(e.keyCode) {
-                    case KEYCODE_SPACE:	shootHeld = true;  console.log('x position: ' +( tank.x-tank.regX) + ' y position: ' + (tank.y-tank.regY)); return false;
+                    case KEYCODE_SPACE:	shootHeld = true;
+                        console.log('x position: ' +( tank.x-tank.regX) + ' y position: ' + (tank.y-tank.regY));
+                        return false;
                     case KEYCODE_A:
                     case KEYCODE_LEFT:	lfHeld = true; return false;
                     case KEYCODE_D:
@@ -301,6 +313,15 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                 }
             }
 
+            function checkRectIntersection(rect1,rect2) {
+                if ( rect1.x >= rect2.x + rect2.width    // a)
+                    || rect1.x + rect1.width <= rect2.x    // b)
+                    || rect1.y >= rect2.y + rect2.height   // c)
+                    || rect1.y + rect1.height <= rect2.y ) // d)
+                // return false;
+                    console.log('hit');
+                // return true;
+            }
 
         </script>
     </head>
