@@ -1,5 +1,7 @@
 <!--
 EaselJS experiments
+
+TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == true.....
 -->
 <!DOCTYPE html>
 <html>
@@ -86,6 +88,7 @@ EaselJS experiments
                 canvas = document.getElementById("gameCanvas");
                 stage = new Stage(canvas);
                 stage.update(); 	//update the stage to show text
+                tileHolder = stage.addChild(new createjs.Container());
 
                 loadLevel(0);
 
@@ -116,6 +119,7 @@ EaselJS experiments
                 stage.addChild(fpsLabel);
                 fpsLabel.x = canvas.width - 100;
                 fpsLabel.y = 10;
+
                 // start the tick and point it at the window so we can do some work before updating the stage:
                 createjs.Ticker.addListener(window);
                 createjs.Ticker.setFPS(40);
@@ -144,6 +148,25 @@ EaselJS experiments
                     tank.y = tank.y = tankPos;
                 } else if (tank.y > canvas.height -  tankPos) {
                     tank.y = canvas.height - tankPos;
+                }
+
+                var l = tileHolder.getNumChildren();
+                for (var i=0; i<l; i++) {
+                    var childTile = tileHolder.getChildAt(i);
+                    // var pt = childTile.globalToLocal(tank.x, tank.y);
+                    var pt = tank.localToLocal(0,0,childTile);
+                    if (childTile.hitTest(pt.x, pt.y)) { 
+                        console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
+                        if(tank.x>childTile.x && tank.rotation == 270) {
+                            tank.x = childTile.x + 26;
+                        } else if (tank.x<childTile.x && tank.rotation == 90) {
+                            tank.x = childTile.x - 13;
+                        } else if (tank.y>childTile.y && tank.rotation == 0) {
+                            tank.y = childTile.y + 26;
+                        } else if (tank.y<childTile.y && tank.rotation == 180) {
+                            tank.y = childTile.y - 13;
+                        }
+                    }
                 }
 
                 fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
@@ -257,7 +280,7 @@ EaselJS experiments
                         wall = wall.clone();
                         wall.x = x*16;
                         wall.y = y*16;
-                        stage.addChild(wall);
+                        tileHolder.addChild(wall);
                         break;
 
                     case '#':
@@ -265,7 +288,7 @@ EaselJS experiments
                         breakes = breakes.clone();
                         breakes.x = x*16;
                         breakes.y = y*16;
-                        stage.addChild(breakes);
+                        tileHolder.addChild(breakes);
                         break;
 
                     case '*':
