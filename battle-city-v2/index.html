@@ -46,6 +46,9 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
             var wallImg;
             var wall;
 
+            var wallSize = 32;
+            var halfTankSize = 13;
+
             var emptyB;
 
             var breakesImg;
@@ -156,26 +159,32 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                 for (var i=0; i<l; i++) {
                     var childTile = tileHolder.getChildAt(i);
                     // var pt = childTile.globalToLocal(tank.x, tank.y);
-                    var pt = tank.localToLocal(0,0,childTile);
-                    if (childTile.hitTest(pt.x, pt.y)) {
-                        //console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
-                        if(tank.x>childTile.x && tank.rotation == 270) {
-                            //tank.x = childTile.x + 26;
-                        } else if (tank.x<childTile.x && tank.rotation == 90) {
-                            //tank.x = childTile.x - 13;
-                        } else if (tank.y>childTile.y && tank.rotation == 0) {
-                            tank.y = childTile.y + 26;
-                        } else if (tank.y<childTile.y && tank.rotation == 180) {
-                            tank.y = childTile.y - 13;
-                        }
-                    }
+                    // var pt = tank.localToLocal(0,0,childTile);
+                    //                    if (childTile.hitTest(pt.x, pt.y)) {
+                    //                        console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
+                    //                        if(tank.x>childTile.x && tank.rotation == 270) {
+                    //                            tank.x = childTile.x + 26;
+                    //                        } else if (tank.x<childTile.x && tank.rotation == 90) {
+                    //                            tank.x = childTile.x - 13;
+                    //                        } else if (tank.y>childTile.y && tank.rotation == 0) {
+                    //                            tank.y = childTile.y + 26;
+                    //                        } else if (tank.y<childTile.y && tank.rotation == 180) {
+                    //                            tank.y = childTile.y - 13;
+                    //                        }
+                    //                    }
 
-                    if (childTile.x < tank.x && tank.x < childTile.x + 32 && childTile.y < tank.y + 8  && tank.y < childTile.y + 32 && tank.rotation == 270) {
+                    if (childTile.x < tank.x && tank.x < childTile.x + wallSize && childTile.y - halfTankSize < tank.y  && tank.y < childTile.y + wallSize && tank.rotation == 270) {
                         console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                         tank.x = childTile.x + 30;
-                    } else if (childTile.x > tank.x && tank.x > childTile.x - 16 && childTile.y < tank.y + 8  && tank.y < childTile.y + 32 && tank.rotation == 90) {
+                        tank.x = childTile.x + wallSize;
+                    } else if (childTile.x > tank.x && tank.x > childTile.x - wallSize * 0.5 && childTile.y - halfTankSize < tank.y  && tank.y < childTile.y + wallSize && tank.rotation == 90) {
                         console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.x = childTile.x - 13;
+                        tank.x = childTile.x - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x && tank.x < childTile.x + wallSize && childTile.y > tank.y  && tank.y > childTile.y - wallSize * 0.5 && tank.rotation == 180) {
+                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = childTile.y - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x && tank.x < childTile.x + wallSize && childTile.y < tank.y  && tank.y < childTile.y + wallSize && tank.rotation == 0) {
+                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = childTile.y + wallSize;
                     }
                 }
 
@@ -311,16 +320,6 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                         stage.addChild(trees);
                         break;
                 }
-            }
-
-            function checkRectIntersection(rect1,rect2) {
-                if ( rect1.x >= rect2.x + rect2.width    // a)
-                    || rect1.x + rect1.width <= rect2.x    // b)
-                    || rect1.y >= rect2.y + rect2.height   // c)
-                    || rect1.y + rect1.height <= rect2.y ) // d)
-                // return false;
-                    console.log('hit');
-                // return true;
             }
 
         </script>
