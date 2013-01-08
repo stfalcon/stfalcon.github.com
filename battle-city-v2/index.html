@@ -173,7 +173,11 @@ EaselJS experiments
                 } else if (tank.y > canvas.height - tankPos) {
                     tank.y = canvas.height - tankPos;
                 }
+                var l = tileHolder.getNumChildren();
 
+                wallCollisions(l, tank);
+
+                if (tank2) {
                 if(tank2.rotation == 90)
                     tank2.x += tank2Speed;
                 else if (tank2.rotation == 270)
@@ -187,10 +191,8 @@ EaselJS experiments
                     tank2.rotation = 270;
                 }
 
-                var l = tileHolder.getNumChildren();
-                wallCollisions(l, tank);
-
                 tankCollisions(tank, tank2);
+                }
 
                 fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
 
@@ -203,6 +205,21 @@ EaselJS experiments
                 if (ballInstance) {
                     ballInstance.x += ballspeedX;
                     ballInstance.y += ballspeedY;
+
+                    if(tank2 &&
+                       ballInstance.x >= tank2.x - halfTankSize &&
+                       ballInstance.x <= tank2.x + halfTankSize &&
+                       ballInstance.y >= tank2.y - halfTankSize &&
+                       ballInstance.y <= tank2.y + halfTankSize) {
+                        console.log('hit!');
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                        tank2.visible = null;
+                        tank2 = null;
+                        delete(tank2);
+                        return;
+                    }
 
                     if(ballInstance.x < 0) {
                         ballInstance.x = 0;
