@@ -42,6 +42,11 @@ EaselJS experiments
             var tank2 = new Bitmap(tankImg);
             var tankPos = 13;
 
+            var ball = new createjs.Shape(new createjs.Graphics().beginFill("yellow").drawCircle(0,0,2));
+            var ballInstance;
+            var ballspeedX = 0;
+            var ballspeedY = 0;
+
             var wallImg;
             var wall;
 
@@ -128,6 +133,7 @@ EaselJS experiments
                 tank2.rotation = 90;
                 stage.addChild(tank2);
 
+                //stage.addChild(shape);
 
                 // add a text object to output the current FPS:
                 fpsLabel = new createjs.Text("-- fps","bold 12px Arial","#FFF");
@@ -169,9 +175,9 @@ EaselJS experiments
                 }
 
                 if(tank2.rotation == 90)
-                tank2.x += tank2Speed;
+                    tank2.x += tank2Speed;
                 else if (tank2.rotation == 270)
-                tank2.x -= tank2Speed;
+                    tank2.x -= tank2Speed;
 
                 if(tank2.x < 0 + tankPos) {
                     tank2.x = tankPos;
@@ -194,6 +200,33 @@ EaselJS experiments
                     tank2Speed = 0.5;
                 }
 
+                if (ballInstance) {
+                    ballInstance.x += ballspeedX;
+                    ballInstance.y += ballspeedY;
+
+                    if(ballInstance.x < 0) {
+                        ballInstance.x = 0;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.x > canvas.width) {
+                        ballInstance.x = canvas.width;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.y <  0) {
+                        ballInstance.y = 0;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.y > canvas.height) {
+                        ballInstance.y = canvas.height;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    }
+                }
+
                 // draw the updates to stage:
                 stage.update();
             }
@@ -205,6 +238,34 @@ EaselJS experiments
                 switch(e.keyCode) {
                     case KEYCODE_SPACE:	shootHeld = true;
                         console.log('x position: ' +( tank.x-tank.regX) + ' y position: ' + (tank.y-tank.regY));
+                        if (!ballInstance) {
+                        ballInstance = ball.clone();
+                        if (tank.rotation == 90) {
+                            ballInstance.x = tank.x + halfTankSize;
+                            ballspeedX = 3;
+                            ballspeedY = 0;
+                        } else if (tank.rotation == 270) {
+                            ballInstance.x = tank.x - halfTankSize;
+                            ballspeedX = -3;
+                            ballspeedY = 0;
+                        } else {
+                            ballInstance.x = tank.x;
+                        }
+
+                        if (tank.rotation == 0) {
+                            ballInstance.y = tank.y - halfTankSize;
+                            ballspeedY = -3;
+                            ballspeedX = 0;
+                        } else if (tank.rotation == 180) {
+                            ballInstance.y = tank.y + halfTankSize;
+                            ballspeedY = 3;
+                            ballspeedX = 0;
+                        } else {
+                            ballInstance.y = tank.y;
+                        }
+
+                        stage.addChild(ballInstance);
+                        }
                         return false;
                     case KEYCODE_A:
                     case KEYCODE_LEFT:	lfHeld = true; return false;
@@ -326,17 +387,15 @@ EaselJS experiments
                     if (childTile.x < tank.x &&
                         tank.x < childTile.x + wallSize &&
                         childTile.y - halfTankSize < tank.y  &&
-                        tank.y < childTile.y + 26) {
+                        tank.y < childTile.y + 30) {
                         wallColl = true;
                         console.log('x-');
-//                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
                         tank.x = childTile.x + wallSize;
                     } else if (childTile.x > tank.x &&
                         tank.x > childTile.x - wallSize * 0.5 &&
                         childTile.y - halfTankSize < tank.y  &&
                         tank.y < childTile.y + wallSize) {
                         wallColl = true;
-//                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
                         console.log('x+');
                         tank.x = childTile.x - wallSize * 0.5;
                     } else if (childTile.x - halfTankSize < tank.x &&
@@ -346,7 +405,6 @@ EaselJS experiments
                         tank.rotation == 180) {
                         wallColl = true;
                         console.log('y-');
-//                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
                         tank.y = childTile.y - wallSize * 0.5;
                     } else if (childTile.x - halfTankSize < tank.x &&
                         tank.x < childTile.x + wallSize - 1 &&
@@ -355,7 +413,6 @@ EaselJS experiments
                         tank.rotation == 0) {
                         wallColl = true;
                         console.log('y+');
-//                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
                         tank.y = childTile.y + wallSize;
                     }
                 }
@@ -363,36 +420,36 @@ EaselJS experiments
 
             function tankCollisions(tank, tank2) {
                 if (tank2.x < tank.x &&
-                        tank.x < tank2.x + tankSize &&
-                        tank2.y - halfTankSize < tank.y  &&
-                        tank.y < tank2.y + wallSize) {
-                        tankColl = true;
-                        console.log('tx-');
-                        tank.x = tank2.x + tankSize;
-                    } else if (tank2.x > tank.x &&
-                        tank.x > tank2.x - tankSize &&
-                        tank2.y - tankSize < tank.y  &&
-                        tank.y < tank2.y + wallSize) {
-                        tankColl = true;
-                        console.log('tx+');
-                        tank.x = tank2.x - tankSize;
-                    } else if (tank2.x - halfTankSize < tank.x &&
-                        tank.x < tank2.x + wallSize - 1 &&
-                        tank2.y > tank.y  &&
-                        tank.y > tank2.y - tankSize &&
-                        tank.rotation == 180) {
-                        tankColl = true;
-                        console.log('ty-');
-                        tank.y = tank2.y - tankSize;
-                    } else if (tank2.x - halfTankSize < tank.x &&
-                        tank.x < tank2.x + wallSize - 1 &&
-                        tank2.y < tank.y  &&
-                        tank.y < tank2.y + tankSize &&
-                        tank.rotation == 0) {
-                        tankColl = true;
-                        console.log('ty+');
-                        tank.y = tank2.y + tankSize;
-                    }
+                    tank.x - 5 < tank2.x + tankSize &&
+                    tank2.y - halfTankSize < tank.y  &&
+                    tank.y < tank2.y + wallSize) {
+                    tankColl = true;
+                    console.log('tx-');
+                    tank.x = tank2.x + wallSize;
+                } else if (tank2.x - halfTankSize > tank.x &&
+                    tank.x > tank2.x - tankSize &&
+                    tank2.y - tankSize < tank.y  &&
+                    tank.y < tank2.y + wallSize) {
+                    tankColl = true;
+                    console.log('tx+');
+                    tank.x = tank2.x - tankSize;
+                } else if (tank2.x - halfTankSize < tank.x &&
+                    tank.x < tank2.x + wallSize - 2 &&
+                    tank2.y > tank.y  &&
+                    tank.y > tank2.y - tankSize &&
+                    tank.rotation == 180) {
+                    tankColl = true;
+                    console.log('ty-');
+                    tank.y = tank2.y - tankSize;
+                } else if (tank2.x - halfTankSize < tank.x &&
+                    tank.x < tank2.x + wallSize - 1 &&
+                    tank2.y < tank.y  &&
+                    tank.y < tank2.y + wallSize &&
+                    tank.rotation == 0) {
+                    tankColl = true;
+                    console.log('ty+');
+                    tank.y = tank2.y + wallSize;
+                }
             }
 
         </script>
