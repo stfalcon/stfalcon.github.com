@@ -349,31 +349,31 @@ EaselJS experiments
 
             function tankCollisions(tank, tank2) {
                 if (tank2.x < tank.x &&
-                        tank.x < tank2.x + 26 &&
+                        tank.x < tank2.x + tankSize &&
                         tank2.y - halfTankSize < tank.y  &&
                         tank.y < tank2.y + wallSize) {
                         console.log('x-');
-                        tank.x = tank2.x + 26;
+                        tank.x = tank2.x + tankSize;
                     } else if (tank2.x > tank.x &&
-                        tank.x > tank2.x - 26 &&
-                        tank2.y - 26 < tank.y  &&
+                        tank.x > tank2.x - tankSize &&
+                        tank2.y - tankSize < tank.y  &&
                         tank.y < tank2.y + wallSize) {
                         console.log('x+');
-                        tank.x = tank2.x - 26;
+                        tank.x = tank2.x - tankSize;
                     } else if (tank2.x - halfTankSize < tank.x &&
                         tank.x < tank2.x + wallSize - 1 &&
                         tank2.y > tank.y  &&
-                        tank.y > tank2.y - 26 &&
+                        tank.y > tank2.y - tankSize &&
                         tank.rotation == 180) {
                         console.log('y-');
-                        tank.y = tank2.y - 26;
+                        tank.y = tank2.y - tankSize;
                     } else if (tank2.x - halfTankSize < tank.x &&
                         tank.x < tank2.x + wallSize - 1 &&
                         tank2.y < tank.y  &&
-                        tank.y < tank2.y + 26 &&
+                        tank.y < tank2.y + tankSize &&
                         tank.rotation == 0) {
                         console.log('y+');
-                        tank.y = tank2.y + 26;
+                        tank.y = tank2.y + tankSize;
                     }
             }
 
