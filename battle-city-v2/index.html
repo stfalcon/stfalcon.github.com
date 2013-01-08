@@ -154,43 +154,7 @@ EaselJS experiments
                 }
 
                 var l = tileHolder.getNumChildren();
-                for (var i=0; i<l; i++) {
-                    var childTile = tileHolder.getChildAt(i);
-
-                    if (childTile.x < tank.x &&
-                        tank.x < childTile.x + wallSize &&
-                        childTile.y - halfTankSize < tank.y  &&
-                        tank.y < childTile.y + wallSize &&
-                        tank.rotation == 270) {
-                        console.log('x-');
-//                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.x = childTile.x + wallSize;
-                    } else if (childTile.x > tank.x &&
-                        tank.x > childTile.x - wallSize * 0.5 &&
-                        childTile.y - halfTankSize < tank.y  &&
-                        tank.y < childTile.y + wallSize &&
-                        tank.rotation == 90) {
-//                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        console.log('x+');
-                        tank.x = childTile.x - wallSize * 0.5;
-                    } else if (childTile.x - halfTankSize < tank.x &&
-                        tank.x < childTile.x + wallSize &&
-                        childTile.y > tank.y  &&
-                        tank.y > childTile.y - wallSize * 0.5 &&
-                        tank.rotation == 180) {
-                        console.log('y-');
-//                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.y = childTile.y - wallSize * 0.5;
-                    } else if (childTile.x - halfTankSize < tank.x &&
-                        tank.x < childTile.x + wallSize &&
-                        childTile.y < tank.y  &&
-                        tank.y < childTile.y + wallSize &&
-                        tank.rotation == 0) {
-                        console.log('y+');
-//                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.y = childTile.y + wallSize;
-                    }
-                }
+                wallCollisions(l, tank);
 
                 fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
 
@@ -316,6 +280,46 @@ EaselJS experiments
                         trees.y = y*16;
                         stage.addChild(trees);
                         break;
+                }
+            }
+
+            function wallCollisions (l, tank) {
+                for (var i=0; i<l; i++) {
+                    var childTile = tileHolder.getChildAt(i);
+
+                    if (childTile.x < tank.x &&
+                        tank.x < childTile.x + wallSize &&
+                        childTile.y - halfTankSize < tank.y  &&
+                        tank.y < childTile.y + wallSize &&
+                        tank.rotation == 270) {
+                        console.log('x-');
+//                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.x = childTile.x + wallSize;
+                    } else if (childTile.x > tank.x &&
+                        tank.x > childTile.x - wallSize * 0.5 &&
+                        childTile.y - halfTankSize < tank.y  &&
+                        tank.y < childTile.y + wallSize &&
+                        tank.rotation == 90) {
+//                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        console.log('x+');
+                        tank.x = childTile.x - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x &&
+                        tank.x < childTile.x + wallSize &&
+                        childTile.y > tank.y  &&
+                        tank.y > childTile.y - wallSize * 0.5 &&
+                        tank.rotation == 180) {
+                        console.log('y-');
+//                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = childTile.y - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x &&
+                        tank.x < childTile.x + wallSize &&
+                        childTile.y < tank.y  &&
+                        tank.y < childTile.y + wallSize &&
+                        tank.rotation == 0) {
+                        console.log('y+');
+//                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = childTile.y + wallSize;
+                    }
                 }
             }
 
