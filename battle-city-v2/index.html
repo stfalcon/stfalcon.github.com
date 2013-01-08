@@ -1,7 +1,5 @@
 <!--
 EaselJS experiments
-
-TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == true.....
 -->
 <!DOCTYPE html>
 <html>
@@ -158,20 +156,6 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                 var l = tileHolder.getNumChildren();
                 for (var i=0; i<l; i++) {
                     var childTile = tileHolder.getChildAt(i);
-                    // var pt = childTile.globalToLocal(tank.x, tank.y);
-                    // var pt = tank.localToLocal(0,0,childTile);
-                    //                    if (childTile.hitTest(pt.x, pt.y)) {
-                    //                        console.log('tank.x: ' + tank.x +  ' tank.y: ' + tank.y + ' x: ' + childTile.x + ' y: ' + childTile.y);
-                    //                        if(tank.x>childTile.x && tank.rotation == 270) {
-                    //                            tank.x = childTile.x + 26;
-                    //                        } else if (tank.x<childTile.x && tank.rotation == 90) {
-                    //                            tank.x = childTile.x - 13;
-                    //                        } else if (tank.y>childTile.y && tank.rotation == 0) {
-                    //                            tank.y = childTile.y + 26;
-                    //                        } else if (tank.y<childTile.y && tank.rotation == 180) {
-                    //                            tank.y = childTile.y - 13;
-                    //                        }
-                    //                    }
 
                     if (childTile.x < tank.x && tank.x < childTile.x + wallSize && childTile.y - halfTankSize < tank.y  && tank.y < childTile.y + wallSize && tank.rotation == 270) {
                         console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
@@ -259,15 +243,11 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                     // If everything was OK
                     if (eventResult.status == 200) {
                         newTextLevel = eventResult.responseText.replace(/[\n\r\t]/g, '');
-                        // console.log(newTextLevel);
                     } else {
                         console.log('Error', eventResult.statusText);
-                        // Loading a hard coded level in case of error
-                        //newTextLevel = hardcodedErrorTextLevel;
                     }
 
                     loadThisTextLevel(newTextLevel);
-                    //console.log(textTiles);
                 }
             }
 
@@ -297,7 +277,6 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                         break;
 
                     case '=':
-                        // console.log("x: " + x + " y: " + y);
                         wall = wall.clone();
                         wall.x = x*16;
                         wall.y = y*16;
@@ -305,7 +284,6 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                         break;
 
                     case '#':
-                        //console.log("x: " + x + " y: " + y);
                         breakes = breakes.clone();
                         breakes.x = x*16;
                         breakes.y = y*16;
@@ -313,7 +291,6 @@ TODO: tiles to container. container loop check hitTest! then fwdHeld && hit == t
                         break;
 
                     case '*':
-                        //console.log("x: " + x + " y: " + y);
                         trees = trees.clone();
                         trees.x = x*16;
                         trees.y = y*16;
