@@ -178,37 +178,7 @@ EaselJS experiments
                 var l = tileHolder.getNumChildren();
                 wallCollisions(l, tank);
 
-                if (tank2.x < tank.x &&
-                        tank.x < tank2.x + 26 &&
-                        tank2.y - halfTankSize < tank.y  &&
-                        tank.y < tank2.y + wallSize) {
-                        console.log('x-');
-//                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.x = tank2.x + 26;
-                    } else if (tank2.x > tank.x &&
-                        tank.x > tank2.x - 26 &&
-                        tank2.y - 26 < tank.y  &&
-                        tank.y < tank2.y + wallSize) {
-//                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        console.log('x+');
-                        tank.x = tank2.x - 26;
-                    } else if (tank2.x - halfTankSize < tank.x &&
-                        tank.x < tank2.x + wallSize - 1 &&
-                        tank2.y > tank.y  &&
-                        tank.y > tank2.y - 26 &&
-                        tank.rotation == 180) {
-                        console.log('y-');
-//                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.y = tank2.y - 26;
-                    } else if (tank2.x - halfTankSize < tank.x &&
-                        tank.x < tank2.x + wallSize - 1 &&
-                        tank2.y < tank.y  &&
-                        tank.y < tank2.y + 26 &&
-                        tank.rotation == 0) {
-                        console.log('y+');
-//                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
-                        tank.y = tank2.y + 26;
-                    }
+                tankCollisions(tank, tank2);
 
                 fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
 
@@ -375,6 +345,36 @@ EaselJS experiments
                         tank.y = childTile.y + wallSize;
                     }
                 }
+            }
+
+            function tankCollisions(tank, tank2) {
+                if (tank2.x < tank.x &&
+                        tank.x < tank2.x + 26 &&
+                        tank2.y - halfTankSize < tank.y  &&
+                        tank.y < tank2.y + wallSize) {
+                        console.log('x-');
+                        tank.x = tank2.x + 26;
+                    } else if (tank2.x > tank.x &&
+                        tank.x > tank2.x - 26 &&
+                        tank2.y - 26 < tank.y  &&
+                        tank.y < tank2.y + wallSize) {
+                        console.log('x+');
+                        tank.x = tank2.x - 26;
+                    } else if (tank2.x - halfTankSize < tank.x &&
+                        tank.x < tank2.x + wallSize - 1 &&
+                        tank2.y > tank.y  &&
+                        tank.y > tank2.y - 26 &&
+                        tank.rotation == 180) {
+                        console.log('y-');
+                        tank.y = tank2.y - 26;
+                    } else if (tank2.x - halfTankSize < tank.x &&
+                        tank.x < tank2.x + wallSize - 1 &&
+                        tank2.y < tank.y  &&
+                        tank.y < tank2.y + 26 &&
+                        tank.rotation == 0) {
+                        console.log('y+');
+                        tank.y = tank2.y + 26;
+                    }
             }
 
         </script>
