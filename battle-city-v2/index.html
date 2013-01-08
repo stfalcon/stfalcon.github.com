@@ -39,12 +39,14 @@ EaselJS experiments
 
             var tankImg = new Image();
             var tank = new Bitmap(tankImg);
+            var tank2 = new Bitmap(tankImg);
             var tankPos = 13;
 
             var wallImg;
             var wall;
 
             var wallSize = 32;
+            var tankSize = 26;
             var halfTankSize = 13;
 
             var emptyB;
@@ -72,7 +74,8 @@ EaselJS experiments
             var fwdHeld = false ;		//is the user holding a forward command
             var bwdHeld = false ;		//is the user holding a backward command
 
-            var speed = 1;
+            var speed = 2;
+            var speed2 = 0.5;
 
             var hit = false;
 
@@ -116,6 +119,12 @@ EaselJS experiments
                 tank.y=canvas.height-13;
                 stage.addChild(tank);
 
+                tank2.regX = tank2.regY = tankPos;
+                tank2.x=210;
+                tank2.y=192;
+                tank2.rotation = 90;
+                stage.addChild(tank2);
+
 
                 // add a text object to output the current FPS:
                 fpsLabel = new createjs.Text("-- fps","bold 12px Arial","#FFF");
@@ -145,16 +154,59 @@ EaselJS experiments
 
                 if(tank.x < 0 + tankPos) {
                     tank.x = tankPos;
-                } else if (tank.x > canvas.width -  tankPos) {
+                } else if (tank.x > canvas.width - tankPos) {
                     tank.x = canvas.width - tankPos;
                 } else if (tank.y <  0 + tankPos) {
                     tank.y = tank.y = tankPos;
-                } else if (tank.y > canvas.height -  tankPos) {
+                } else if (tank.y > canvas.height - tankPos) {
                     tank.y = canvas.height - tankPos;
+                }
+
+                if(tank2.rotation == 90)
+                tank2.x += speed2;
+                else if (tank2.rotation == 270)
+                tank2.x -= speed2;
+
+                if(tank2.x < 0 + tankPos) {
+                    tank2.x = tankPos;
+                    tank2.rotation = 90;
+                } else if (tank2.x > canvas.width - tankPos) {
+                    tank2.x = canvas.width - tankPos;
+                    tank2.rotation = 270;
                 }
 
                 var l = tileHolder.getNumChildren();
                 wallCollisions(l, tank);
+
+                if (tank2.x < tank.x &&
+                        tank.x < tank2.x + 26 &&
+                        tank2.y - halfTankSize < tank.y  &&
+                        tank.y < tank2.y + wallSize) {
+                        console.log('x-');
+//                        console.log('x- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.x = tank2.x + 26;
+                    } else if (tank2.x > tank.x &&
+                        tank.x > tank2.x - 26 &&
+                        tank2.y - halfTankSize < tank.y  &&
+                        tank.y < tank2.y + wallSize) {
+//                        console.log('x+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        console.log('x+');
+                        tank.x = tank2.x - 26;
+                    } else if (tank2.x - halfTankSize < tank.x &&
+                        tank.x < tank2.x + wallSize - 1 &&
+                        tank2.y > tank.y  &&
+                        tank.y > tank2.y - 26) {
+                        console.log('y-');
+//                        console.log('y- childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = tank2.y - 26;
+                    } else if (tank2.x - halfTankSize < tank.x &&
+                        tank.x < tank2.x + wallSize - 1 &&
+                        tank2.y < tank.y  &&
+                        tank.y < tank2.y + 26) {
+                        console.log('y+');
+//                        console.log('y+ childTile.x: ' + childTile.x + ' childTile.y:' + childTile.y);
+                        tank.y = tank2.y + 26;
+                    }
 
                 fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
 
