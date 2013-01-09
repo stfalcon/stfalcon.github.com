@@ -1,0 +1,481 @@
+<!--
+EaselJS experiments
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <script>
+            // this sets the namespace for CreateJS to the window object, so you can instantiate objects without specifying
+            // the namespace: "new Graphics()" instead of "new createjs.Graphics()"
+            // this is a quick way to make projects built on pervious versions of EaselJS run without extensive modifications
+            var createjs = window;
+        </script>
+
+        <!-- <script type="text/javascript" src="assets/preloadjs-0.2.0.min.js"></script>
+         <script type="text/javascript" src="assets/soundjs-0.3.0.min.js"></script>-->
+
+        <!-- Import EaselJS Framework -->
+        <script src="http://code.createjs.com/easeljs-0.5.0.min.js"></script>
+
+        <script src="./src/easeljs/Helper.js"></script>
+
+        <script>
+            var canvas;			//Main canvas
+            var stage;			//Main display stage
+
+            var sprSheet = new SpriteSheet({
+                "frames": {
+                    "width": 32,
+                    "numFrames": 10,
+                    "regX": 0,
+                    "regY": 0,
+                    "height": 32
+                },
+                "images": ["assets/textures.png"]
+            });
+
+            var tankImg = new Image();
+            var tank = new Bitmap(tankImg);
+            var tank2 = new Bitmap(tankImg);
+            var tankPos = 13;
+
+            var ball = new createjs.Shape(new createjs.Graphics().beginFill("yellow").drawCircle(0,0,2));
+            var ballInstance;
+            var ballspeedX = 0;
+            var ballspeedY = 0;
+
+            var wallImg;
+            var wall;
+
+            var wallSize = 32;
+            var tankSize = 26;
+            var halfTankSize = 13;
+
+            var wallColl;
+            var tankColl;
+
+            var emptyB;
+
+            var breakesImg;
+            var breakes;
+
+            var treesImg;
+            var trees;
+
+            var KEYCODE_ENTER = 13;		//usefull keycode
+            var KEYCODE_SPACE = 32;		//usefull keycode
+            var KEYCODE_UP = 38;		//usefull keycode
+            var KEYCODE_DOWN = 40;	        //usefull keycode
+            var KEYCODE_LEFT = 37;		//usefull keycode
+            var KEYCODE_RIGHT = 39;		//usefull keycode
+            var KEYCODE_W = 87;			//usefull keycode
+            var KEYCODE_A = 65;			//usefull keycode
+            var KEYCODE_S = 83;			//usefull keycode
+            var KEYCODE_D = 68;			//usefull keycode
+
+            var shootHeld = false;		//is the user holding a shoot command
+            var lfHeld = false;			//is the user holding a turn left command
+            var rtHeld = false;			//is the user holding a turn right command
+            var fwdHeld = false ;		//is the user holding a forward command
+            var bwdHeld = false ;		//is the user holding a backward command
+
+            var speed = 2;
+            var tank2Speed = 0.5;
+
+            var hit = false;
+
+            var textTiles = Array.matrix(26, 26, "|");
+            var tiles = Array.matrix(26, 26, "|");
+
+            //register key functions
+            document.onkeydown = handleKeyDown;
+            document.onkeyup = handleKeyUp;
+
+            function init() {
+                if (window.top != window) {
+                    document.getElementById("header").style.display = "none";
+                }
+
+                canvas = document.getElementById("gameCanvas");
+                stage = new Stage(canvas);
+                stage.update(); 	//update the stage to show text
+                tileHolder = stage.addChild(new createjs.Container());
+
+                loadLevel(0);
+
+                wallImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 2);
+                wall = new Bitmap(wallImg);
+                wall.scaleX = 0.5;
+                wall.scaleY = 0.5;
+
+                breakesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 0);
+                breakes = new Bitmap(breakesImg);
+                breakes.scaleX = 0.5;
+                breakes.scaleY = 0.5;
+
+                treesImg = createjs.SpriteSheetUtils.extractFrame(sprSheet, 4);
+                trees = new Bitmap(treesImg);
+                trees.scaleX = 0.5;
+                trees.scaleY = 0.5;
+
+                tankImg.src = 'assets/tank.png';
+                tank.regX = tank.regY = tankPos;
+                tank.x=145;
+                tank.y=canvas.height-13;
+                stage.addChild(tank);
+
+                tank2.regX = tank2.regY = tankPos;
+                tank2.x=210;
+                tank2.y=192;
+                tank2.rotation = 90;
+                stage.addChild(tank2);
+
+                //stage.addChild(shape);
+
+                // add a text object to output the current FPS:
+                fpsLabel = new createjs.Text("-- fps","bold 12px Arial","#FFF");
+                stage.addChild(fpsLabel);
+                fpsLabel.x = canvas.width - 100;
+                fpsLabel.y = 10;
+
+                // start the tick and point it at the window so we can do some work before updating the stage:
+                createjs.Ticker.addListener(window);
+                createjs.Ticker.setFPS(40);
+            }
+
+            function tick() {
+                wallColl = false;
+                tankColl = false;
+
+                if(fwdHeld) {
+                    tank.y -= speed;
+                    tank.rotation = 0;
+                } else if(bwdHeld) {
+                    tank.y += speed;
+                    tank.rotation = 180;
+                } else if(lfHeld) {
+                    tank.x -= speed;
+                    tank.rotation = 270;
+                } else if(rtHeld) {
+                    tank.x += speed;
+                    tank.rotation = 90;
+                }
+
+                if(tank.x < 0 + tankPos) {
+                    tank.x = tankPos;
+                } else if (tank.x > canvas.width - tankPos) {
+                    tank.x = canvas.width - tankPos;
+                } else if (tank.y <  0 + tankPos) {
+                    tank.y = tank.y = tankPos;
+                } else if (tank.y > canvas.height - tankPos) {
+                    tank.y = canvas.height - tankPos;
+                }
+                var l = tileHolder.getNumChildren();
+
+                wallCollisions(l, tank);
+
+                if (tank2) {
+                if(tank2.rotation == 90)
+                    tank2.x += tank2Speed;
+                else if (tank2.rotation == 270)
+                    tank2.x -= tank2Speed;
+
+                if(tank2.x < 0 + tankPos) {
+                    tank2.x = tankPos;
+                    tank2.rotation = 90;
+                } else if (tank2.x > canvas.width - tankPos) {
+                    tank2.x = canvas.width - tankPos;
+                    tank2.rotation = 270;
+                }
+
+                tankCollisions(tank, tank2);
+                }
+
+                fpsLabel.text = Math.round(createjs.Ticker.getMeasuredFPS())+" fps";
+
+                if(wallColl && tankColl) {
+                    tank2Speed = 0;
+                } else {
+                    tank2Speed = 0.5;
+                }
+
+                if (ballInstance) {
+                    ballInstance.x += ballspeedX;
+                    ballInstance.y += ballspeedY;
+
+                    if(tank2 &&
+                       ballInstance.x >= tank2.x - halfTankSize &&
+                       ballInstance.x <= tank2.x + halfTankSize &&
+                       ballInstance.y >= tank2.y - halfTankSize &&
+                       ballInstance.y <= tank2.y + halfTankSize) {
+                        console.log('hit!');
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                        tank2.visible = null;
+                        tank2 = null;
+                        delete(tank2);
+                        return;
+                    }
+
+                    if(ballInstance.x < 0) {
+                        ballInstance.x = 0;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.x > canvas.width) {
+                        ballInstance.x = canvas.width;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.y <  0) {
+                        ballInstance.y = 0;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    } else if (ballInstance.y > canvas.height) {
+                        ballInstance.y = canvas.height;
+                        ballInstance.visible = null;
+                        ballInstance = null;
+                        delete(ballInstance);
+                    }
+                }
+
+                // draw the updates to stage:
+                stage.update();
+            }
+
+            //allow for WASD and arrow control scheme
+            function handleKeyDown(e) {
+                //cross browser issues exist
+                if(!e){ var e = window.event; }
+                switch(e.keyCode) {
+                    case KEYCODE_SPACE:	shootHeld = true;
+                        console.log('x position: ' +( tank.x-tank.regX) + ' y position: ' + (tank.y-tank.regY));
+                        if (!ballInstance) {
+                        ballInstance = ball.clone();
+                        if (tank.rotation == 90) {
+                            ballInstance.x = tank.x + halfTankSize;
+                            ballspeedX = 3;
+                            ballspeedY = 0;
+                        } else if (tank.rotation == 270) {
+                            ballInstance.x = tank.x - halfTankSize;
+                            ballspeedX = -3;
+                            ballspeedY = 0;
+                        } else {
+                            ballInstance.x = tank.x;
+                        }
+
+                        if (tank.rotation == 0) {
+                            ballInstance.y = tank.y - halfTankSize;
+                            ballspeedY = -3;
+                            ballspeedX = 0;
+                        } else if (tank.rotation == 180) {
+                            ballInstance.y = tank.y + halfTankSize;
+                            ballspeedY = 3;
+                            ballspeedX = 0;
+                        } else {
+                            ballInstance.y = tank.y;
+                        }
+
+                        stage.addChild(ballInstance);
+                        }
+                        return false;
+                    case KEYCODE_A:
+                    case KEYCODE_LEFT:	lfHeld = true; return false;
+                    case KEYCODE_D:
+                    case KEYCODE_RIGHT: rtHeld = true; return false;
+                    case KEYCODE_W:
+                    case KEYCODE_UP:	fwdHeld = true; return false;
+                    case KEYCODE_S:
+                    case KEYCODE_DOWN:	bwdHeld = true; return false;
+                    case KEYCODE_ENTER:	 if(canvas.onclick == handleClick){ handleClick(); }return false;
+                }
+            }
+
+            function handleKeyUp(e) {
+                //cross browser issues exist
+                if(!e){ var e = window.event; }
+                switch(e.keyCode) {
+                    case KEYCODE_SPACE:	shootHeld = false; break;
+                    case KEYCODE_A:
+                    case KEYCODE_LEFT:	lfHeld = false; break;
+                    case KEYCODE_D:
+                    case KEYCODE_RIGHT: rtHeld = false; break;
+                    case KEYCODE_W:
+                    case KEYCODE_UP:	fwdHeld = false; break;
+                    case KEYCODE_S:
+                    case KEYCODE_DOWN:	bwdHeld = false; break;
+                }
+            }
+
+            function loadLevel(levelIndex) {
+                var levelUrl = window.location.href.replace('index.html', '') + "levels/" + levelIndex + ".txt";
+                try {
+                    var request = new XMLHttpRequest();
+                    request.open('GET', levelUrl, true);
+
+                    // Little closure
+                    var instance = this;
+                    request.onreadystatechange = function () {
+                        instance.onLevelReady(this);
+                    };
+                    request.send(null);
+                }
+                catch (e) {
+                    console.log(e);
+                    // Probably an access denied if you try to run from the file:// context
+                    // Loading the hard coded error level to have at least something to play with
+                    //this.LoadThisTextLevel(hardcodedErrorTextLevel);
+                }
+            }
+
+            function onLevelReady(eventResult) {
+                //console.log(eventResult.readyState);
+                var newTextLevel = "";
+
+                if (eventResult.readyState == 4) {
+                    // If everything was OK
+                    if (eventResult.status == 200) {
+                        newTextLevel = eventResult.responseText.replace(/[\n\r\t]/g, '');
+                    } else {
+                        console.log('Error', eventResult.statusText);
+                    }
+
+                    loadThisTextLevel(newTextLevel);
+                }
+            }
+
+            function loadThisTextLevel(level) {
+                parseLevelLines(level);
+
+                // Loop over every tile position,
+                for (var i = 0; i < 26; i++) {
+                    for (var j = 0; j < 26; j++) {
+                        loadTile(textTiles[i][j], j, i);
+                    }
+                }
+            }
+
+            function parseLevelLines(levelLine) {
+                for (var i = 0; i < 26; i++) {
+                    for (var j = 0; j < 26; j++) {
+                        textTiles[i][j] = levelLine.charAt((i * 26) + j);
+                    }
+                }
+            }
+
+            function loadTile(tileType, x, y) {
+                switch (tileType) {
+                    // Blank space
+                    case '.':
+                        break;
+
+                    case '=':
+                        wall = wall.clone();
+                        wall.x = x*16;
+                        wall.y = y*16;
+                        tileHolder.addChild(wall);
+                        break;
+
+                    case '#':
+                        breakes = breakes.clone();
+                        breakes.x = x*16;
+                        breakes.y = y*16;
+                        tileHolder.addChild(breakes);
+                        break;
+
+                    case '*':
+                        trees = trees.clone();
+                        trees.x = x*16;
+                        trees.y = y*16;
+                        stage.addChild(trees);
+                        break;
+                }
+            }
+
+            function wallCollisions (l, tank) {
+                for (var i=0; i<l; i++) {
+                    var childTile = tileHolder.getChildAt(i);
+
+                    if (childTile.x < tank.x &&
+                        tank.x < childTile.x + wallSize &&
+                        childTile.y - halfTankSize < tank.y  &&
+                        tank.y < childTile.y + 30) {
+                        wallColl = true;
+                        console.log('x-');
+                        tank.x = childTile.x + wallSize;
+                    } else if (childTile.x - 8 > tank.x &&
+                        tank.x > childTile.x - wallSize * 0.5 &&
+                        childTile.y - halfTankSize < tank.y  &&
+                        tank.y < childTile.y + wallSize) {
+                        wallColl = true;
+                        console.log('x+');
+                        tank.x = childTile.x - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x &&
+                        tank.x < childTile.x + wallSize - 1 &&
+                        childTile.y > tank.y  &&
+                        tank.y > childTile.y - wallSize * 0.5 &&
+                        tank.rotation == 180) {
+                        wallColl = true;
+                        console.log('y-');
+                        tank.y = childTile.y - wallSize * 0.5;
+                    } else if (childTile.x - halfTankSize < tank.x &&
+                        tank.x < childTile.x + wallSize - 1 &&
+                        childTile.y < tank.y  &&
+                        tank.y < childTile.y + wallSize &&
+                        tank.rotation == 0) {
+                        wallColl = true;
+                        console.log('y+');
+                        tank.y = childTile.y + wallSize;
+                    }
+                }
+            }
+
+            function tankCollisions(tank, tank2) {
+                if (tank2.x + wallSize * 0.5 < tank.x &&
+                    tank.x - wallSize * 0.5 < tank2.x + tankSize &&
+                    tank2.y - halfTankSize < tank.y  &&
+                    tank.y < tank2.y + wallSize) {
+                    tankColl = true;
+                    console.log('tx-');
+                    tank.x = tank2.x + wallSize;
+                } else if (tank2.x - halfTankSize > tank.x &&
+                    tank.x > tank2.x - tankSize &&
+                    tank2.y - tankSize < tank.y  &&
+                    tank.y < tank2.y + wallSize) {
+                    tankColl = true;
+                    console.log('tx+');
+                    tank.x = tank2.x - tankSize;
+                } else if (tank2.x - halfTankSize < tank.x &&
+                    tank.x < tank2.x + wallSize - 2 &&
+                    tank2.y > tank.y  &&
+                    tank.y > tank2.y - tankSize &&
+                    tank.rotation == 180) {
+                    tankColl = true;
+                    console.log('ty-');
+                    tank.y = tank2.y - tankSize;
+                } else if (tank2.x - halfTankSize < tank.x &&
+                    tank.x < tank2.x + wallSize - 1 &&
+                    tank2.y < tank.y  &&
+                    tank.y < tank2.y + wallSize &&
+                    tank.rotation == 0) {
+                    tankColl = true;
+                    console.log('ty+');
+                    tank.y = tank2.y + wallSize;
+                }
+            }
+
+        </script>
+    </head>
+    <body onload="init();">
+        <div class="canvasHolder">
+            <canvas id="gameCanvas" width="416" height="416" style="background-color:black">
+                Your browser doesn't support canvas.
+            </canvas>
+        </div>
+    </body>
+</html>
