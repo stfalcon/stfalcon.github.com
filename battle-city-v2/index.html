@@ -408,7 +408,7 @@ EaselJS experiments
                         wallColl = true;
                         console.log('x-');
                         tank.x = childTile.x + wallSize;
-                    } else if (childTile.x > tank.x &&
+                    } else if (childTile.x - 8 > tank.x &&
                         tank.x > childTile.x - wallSize * 0.5 &&
                         childTile.y - halfTankSize < tank.y  &&
                         tank.y < childTile.y + wallSize) {
@@ -436,8 +436,8 @@ EaselJS experiments
             }
 
             function tankCollisions(tank, tank2) {
-                if (tank2.x < tank.x &&
-                    tank.x - 5 < tank2.x + tankSize &&
+                if (tank2.x + wallSize * 0.5 < tank.x &&
+                    tank.x - wallSize * 0.5 < tank2.x + tankSize &&
                     tank2.y - halfTankSize < tank.y  &&
                     tank.y < tank2.y + wallSize) {
                     tankColl = true;
