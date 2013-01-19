@@ -3,7 +3,6 @@ atom.declare('BattleCity.Wall', App.Element, {
     spriteY: 0,
 
     renderTo: function (ctx, resources) {
-        console.log(this.spriteX, this.spriteY);
         ctx.drawImage({
             image : resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)

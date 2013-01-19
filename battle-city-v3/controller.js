@@ -1,13 +1,20 @@
 /** @class BattleCity.Controller */
 atom.declare( 'BattleCity.Controller', {
     initialize: function () {
-        this.app = new App({ size: new Size(416, 416) });
+        this.size = new Size(416, 416);
+        this.app = new App({ size: this.size });
 
         // отдельный слой для текстур, который будем перерисовывать только по команде
         this.textures = this.app.createLayer({
             name: 'textures',
             intersection: 'manual',
             zIndex: 2
+        });
+
+        this.units = this.app.createLayer({
+            name: 'units',
+            invoke: true,
+            zIndex: 3
         });
 
         atom.ImagePreloader.run({
@@ -37,24 +44,29 @@ atom.declare( 'BattleCity.Controller', {
 
         var data = this.constructor.levels[0];
 
+        this.player = new BattleCity.Player(this.units, {
+            size: this.size,
+            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright' }
+        });
+
         // построение уровня
         for (var y = 0; y < 26; y++) {
             s = data[y];
             for (var x = 0; x < 26; x++) {
-                var image = null;
+                var rectangle = new Rectangle(x*16, y*16, 16, 16);
                 switch(s.charAt(x)) {
                     case '#':
                         new BattleCity.Wall(this.textures, {
-                            shape: new Rectangle(x*16, y*16, 16, 16)
+                            shape: rectangle
                         });
                     case '=':
                         new BattleCity.Breaks(this.textures, {
-                            shape: new Rectangle(x*16, y*16, 16, 16)
+                            shape: rectangle
                         });
                         break;
                     case '*':
                         new BattleCity.Trees(this.textures, {
-                            shape: new Rectangle(x*16, y*16, 16, 16)
+                            shape: rectangle
                         });
                         break;
                 }
