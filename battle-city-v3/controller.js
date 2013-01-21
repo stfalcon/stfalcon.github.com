@@ -1,8 +1,18 @@
 /** @class BattleCity.Controller */
 atom.declare( 'BattleCity.Controller', {
     initialize: function () {
+        atom.ImagePreloader.run({
+            player : 'tank.png',
+            textures : 'textures.png'
+        }, this.start.bind(this));
+    },
+
+    start: function (images) {
         this.size = new Size(416, 416);
         this.app = new App({ size: this.size });
+
+        // images ready
+        this.app.resources.set('images', images);
 
         // отдельный слой для текстур, который будем перерисовывать только по команде
         this.textures = this.app.createLayer({
@@ -11,45 +21,22 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 2
         });
 
+        // слой для юнитов, перерисовываем постоянно
         this.units = this.app.createLayer({
             name: 'units',
             invoke: true,
             zIndex: 3
         });
 
-        atom.ImagePreloader.run({
-            player : 'tank.png',
-            textures : 'textures.png'
-        }, this.start.bind(this));
-
-        this.fpsMeter();
-    },
-
-    fpsMeter: function () {
-        var fps = atom.trace(), time = [], last = Date.now();
-
-        atom.frame.add(function () {
-            if (time.length > 5) time.shift();
-
-            time.push( Date.now() - last );
-            last = Date.now();
-
-            fps.value = Math.ceil(1000 / time.average()) + " FPS";
-        });
-    },
-
-    start: function (images) {
-        // images ready
-        this.app.resources.set('images', images);
-
-        var data = this.constructor.levels[0];
-
+        // игрок
         this.player = new BattleCity.Player(this.units, {
             size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright' }
+            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright' },
+            images: images
         });
 
         // построение уровня
+        var data = this.constructor.levels[0];
         for (var y = 0; y < 26; y++) {
             s = data[y];
             for (var x = 0; x < 26; x++) {
@@ -72,6 +59,21 @@ atom.declare( 'BattleCity.Controller', {
                 }
             }
         }
+
+        this.fpsMeter();
+    },
+
+    fpsMeter: function () {
+        var fps = atom.trace(), time = [], last = Date.now();
+
+        atom.frame.add(function () {
+            if (time.length > 5) time.shift();
+
+            time.push( Date.now() - last );
+            last = Date.now();
+
+            fps.value = Math.ceil(1000 / time.average()) + " FPS";
+        });
     }
 }).own({
     levels: [
