@@ -21,3 +21,13 @@ atom.declare('BattleCity.Trees', BattleCity.Wall, {
     spriteX: 64,
     spriteY: 0
 });
+
+atom.declare('BattleCity.Water', BattleCity.Wall, {
+    spriteX: 96,
+    spriteY: 0
+});
+
+atom.declare('BattleCity.Asphalt', BattleCity.Wall, {
+    spriteX: 128,
+    spriteY: 0
+});
