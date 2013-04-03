@@ -31,3 +31,12 @@ atom.declare('BattleCity.Asphalt', BattleCity.Wall, {
     spriteX: 128,
     spriteY: 0
 });
+
+atom.declare('BattleCity.Base', App.Element, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image : resources.get('images').get('base'),
+            center: this.shape.center
+        });
+    }
+});

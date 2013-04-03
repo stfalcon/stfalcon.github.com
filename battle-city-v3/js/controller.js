@@ -1,15 +1,18 @@
 /** @class BattleCity.Controller */
 atom.declare( 'BattleCity.Controller', {
 
-    texturesFields: [],
+    textures: [],
 
     initialize: function () {
         atom.ImagePreloader.run({
-            player : 'tank.png [64:32]{0:0}',
-            player2 : 'tank.png [64:32]{1:0}',
-            player3 : 'tank.png [64:32]{2:0}',
-            player4 : 'tank.png [64:32]{3:0}',
-            textures : 'textures.png'
+            player: 'images/tank.png [64:32]{0:0}',
+            player2: 'images/tank.png [64:32]{1:0}',
+            player3: 'images/tank.png [64:32]{2:0}',
+            player4: 'images/tank.png [64:32]{3:0}',
+            textures: 'images/textures.png',
+            base: 'images/base.png',
+            bullet: 'images/bullet.png',
+            bang: 'images/bang.png'
         }, this.start.bind(this));
 
         this.fpsMeter();
@@ -26,6 +29,8 @@ atom.declare( 'BattleCity.Controller', {
         // images ready
         this.app.resources.set('images', images);
 
+        this.sounds = new BattleCity.Sounds('sounds/');
+
         // слой для фона и нижних текстур (вода и асфальт)
         this.background = this.app.createLayer({
             name: 'background',
@@ -35,8 +40,8 @@ atom.declare( 'BattleCity.Controller', {
         this.background.ctx.fillAll('black');
 
         // слой для верхних текстур
-        this.textures = this.app.createLayer({
-            name: 'textures',
+        this.foreground = this.app.createLayer({
+            name: 'foreground',
             intersection: 'manual',
             zIndex: 3
         });
@@ -51,7 +56,7 @@ atom.declare( 'BattleCity.Controller', {
         // игрок
         this.player = new BattleCity.Player(this.units, {
             size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright' },
+            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
             images: images,
             controller: this
         });
@@ -59,8 +64,8 @@ atom.declare( 'BattleCity.Controller', {
         // координатная сетка (для дебага)
 //        for (var y = 0; y < 52; y++) {
 //            for (var x = 0; x < 52; x++) {
-//                this.textures.ctx.fillStyle   = 'red'; // blue
-//                this.textures.ctx.fillRect(x*8, y*8, 1, 1);
+//                this.foreground.ctx.fillStyle   = 'red'; // blue
+//                this.foreground.ctx.fillRect(x*8, y*8, 1, 1);
 //            }
 //        }
 
@@ -69,39 +74,44 @@ atom.declare( 'BattleCity.Controller', {
         for (var y = 0; y < 26; y++) {
             s = data[y];
             for (var x = 0; x < 26; x++) {
-                var textureField = null;
+                var field = null;
                 var rectangle = new Rectangle(x*16, y*16, 16, 16);
                 switch(s.charAt(x)) {
                     case '#':
-                        textureField = new BattleCity.Wall(this.textures, {
+                        field = new BattleCity.Wall(this.foreground, {
                             shape: rectangle
                         });
                     case '=':
-                        textureField = new BattleCity.Breaks(this.textures, {
+                        field = new BattleCity.Breaks(this.foreground, {
                             shape: rectangle
                         });
                         break;
                     case '*':
-                        textureField = new BattleCity.Trees(this.textures, {
+                        field = new BattleCity.Trees(this.foreground, {
                             shape: rectangle
                         });
                         break;
                     case '~':
-                        textureField = new BattleCity.Water(this.background, {
+                        field = new BattleCity.Water(this.background, {
                             shape: rectangle
                         });
                         break;
                     case '>':
-                        textureField = new BattleCity.Asphalt(this.background, {
+                        field = new BattleCity.Asphalt(this.background, {
                             shape: rectangle
                         });
                         break;
                 }
 
-                if (textureField) {
-                    this.texturesFields.push(textureField);
+                if (field) {
+                    this.textures.push(field);
                 }
             }
+
+            // орёл
+            new BattleCity.Base(this.foreground, {
+                shape: new Rectangle(6*32, 12*32, 32, 32)
+            });
         }
     },
 
@@ -144,8 +154,8 @@ atom.declare( 'BattleCity.Controller', {
             "  ==  ==          ==  ==  ",
             "  ==  ==          ==  ==  ",
             "  ==  ==   ====   ==  ==  ",
-            "           =**=           ",
-            "           =**=           "
+            "           =  =           ",
+            "           =  =           "
         ]
     ]
 });

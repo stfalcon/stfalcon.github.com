@@ -1,14 +1,13 @@
 atom.declare('BattleCity.Player', App.Element, {
-    width : 32,
-    height: 32,
-
     speed: 0.09, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
+
+    bullets: 0,
 
     configure: function () {
         // анимация движения гусениц танка
         this.animationSheet = new Animation.Sheet({
-            frames: new Animation.Frames(this.settings.get('images').get('player'), this.width, this.height),
+            frames: new Animation.Frames(this.settings.get('images').get('player'), 32, 32),
             delay : 60,
             looped: true
         });
@@ -22,7 +21,7 @@ atom.declare('BattleCity.Player', App.Element, {
 
         // задаем стартовые координаты танка
         this.shape = new Rectangle(
-            128, this.size.height-this.height, this.width, this.height
+            128, this.size.height-32, 32, 32
         );
     },
 
@@ -57,6 +56,37 @@ atom.declare('BattleCity.Player', App.Element, {
             this.move(-this.speed*time, 0);
         } else if (keyboard.key(controls.right)) {
             this.move(this.speed*time, 0);
+        }
+
+        if (keyboard.key(controls.fire)) {
+            this.shot(time);
+        }
+    },
+
+    // стреляем
+    shot: function (time) {
+        if (!this.bullets) {
+            var x = this.angle == 90 ? this.shape.center.x + 24
+                : this.angle == 270 ? this.shape.center.x - 24
+                : this.shape.center.x;
+            var y = this.angle == 0 ? this.shape.center.y - 24
+                : this.angle == 180 ? this.shape.center.y + 24
+                : this.shape.center.y;
+
+            var bullet = new BattleCity.Bullet(this.controller.units, {
+                controller: this.controller,
+                angle: this.angle,
+                shape: new Rectangle({
+                    center: new Point(x, y),
+                    size: new Size(8, 8)}
+                ),
+                player: this,
+                images: this.settings.get('images')
+            });
+
+            this.controller.game.add(bullet);
+
+            this.bullets++;
         }
     },
 
@@ -130,14 +160,14 @@ atom.declare('BattleCity.Player', App.Element, {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.texturesFields.length; i--;) {
-            textureField = this.controller.texturesFields[i];
+        for (i = this.controller.textures.length; i--;) {
+            field = this.controller.textures[i];
 
-            if (textureField.shape.intersect(shape)) {
-                if (textureField instanceof BattleCity.Trees) {
+            if (field.shape.intersect(shape)) {
+                if (field instanceof BattleCity.Trees) {
                     return false;
                 }
-                if (textureField instanceof BattleCity.Asphalt) {
+                if (field instanceof BattleCity.Asphalt) {
                     return false;
                 }
 

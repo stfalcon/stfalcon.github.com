@@ -7,14 +7,14 @@ atom.declare('BattleCity.Game', {
         this.controller = controller;
         this.players = [];
         this.textures = [];
-//        this.bullets = [];
+        this.bullets = [];
 //        this.enemies = [];
     },
 
     /** @private */
     getArray: function (item) {
         var a = item instanceof BattleCity.Wall ? this.textures :
-//            item instanceof BattleCity.Bullet ? this.bullets :
+            item instanceof BattleCity.Bullet ? this.bullets :
 //            item instanceof BattleCity.Enemy ? this.enemies :
             item instanceof BattleCity.Player ? this.players : null;
 
@@ -34,7 +34,7 @@ atom.declare('BattleCity.Game', {
     },
 
     update: function () {
-        console.log(new Date().getTime());
+//        console.log(new Date().getTime());
 //        this.shipsAsteroids();
 //        this.bulletsAsteroids();
     },
