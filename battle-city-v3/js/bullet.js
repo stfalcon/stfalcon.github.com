@@ -11,14 +11,13 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         // анимация взрыва
         this.animationSheet = new Animation.Sheet({
-            frames: new Animation.Frames(this.settings.get('images').get('bang'), 32, 32),
+            frames: new Animation.Frames(this.settings.get('images').get('bang'), 8, 8),
             delay : 60,
-//            looped: true
+            looped: true
         });
         this.animation = new Animation({
             sheet   : this.animationSheet,
-            onUpdate: this.redraw,
-//            onStop: this.die
+            onUpdate: this.redraw
         });
 
         this.image = this.settings.get('images').get('bullet');
@@ -37,6 +36,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
     },
 
     onUpdate: function (time) {
+        this.redraw();
         var x = this.angle == 90 ? this.speed*time
             : this.angle == 270 ? -this.speed*time
             : 0;
@@ -49,14 +49,18 @@ atom.declare('BattleCity.Bullet', App.Element, {
             this.redraw();
         } else {
 //            console.log(this.settings.get('player').bullets);
+            if(this.settings.get('player').bullets > 0) {
             this.settings.get('player').bullets--;
             this.image = this.animation.get();
+            this.animation.stop();
+            this.die();
+            }
         }
     },
 
     die: function () {
-//        this.controller.game.remove(this);
-        this.destroy();
+        var bulletTemp = this;
+        setTimeout(function() {bulletTemp.destroy();}, 200);
     },
 
 
