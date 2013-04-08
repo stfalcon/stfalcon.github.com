@@ -36,10 +36,10 @@ atom.declare('BattleCity.Bullet', App.Element, {
             this.shape.move(new Point(x, y));
             this.redraw();
         } else {
-            if(this.settings.get('player').bullets > 0) {
-            this.settings.get('player').bullets--;
+            if(this.settings.get('player').bullets > 0) { // проверяем наличие пули
+                this.settings.get('player').bullets--;
 
-                //Создаем инстанс взрыва
+                // Создаем инстанс взрыва
                 new BattleCity.Explosion(this.controller.units, {
                     shape: new LibCanvas.Shapes.Circle( this.shape.x, this.shape.y, 32 ),
                     animationSheet: this.animationSheet,
@@ -47,7 +47,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
                     images: this.settings.get('images')
                 });
 
-                //Уничтожаем инстанс пули
+                // Уничтожаем инстанс пули
                 this.destroy();
             }
         }
