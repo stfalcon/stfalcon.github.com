@@ -41,7 +41,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
                 // Создаем инстанс взрыва
                 new BattleCity.Explosion(this.controller.units, {
-                    shape: new LibCanvas.Shapes.Circle( this.shape.x, this.shape.y, 32 ),
+                    shape: new LibCanvas.Shapes.Circle( this.shape.x + 4, this.shape.y + 4, 32 ),
                     animationSheet: this.animationSheet,
                     animation: this.animation,
                     images: this.settings.get('images')
