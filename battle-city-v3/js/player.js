@@ -1,7 +1,7 @@
 atom.declare('BattleCity.Player', App.Element, {
     speed: 0.09, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
-
+    rateOfFire: 2.5, // скорострельность
     bullets: 0,
 
     configure: function () {
@@ -42,6 +42,8 @@ atom.declare('BattleCity.Player', App.Element, {
         })
     },
 
+    lastShot: 0, // время последнего выстрела
+
     onUpdate: function (time) {
         var
             keyboard = atom.Keyboard(),
@@ -65,7 +67,10 @@ atom.declare('BattleCity.Player', App.Element, {
 
     // стреляем
     shot: function (time) {
-        if (!this.bullets) {
+        var now = Date.now();
+        if (now > this.lastShot + this.rateOfFire * 1000 && !this.bullets) { // нельзя стрелять чаще, чем раз в rateOfFire секунд
+            this.lastShot = now;
+
             var x = this.angle == 90 ? this.shape.center.x + 24
                 : this.angle == 270 ? this.shape.center.x - 24
                 : this.shape.center.x;

@@ -9,18 +9,6 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         this.angle = this.settings.get('angle');
 
-        // анимация взрыва
-        this.animationSheet = new Animation.Sheet({
-            frames: new Animation.Frames(this.settings.get('images').get('bang'), 32, 32),
-            delay : 60,
-//            looped: true
-        });
-        this.animation = new Animation({
-            sheet   : this.animationSheet,
-            onUpdate: this.redraw,
-//            onStop: this.die
-        });
-
         this.image = this.settings.get('images').get('bullet');
     },
 
@@ -48,17 +36,22 @@ atom.declare('BattleCity.Bullet', App.Element, {
             this.shape.move(new Point(x, y));
             this.redraw();
         } else {
-//            console.log(this.settings.get('player').bullets);
-            this.settings.get('player').bullets--;
-            this.image = this.animation.get();
+            if(this.settings.get('player').bullets > 0) { // проверяем наличие пули
+                this.settings.get('player').bullets--;
+
+                // Создаем инстанс взрыва
+                new BattleCity.Explosion(this.controller.units, {
+                    shape: new LibCanvas.Shapes.Circle( this.shape.x + 4, this.shape.y + 4, 32 ),
+                    animationSheet: this.animationSheet,
+                    animation: this.animation,
+                    images: this.settings.get('images')
+                });
+
+                // Уничтожаем инстанс пули
+                this.destroy();
+            }
         }
     },
-
-    die: function () {
-//        this.controller.game.remove(this);
-        this.destroy();
-    },
-
 
     // проверяем выезд за границы игрового поля
     checkOutOfTheField: function(shape, point) {
