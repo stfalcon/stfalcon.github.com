@@ -9,18 +9,6 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         this.angle = this.settings.get('angle');
 
-        // анимация взрыва
-        this.animationSheet = new Animation.Sheet({
-            frames: new Animation.Frames(this.settings.get('images').get('bang'), 8, 8),
-            delay : 50,
-            looped: false
-        });
-        this.animation = new Animation({
-            sheet   : this.animationSheet,
-            onUpdate: this.redraw,
-            onStop: this.destroy
-        });
-
         this.image = this.settings.get('images').get('bullet');
     },
 
@@ -50,7 +38,17 @@ atom.declare('BattleCity.Bullet', App.Element, {
         } else {
             if(this.settings.get('player').bullets > 0) {
             this.settings.get('player').bullets--;
-            this.image = this.animation.get();
+
+                //Создаем инстанс взрыва
+                new BattleCity.Explosion(this.controller.units, {
+                    shape: new LibCanvas.Shapes.Circle( this.shape.x, this.shape.y, 32 ),
+                    animationSheet: this.animationSheet,
+                    animation: this.animation,
+                    images: this.settings.get('images')
+                });
+
+                //Уничтожаем инстанс пули
+                this.destroy();
             }
         }
     },
