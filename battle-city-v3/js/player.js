@@ -1,7 +1,6 @@
 atom.declare('BattleCity.Player', App.Element, {
     speed: 0.09, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
-    rateOfFire: 2.5, // скорострельность
     bullets: 0,
 
     configure: function () {
@@ -42,8 +41,6 @@ atom.declare('BattleCity.Player', App.Element, {
         })
     },
 
-    lastShot: 0, // время последнего выстрела
-
     onUpdate: function (time) {
         var
             keyboard = atom.Keyboard(),
@@ -67,15 +64,12 @@ atom.declare('BattleCity.Player', App.Element, {
 
     // стреляем
     shot: function (time) {
-        var now = Date.now();
-        if (now > this.lastShot + this.rateOfFire * 1000 && !this.bullets) { // нельзя стрелять чаще, чем раз в rateOfFire секунд
-            this.lastShot = now;
-
-            var x = this.angle == 90 ? this.shape.center.x + 24
-                : this.angle == 270 ? this.shape.center.x - 24
+        if (!this.bullets) { // пока стреляем по одной пуле
+            var x = this.angle == 90 ? this.shape.center.x + 16
+                : this.angle == 270 ? this.shape.center.x - 16
                 : this.shape.center.x;
-            var y = this.angle == 0 ? this.shape.center.y - 24
-                : this.angle == 180 ? this.shape.center.y + 24
+            var y = this.angle == 0 ? this.shape.center.y - 16
+                : this.angle == 180 ? this.shape.center.y + 16
                 : this.shape.center.y;
 
             var bullet = new BattleCity.Bullet(this.controller.units, {
@@ -135,12 +129,6 @@ atom.declare('BattleCity.Player', App.Element, {
         this.angle = angle;
 
         this.redraw();
-
-//        console.log(
-//            ['center', this.shape.center.x, this.shape.center.y],
-//            ['to', this.shape.to.x, this.shape.to.y],
-//            ['from', this.shape.from.x, this.shape.from.y]
-//        );
     },
 
     // проверяем выезд за границы игрового поля

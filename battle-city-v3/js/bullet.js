@@ -1,6 +1,5 @@
 atom.declare('BattleCity.Bullet', App.Element, {
-//    zIndex: 2,
-    speed: 0.2,
+    speed: 0.2, // скорость полета пули
 
     configure: function method () {
         method.previous.call(this);
@@ -8,7 +7,6 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.controller.sounds.play('shot');
 
         this.angle = this.settings.get('angle');
-
         this.image = this.settings.get('images').get('bullet');
     },
 
@@ -32,28 +30,30 @@ atom.declare('BattleCity.Bullet', App.Element, {
             : this.angle == 180 ? this.speed*time
             : 0;
 
-        if (!this.checkOutOfTheField(this.shape, new Point(x, y))) {
-            this.shape.move(new Point(x, y));
-            this.redraw();
-        } else {
-            if(this.settings.get('player').bullets > 0) { // проверяем наличие пули
-                this.settings.get('player').bullets--;
+        // двигаем пулю
+        this.shape.move(new Point(x, y));
+        this.redraw();
 
-                // Создаем инстанс взрыва
-                new BattleCity.Explosion(this.controller.units, {
-                    shape: new LibCanvas.Shapes.Circle( this.shape.x + 4, this.shape.y + 4, 32 ),
-                    animationSheet: this.animationSheet,
-                    animation: this.animation,
-                    images: this.settings.get('images')
-                });
+        // считаем коллизию с пределами поля
+        if (this.checkOutOfTheField(this.shape, new Point(x, y))) {
+            this.settings.get('player').bullets--;
 
-                // Уничтожаем инстанс пули
-                this.destroy();
-            }
+            // создаем инстанс взрыва
+            new BattleCity.Explosion(this.controller.units, {
+                // @todo координаты центра взрыва нужно подвигать немного вперед
+                shape: new LibCanvas.Shapes.Circle(this.shape.center.x, this.shape.center.y, 32 ),
+                animationSheet: this.animationSheet,
+                animation: this.animation,
+                images: this.settings.get('images')
+            });
+
+            // уничтожаем инстанс пули
+            this.destroy();
         }
     },
 
-    // проверяем выезд за границы игрового поля
+    // проверяем вылет за границы игрового поля
+    // @todo копипаст с player.js
     checkOutOfTheField: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
