@@ -38,4 +38,56 @@ atom.declare('BattleCity.Game', {
 //        this.shipsAsteroids();
 //        this.bulletsAsteroids();
     },
+
+    // проверяем выезд за границы игрового поля
+    checkOutOfTheField: function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        var top = shape.from.y,
+            bottom = shape.to.y - this.controller.size.height,
+            left = shape.from.x,
+            right = shape.to.x - this.controller.size.width;
+
+        if (top < 0 || bottom > 0 || left < 0 || right > 0) {
+            return true;
+        }
+
+        return false;
+    },
+
+    // проверяем колизии с текстурами
+    checkCollisionWithTextures: function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.textures.length; i--;) {
+            field = this.controller.textures[i];
+
+            if (field.shape.intersect(shape)) {
+                if (field instanceof BattleCity.Trees || field instanceof BattleCity.Asphalt) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    // рушим стены
+    destroyWalls: function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.textures.length; i--;) {
+            field = this.controller.textures[i];
+
+            if (field.shape.intersect(shape) && field instanceof BattleCity.Breaks) {
+                this.controller.textures.erase(field);
+                field.destroy();
+            }
+        }
+    }
 });

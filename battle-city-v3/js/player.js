@@ -126,8 +126,8 @@ atom.declare('BattleCity.Player', App.Element, {
         }
 
         // можно ехать
-        if (!this.checkCollisionWithTextures(this.shape, new Point(x, y))
-            && !this.checkOutOfTheField(this.shape, new Point(x, y))) {
+        if (!this.controller.game.checkCollisionWithTextures(this.shape, new Point(x, y))
+            && !this.controller.game.checkOutOfTheField(this.shape, new Point(x, y))) {
             this.shape.move(new Point(x, y));
         }
 
@@ -135,46 +135,6 @@ atom.declare('BattleCity.Player', App.Element, {
         this.angle = angle;
 
         this.redraw();
-    },
-
-    // проверяем выезд за границы игрового поля
-    checkOutOfTheField: function(shape, point) {
-        var shape = shape.clone();
-        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-
-        var top = shape.from.y,
-            bottom = shape.to.y - this.controller.size.height,
-            left = shape.from.x,
-            right = shape.to.x - this.controller.size.width;
-
-        if (top < 0 || bottom > 0 || left < 0 || right > 0) {
-            return true;
-        }
-
-        return false;
-    },
-
-    // проверяем колизии с текстурами
-    checkCollisionWithTextures: function(shape, point) {
-        var shape = shape.clone();
-        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
-
-            if (field.shape.intersect(shape)) {
-                if (field instanceof BattleCity.Trees) {
-                    return false;
-                }
-                if (field instanceof BattleCity.Asphalt) {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
 });
