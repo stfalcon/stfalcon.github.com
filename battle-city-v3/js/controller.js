@@ -81,6 +81,7 @@ atom.declare( 'BattleCity.Controller', {
                         field = new BattleCity.Wall(this.foreground, {
                             shape: rectangle
                         });
+                        break;
                     case '=':
                         field = new BattleCity.Breaks(this.foreground, {
                             shape: rectangle

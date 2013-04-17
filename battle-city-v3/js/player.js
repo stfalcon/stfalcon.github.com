@@ -2,6 +2,8 @@ atom.declare('BattleCity.Player', App.Element, {
     speed: 0.09, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
     bullets: 0,
+    rateOfFire: 1,
+    lastShot: 0,
 
     configure: function () {
         // анимация движения гусениц танка
@@ -64,7 +66,11 @@ atom.declare('BattleCity.Player', App.Element, {
 
     // стреляем
     shot: function (time) {
-        if (!this.bullets) { // пока стреляем по одной пуле
+        var now = Date.now();
+
+        if (now > this.lastShot + this.rateOfFire * 1000 && !this.bullets) { // пока стреляем по одной пуле
+            this.lastShot = now;
+
             var x = this.angle == 90 ? this.shape.center.x + 16
                 : this.angle == 270 ? this.shape.center.x - 16
                 : this.shape.center.x;

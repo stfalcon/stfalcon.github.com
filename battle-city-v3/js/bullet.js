@@ -35,7 +35,8 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.redraw();
 
         // считаем коллизию с пределами поля
-        if (this.checkOutOfTheField(this.shape, new Point(x, y))) {
+        if (this.checkOutOfTheField(this.shape, new Point(x, y))
+            || this.checkCollisionWithTextures(this.shape, new Point(x, y))) {
             this.settings.get('player').bullets--;
 
             // создаем инстанс взрыва
@@ -65,6 +66,35 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         if (top < 0 || bottom > 0 || left < 0 || right > 0) {
             return true;
+        }
+
+        return false;
+    },
+
+    // проверяем колизии с текстурами
+    checkCollisionWithTextures: function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.textures.length; i--;) {
+            field = this.controller.textures[i];
+
+            if (field.shape.intersect(shape)) {
+
+                if (field instanceof BattleCity.Trees) {
+                    return false;
+                }
+                if (field instanceof BattleCity.Asphalt) {
+                    return false;
+                }
+
+                if (field instanceof BattleCity.Breaks) {
+                this.controller.textures.erase(field);
+                field.destroy();
+                }
+
+                return true;
+            }
         }
 
         return false;
