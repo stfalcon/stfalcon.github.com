@@ -1,3 +1,20 @@
+atom.declare('BattleCity.BreaksWest', App.Element, {
+    spriteX: 32,
+    spriteY: 0,
+
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image : resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop : [8, 0, 8 , 16],
+            draw : [this.shape.from.x + 8, this.shape.from.y, 8, 16],
+            center: this.shape.center
+        });
+    }
+});
+
+
 atom.declare('BattleCity.Wall', App.Element, {
     spriteX: 0,
     spriteY: 0,

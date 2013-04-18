@@ -84,10 +84,19 @@ atom.declare('BattleCity.Game', {
         for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
-            if (field.shape.intersect(shape) && field instanceof BattleCity.Breaks) {
-                this.controller.textures.erase(field);
-                field.destroy();
+            if (this.controller.textures[i].shape.intersect(shape) && this.controller.textures[i] instanceof BattleCity.Breaks) {
+
+                var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
+
+                this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
+                    shape: rectangle
+                });
+
+//                this.controller.textures.erase(this.controller.textures[i]);
+//                this.controller.textures[i].destroy();
             }
         }
+
+        console.log(this.controller.textures);
     }
 });
