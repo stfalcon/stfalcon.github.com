@@ -1,6 +1,6 @@
 /** @class BattleCity.Game */
 atom.declare('BattleCity.Game', {
-    initialize: function(controller) {
+    initialize : function(controller) {
 //        this.bindMethods('update');
 
         this.controller = controller;
@@ -10,39 +10,39 @@ atom.declare('BattleCity.Game', {
 //        this.enemies = [];
     },
     /** @private */
-    getArray: function(item) {
+    getArray : function(item) {
         var a = item instanceof BattleCity.Wall ? this.textures :
-                item instanceof BattleCity.Bullet ? this.bullets :
+            item instanceof BattleCity.Bullet ? this.bullets :
 //            item instanceof BattleCity.Enemy ? this.enemies :
-                item instanceof BattleCity.Player ? this.players : null;
+            item instanceof BattleCity.Player ? this.players : null;
 
         if (a == null)
             throw new TypeError('unknown type of ' + item);
 
         return a;
     },
-    add: function(item) {
+    add : function(item) {
         this.getArray(item).push(item);
         return this;
     },
-    remove: function(item) {
+    remove : function(item) {
         this.getArray(item).erase(item);
         return this;
     },
-    update: function() {
+    update : function() {
 //        console.log(new Date().getTime());
 //        this.shipsAsteroids();
 //        this.bulletsAsteroids();
     },
     // проверяем выезд за границы игрового поля
-    checkOutOfTheField: function(shape, point) {
+    checkOutOfTheField : function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
         var top = shape.from.y,
-                bottom = shape.to.y - this.controller.size.height,
-                left = shape.from.x,
-                right = shape.to.x - this.controller.size.width;
+            bottom = shape.to.y - this.controller.size.height,
+            left = shape.from.x,
+            right = shape.to.x - this.controller.size.width;
 
         if (top < 0 || bottom > 0 || left < 0 || right > 0) {
             return true;
@@ -51,11 +51,11 @@ atom.declare('BattleCity.Game', {
         return false;
     },
     // проверяем колизии с текстурами
-    checkCollisionWithTextures: function(shape, point) {
+    checkCollisionWithTextures : function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.textures.length; i--; ) {
+        for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
             if (field.shape.intersect(shape)) {
@@ -70,41 +70,62 @@ atom.declare('BattleCity.Game', {
         return false;
     },
     // рушим стены
-    destroyWalls: function(shape, point) {
+    destroyWalls : function(shape, point, angle) {
         var shape = shape.clone();
+//        console.log(angle);
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.textures.length; i--; ) {
+        for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
             if (this.controller.textures[i].shape.intersect(shape) && this.controller.textures[i] instanceof BattleCity.Breaks) {
-
+//            console.log(i);
                 var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
 
-                this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                    shape: rectangle
-                });
+                if (angle === 90) {
+                    this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
+                        shape : rectangle
+                    });
+                } else if (angle === 270) {
+                    this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
+                        shape : rectangle
+                    });
+                } else if (angle === 0) {
+                    this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
+                        shape : rectangle
+                    });
+                } else if (angle === 180) {
+                    this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
+                        shape : rectangle
+                    });
+                }
 
-                this.controller.parted[i] = true;
+                this.controller.parted[i] = i;
             }
         }
     },
-    destroyPartedWalls: function(shape, point) {
+    destroyPartedWalls : function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.textures.length; i--; ) {
+        for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
-            if (this.controller.textures[i].shape.intersect(shape) && this.controller.textures[i] instanceof BattleCity.BreaksWest) {
-                console.log(this.controller.parted[i]);
-                if (this.controller.parted[i] === true) {
-//                    alert('true');
+            if (field.shape.intersect(shape) &&
+                this.controller.parted[i] === i &&
+                field instanceof BattleCity.BreaksWest ||
+                field instanceof BattleCity.BreaksEast ||
+                field instanceof BattleCity.BreaksNorth ||
+                field instanceof BattleCity.BreaksSouth
+                ) {
+                console.log(i);
+                console.log(this.controller.parted);
+
                     this.controller.textures.erase(field);
                     field.destroy();
-                    return;
-                }
+                    this.controller.parted.erase(this.controller.parted[i]);
+                    this.controller.parted[i] = 0;
             }
         }
-    }
+     }
 });
