@@ -48,7 +48,7 @@ atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
             image : resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop : [0, 0, 16 , 8],
+            crop : [0, 8, 16 , 8],
             draw : [this.shape.from.x, this.shape.from.y + 8, 16, 8],
             center: this.shape.center
         });

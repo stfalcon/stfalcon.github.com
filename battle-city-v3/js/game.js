@@ -118,8 +118,8 @@ atom.declare('BattleCity.Game', {
                 field instanceof BattleCity.BreaksNorth ||
                 field instanceof BattleCity.BreaksSouth
                 ) {
-                console.log(i);
-                console.log(this.controller.parted);
+                    console.log(i);
+                    console.log(this.controller.parted);
 
                     this.controller.textures.erase(field);
                     field.destroy();
