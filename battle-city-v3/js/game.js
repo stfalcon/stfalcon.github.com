@@ -82,27 +82,31 @@ atom.declare('BattleCity.Game', {
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) {
                     var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
 
-                    if (angle === 90) {
-                        this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                            shape : rectangle
-                        });
-                    } else if (angle === 270) {
-                        this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
-                            shape : rectangle
-                        });
-                    } else if (angle === 0) {
-                        this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
-                            shape : rectangle
-                        });
-                    } else if (angle === 180) {
-                        this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
-                            shape : rectangle
-                        });
+                    switch (angle) {
+                        case 90:
+                            this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
+                                shape : rectangle
+                            });
+                            break;
+                        case 270:
+                            this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
+                                shape : rectangle
+                            });
+                            break;
+                        case 0:
+                            this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
+                                shape : rectangle
+                            });
+                            break;
+                        case 180:
+                            this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
+                                shape : rectangle
+                            });
+                            break;
                     }
 
                     this.controller.parted[i] = i;
-                } else if (this.controller.parted[i] === i &&
-                    field instanceof BattleCity.BreaksWest ||
+                } else if (field instanceof BattleCity.BreaksWest ||
                     field instanceof BattleCity.BreaksEast ||
                     field instanceof BattleCity.BreaksNorth ||
                     field instanceof BattleCity.BreaksSouth) {
