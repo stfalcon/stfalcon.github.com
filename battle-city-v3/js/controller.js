@@ -3,6 +3,7 @@ atom.declare( 'BattleCity.Controller', {
 
     textures: [],
     parted: [],
+    endGame : false,
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -12,6 +13,7 @@ atom.declare( 'BattleCity.Controller', {
             player4: 'images/tank.png [64:32]{3:0}',
             textures: 'images/textures.png',
             base: 'images/base.png',
+            baseDestroyed: 'images/base_destroyed.png',
             bullet: 'images/bullet.png',
             bang: 'images/bang.png'
         }, this.start.bind(this));
@@ -77,6 +79,8 @@ atom.declare( 'BattleCity.Controller', {
             for (var x = 0; x < 26; x++) {
                 var field = null;
                 var rectangle = new Rectangle(x*16, y*16, 16, 16);
+                var baseRectangle = new Rectangle(x*16, y*16, 32, 32);
+
                 switch(s.charAt(x)) {
                     case '#':
                         field = new BattleCity.Wall(this.foreground, {
@@ -103,17 +107,17 @@ atom.declare( 'BattleCity.Controller', {
                             shape: rectangle
                         });
                         break;
+                    case 'B':
+                        field = new BattleCity.Base(this.foreground, {
+                            shape: baseRectangle
+                        });
+                        break;
                 }
 
                 if (field) {
                     this.textures.push(field);
                 }
             }
-
-            // орёл
-            new BattleCity.Base(this.foreground, {
-                shape: new Rectangle(6*32, 12*32, 32, 32)
-            });
         }
     },
 
@@ -156,7 +160,7 @@ atom.declare( 'BattleCity.Controller', {
             "  ==  ==          ==  ==  ",
             "  ==  ==          ==  =   ",
             "  ==  ==   ====   ==  =   ",
-            "           =  =           ",
+            "           =B =           ",
             "           =  =           "
         ]
     ]

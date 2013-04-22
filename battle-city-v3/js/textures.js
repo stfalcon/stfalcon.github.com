@@ -97,3 +97,12 @@ atom.declare('BattleCity.Base', App.Element, {
         });
     }
 });
+
+atom.declare('BattleCity.BaseDestroyed', App.Element, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image : resources.get('images').get('baseDestroyed'),
+            center: this.shape.center
+        });
+    }
+});
