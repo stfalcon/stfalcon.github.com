@@ -78,54 +78,41 @@ atom.declare('BattleCity.Game', {
         for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
-            if (this.controller.textures[i].shape.intersect(shape) && this.controller.textures[i] instanceof BattleCity.Breaks) {
-//            console.log(i);
-                var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
+            if (this.controller.textures[i].shape.intersect(shape)) {
+                if (this.controller.textures[i] instanceof BattleCity.Breaks) {
+                    var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
 
-                if (angle === 90) {
-                    this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                        shape : rectangle
-                    });
-                } else if (angle === 270) {
-                    this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
-                        shape : rectangle
-                    });
-                } else if (angle === 0) {
-                    this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
-                        shape : rectangle
-                    });
-                } else if (angle === 180) {
-                    this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
-                        shape : rectangle
-                    });
-                }
+                    if (angle === 90) {
+                        this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
+                            shape : rectangle
+                        });
+                    } else if (angle === 270) {
+                        this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
+                            shape : rectangle
+                        });
+                    } else if (angle === 0) {
+                        this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
+                            shape : rectangle
+                        });
+                    } else if (angle === 180) {
+                        this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
+                            shape : rectangle
+                        });
+                    }
 
-                this.controller.parted[i] = i;
-            }
-        }
-    },
-    destroyPartedWalls : function(shape, point) {
-        var shape = shape.clone();
-        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
-
-            if (field.shape.intersect(shape) &&
-                this.controller.parted[i] === i &&
-                field instanceof BattleCity.BreaksWest ||
-                field instanceof BattleCity.BreaksEast ||
-                field instanceof BattleCity.BreaksNorth ||
-                field instanceof BattleCity.BreaksSouth
-                ) {
-                    console.log(i);
-                    console.log(this.controller.parted);
+                    this.controller.parted[i] = i;
+                } else if (this.controller.parted[i] === i &&
+                    field instanceof BattleCity.BreaksWest ||
+                    field instanceof BattleCity.BreaksEast ||
+                    field instanceof BattleCity.BreaksNorth ||
+                    field instanceof BattleCity.BreaksSouth) {
 
                     this.controller.textures.erase(field);
                     field.destroy();
                     this.controller.parted.erase(this.controller.parted[i]);
                     this.controller.parted[i] = 0;
+                }
             }
         }
-     }
+    }
 });
