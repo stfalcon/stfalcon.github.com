@@ -2,6 +2,7 @@
 atom.declare( 'BattleCity.Controller', {
 
     textures: [],
+    parted: [],
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -20,6 +21,7 @@ atom.declare( 'BattleCity.Controller', {
 
     start: function (images) {
         this.game = new BattleCity.Game(this);
+        this.collisions = new BattleCity.Collisions(this);
         atom.frame.add(this.game.update);
 
         this.size = new Size(416, 416);
@@ -81,6 +83,7 @@ atom.declare( 'BattleCity.Controller', {
                         field = new BattleCity.Wall(this.foreground, {
                             shape: rectangle
                         });
+                        break;
                     case '=':
                         field = new BattleCity.Breaks(this.foreground, {
                             shape: rectangle

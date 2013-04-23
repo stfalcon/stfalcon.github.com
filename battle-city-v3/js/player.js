@@ -2,6 +2,8 @@ atom.declare('BattleCity.Player', App.Element, {
     speed: 0.09, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
     bullets: 0,
+    rateOfFire: 1,
+    lastShot: 0,
 
     configure: function () {
         // анимация движения гусениц танка
@@ -64,7 +66,11 @@ atom.declare('BattleCity.Player', App.Element, {
 
     // стреляем
     shot: function (time) {
-        if (!this.bullets) { // пока стреляем по одной пуле
+        var now = Date.now();
+
+        if (now > this.lastShot + this.rateOfFire * 1000 && !this.bullets) { // пока стреляем по одной пуле
+            this.lastShot = now;
+
             var x = this.angle == 90 ? this.shape.center.x + 16
                 : this.angle == 270 ? this.shape.center.x - 16
                 : this.shape.center.x;
@@ -104,24 +110,37 @@ atom.declare('BattleCity.Player', App.Element, {
             y > 0 ? 180 :
             x < 0 ? 270 : 0;
 
+        var posX = 128;
+        var posY = this.size.height-32;
+
         // пытаемся выровнять координаты при заходе в поворот
         if (this.angle == 0 && (angle == 270 || angle == 90)) {
             // двигается снизу вверх и поворачивает налево-направо
-            y -= this.shape.center.y - Math.round(this.shape.center.y / 16) * 16;
+            posX = this.shape.center.x - 16;
+            posY = this.shape.center.y - (this.shape.center.y % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 180 && (angle == 270 || angle == 90)) {
             // двигается сверху вниз и поворачивает налево-направо
-            y += Math.round(this.shape.center.y / 16) * 16 - this.shape.center.y;
+            posX = this.shape.center.x - 16;
+            posY = this.shape.center.y - (this.shape.center.y % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 90 && (angle == 0 || angle == 180)) {
             // двигает слева направо и поворачивает вниз-вверх
-            x += Math.round(this.shape.center.x / 16) * 16 - this.shape.center.x;
+            posY = this.shape.center.y - 16;
+            posX = this.shape.center.x - (this.shape.center.x % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 270 && (angle == 0 || angle == 180)) {
             // двигается справа налево и поворачивает вниз-вверх
-            x -= this.shape.center.x - Math.round(this.shape.center.x / 16) * 16;
+            posY = this.shape.center.y - 16;
+            posX = this.shape.center.x - (this.shape.center.x % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         }
 
+        console.log(posY);
+
         // можно ехать
-        if (!this.checkCollisionWithTextures(this.shape, new Point(x, y))
-            && !this.checkOutOfTheField(this.shape, new Point(x, y))) {
+        if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
+            && !this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))) {
             this.shape.move(new Point(x, y));
         }
 
@@ -129,46 +148,6 @@ atom.declare('BattleCity.Player', App.Element, {
         this.angle = angle;
 
         this.redraw();
-    },
-
-    // проверяем выезд за границы игрового поля
-    checkOutOfTheField: function(shape, point) {
-        var shape = shape.clone();
-        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-
-        var top = shape.from.y,
-            bottom = shape.to.y - this.controller.size.height,
-            left = shape.from.x,
-            right = shape.to.x - this.controller.size.width;
-
-        if (top < 0 || bottom > 0 || left < 0 || right > 0) {
-            return true;
-        }
-
-        return false;
-    },
-
-    // проверяем колизии с текстурами
-    checkCollisionWithTextures: function(shape, point) {
-        var shape = shape.clone();
-        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
-
-            if (field.shape.intersect(shape)) {
-                if (field instanceof BattleCity.Trees) {
-                    return false;
-                }
-                if (field instanceof BattleCity.Asphalt) {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
 });
