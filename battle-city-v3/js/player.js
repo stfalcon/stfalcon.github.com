@@ -110,24 +110,37 @@ atom.declare('BattleCity.Player', App.Element, {
             y > 0 ? 180 :
             x < 0 ? 270 : 0;
 
+        var posX = 128;
+        var posY = this.size.height-32;
+
         // пытаемся выровнять координаты при заходе в поворот
         if (this.angle == 0 && (angle == 270 || angle == 90)) {
             // двигается снизу вверх и поворачивает налево-направо
-            y -= this.shape.center.y - Math.round(this.shape.center.y / 16) * 16;
+            posX = this.shape.center.x - 16;
+            posY = this.shape.center.y - (this.shape.center.y % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 180 && (angle == 270 || angle == 90)) {
             // двигается сверху вниз и поворачивает налево-направо
-            y += Math.round(this.shape.center.y / 16) * 16 - this.shape.center.y;
+            posX = this.shape.center.x - 16;
+            posY = this.shape.center.y - (this.shape.center.y % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 90 && (angle == 0 || angle == 180)) {
             // двигает слева направо и поворачивает вниз-вверх
-            x += Math.round(this.shape.center.x / 16) * 16 - this.shape.center.x;
+            posY = this.shape.center.y - 16;
+            posX = this.shape.center.x - (this.shape.center.x % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         } else if (this.angle == 270 && (angle == 0 || angle == 180)) {
             // двигается справа налево и поворачивает вниз-вверх
-            x -= this.shape.center.x - Math.round(this.shape.center.x / 16) * 16;
+            posY = this.shape.center.y - 16;
+            posX = this.shape.center.x - (this.shape.center.x % 16) - 16;
+            this.shape.moveTo(new Point(posX, posY));
         }
 
+        console.log(posY);
+
         // можно ехать
-        if (!this.controller.game.checkCollisionWithTextures(this.shape, new Point(x, y))
-            && !this.controller.game.checkOutOfTheField(this.shape, new Point(x, y))) {
+        if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
+            && !this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))) {
             this.shape.move(new Point(x, y));
         }
 
