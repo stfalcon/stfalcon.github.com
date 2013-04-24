@@ -35,9 +35,9 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.redraw();
 
         // считаем коллизию с пределами поля
-        if (this.controller.game.checkOutOfTheField(this.shape, new Point(x, y))
-            || this.controller.game.checkCollisionWithTextures(this.shape, new Point(x, y))) {
-            this.controller.game.destroyWalls(this.shape, new Point(x, y), this.angle);
+        if (this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
+            || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+            this.controller.collisions.destroyWalls(this.shape, new Point(x, y), this.angle);
 
             this.settings.get('player').bullets--;
 

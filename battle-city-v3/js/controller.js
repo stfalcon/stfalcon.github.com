@@ -23,6 +23,7 @@ atom.declare( 'BattleCity.Controller', {
 
     start: function (images) {
         this.game = new BattleCity.Game(this);
+        this.collisions = new BattleCity.Collisions(this);
         atom.frame.add(this.game.update);
 
         this.size = new Size(416, 416);
