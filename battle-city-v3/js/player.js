@@ -35,7 +35,6 @@ atom.declare('BattleCity.Player', App.Element, {
     },
 
     renderTo: function (ctx, resources) {
-//        ctx.fill(this.shape, 'indigo');
         ctx.drawImage({
             image : this.image,
             center: this.shape.center,
@@ -48,19 +47,30 @@ atom.declare('BattleCity.Player', App.Element, {
             keyboard = atom.Keyboard(),
             controls = this.settings.get('controls');
 
-        // проверяем нажатия клавиш и двигаем/поворачиваем танк
-        if (keyboard.key(controls.up)) {
-            this.move(0, -this.speed*time);
-        } else if (keyboard.key(controls.down)) {
-            this.move(0, this.speed*time);
-        } else if (keyboard.key(controls.left)) {
-            this.move(-this.speed*time, 0);
-        } else if (keyboard.key(controls.right)) {
-            this.move(this.speed*time, 0);
-        }
+        if(!this.controller.endGame) {
+            // проверяем нажатия клавиш и двигаем/поворачиваем танк
+            if (keyboard.key(controls.up)) {
+                this.move(0, -this.speed*time);
+            } else if (keyboard.key(controls.down)) {
+                this.move(0, this.speed*time);
+            } else if (keyboard.key(controls.left)) {
+                this.move(-this.speed*time, 0);
+            } else if (keyboard.key(controls.right)) {
+                this.move(this.speed*time, 0);
+            }
 
-        if (keyboard.key(controls.fire)) {
-            this.shot(time);
+            if (keyboard.key(controls.fire)) {
+                this.shot(time);
+            }
+        } else {
+            if (keyboard.key('enter')) {
+               this.controller.game.gameRestart();
+            }
+
+            var thisGame = this;
+            setInterval(function(){
+                thisGame.controller.game.gameRestart();
+            },10000);
         }
     },
 

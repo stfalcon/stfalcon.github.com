@@ -33,5 +33,8 @@ atom.declare('BattleCity.Game', {
 //        console.log(new Date().getTime());
 //        this.shipsAsteroids();
 //        this.bulletsAsteroids();
+    },
+    gameRestart : function() {
+        location.reload();
     }
 });

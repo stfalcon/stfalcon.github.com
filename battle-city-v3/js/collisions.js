@@ -99,11 +99,11 @@ atom.declare('BattleCity.Collisions', {
 
                     this.controller.endGame = true;
 
-                    var gameOverMessage = new BattleCity.GameOverMessage(this.controller.foreground, {
+                    var gameOverMessage = new BattleCity.GameOverMessage(this.controller.info, {
                         controller: this.controller,
                         shape: new Rectangle({
-                                center: new Point(0, 0),
-                                size: new Size(16, 16)}
+                                from: new Point(175, 350),
+                                size: new Size(64, 40)}
                         )
                     });
                 }

@@ -50,6 +50,13 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 3
         });
 
+        this.info = this.app.createLayer({
+            name: 'info',
+            invoke: true,
+            intersection: 'manual',
+            zIndex: 4
+        });
+
         // слой для юнитов, перерисовываем постоянно
         this.units = this.app.createLayer({
             name: 'units',
@@ -159,8 +166,8 @@ atom.declare( 'BattleCity.Controller', {
             "  ==  ==  ==  ==  ==  ==  ",
             "  ==  ==  ==  ==  ==  ==  ",
             "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  =   ",
-            "  ==  ==   ====   ==  =   ",
+            "  ==  ==          ==  ==  ",
+            "  ==  ==   ====   ==  ==  ",
             "           =B =           ",
             "           =  =           "
         ]
