@@ -1,5 +1,5 @@
-atom.declare('BattleCity.Player', App.Element, {
-    speed: 0.09, // скорость перемещения игрока
+atom.declare('BattleCity.Enemy', App.Element, {
+    speed: 0.09, // скорость перемещения
     angle: 0, // угол поворота спрайта
     bullets: 0,
     rateOfFire: 1,
@@ -19,10 +19,11 @@ atom.declare('BattleCity.Player', App.Element, {
 
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
+        this.angle = 270;
 
         // задаем стартовые координаты танка
         this.shape = new Rectangle(
-            128, this.size.height-32, 32, 32
+            192, 176, 32, 32
         );
     },
 
@@ -43,35 +44,36 @@ atom.declare('BattleCity.Player', App.Element, {
     },
 
     onUpdate: function (time) {
-        var
-            keyboard = atom.Keyboard(),
-            controls = this.settings.get('controls');
-
-        if(!this.controller.endGame) {
-            // проверяем нажатия клавиш и двигаем/поворачиваем танк
-            if (keyboard.key(controls.up)) {
-                this.move(0, -this.speed*time);
-            } else if (keyboard.key(controls.down)) {
-                this.move(0, this.speed*time);
-            } else if (keyboard.key(controls.left)) {
-                this.move(-this.speed*time, 0);
-            } else if (keyboard.key(controls.right)) {
-                this.move(this.speed*time, 0);
-            }
-
-            if (keyboard.key(controls.fire)) {
-                this.shot(time);
-            }
-        } else {
-            if (keyboard.key('enter')) {
-               this.controller.game.gameRestart();
-            }
-
-            var thisGame = this;
-            setInterval(function(){
-                thisGame.controller.game.gameRestart();
-            },10000);
-        }
+        this.move(-this.speed*time, 0);
+//        var
+//            keyboard = atom.Keyboard(),
+//            controls = this.settings.get('controls');
+//
+//        if(!this.controller.endGame) {
+//            // проверяем нажатия клавиш и двигаем/поворачиваем танк
+//            if (keyboard.key(controls.up)) {
+//                this.move(0, -this.speed*time);
+//            } else if (keyboard.key(controls.down)) {
+//                this.move(0, this.speed*time);
+//            } else if (keyboard.key(controls.left)) {
+//                this.move(-this.speed*time, 0);
+//            } else if (keyboard.key(controls.right)) {
+//                this.move(this.speed*time, 0);
+//            }
+//
+//            if (keyboard.key(controls.fire)) {
+//                this.shot(time);
+//            }
+//        } else {
+//            if (keyboard.key('enter')) {
+//                this.controller.game.gameRestart();
+//            }
+//
+//            var thisGame = this;
+//            setInterval(function(){
+//                thisGame.controller.game.gameRestart();
+//            },10000);
+//        }
     },
 
     // стреляем
@@ -92,8 +94,8 @@ atom.declare('BattleCity.Player', App.Element, {
                 controller: this.controller,
                 angle: this.angle,
                 shape: new Rectangle({
-                    center: new Point(x, y),
-                    size: new Size(8, 8)}
+                        center: new Point(x, y),
+                        size: new Size(8, 8)}
                 ),
                 player: this,
                 images: this.settings.get('images')
@@ -116,9 +118,9 @@ atom.declare('BattleCity.Player', App.Element, {
 
         var angle =
             y < 0 ? 0 :
-            x > 0 ? 90 :
-            y > 0 ? 180 :
-            x < 0 ? 270 : 0;
+                x > 0 ? 90 :
+                    y > 0 ? 180 :
+                        x < 0 ? 270 : 0;
 
         var posX = 128;
         var posY = this.size.height-32;
@@ -146,13 +148,13 @@ atom.declare('BattleCity.Player', App.Element, {
             this.shape.moveTo(new Point(posX, posY));
         }
 
-        console.log(posY);
-
         // можно ехать
         if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
             && !this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            && !this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y))) {
+            && !this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))) {
             this.shape.move(new Point(x, y));
+        } else {
+            this.speed = -this.speed;
         }
 
         // повернуть танк

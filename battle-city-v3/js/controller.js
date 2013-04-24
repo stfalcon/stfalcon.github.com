@@ -3,6 +3,8 @@ atom.declare( 'BattleCity.Controller', {
 
     textures: [],
     parted: [],
+    enemies: [],
+    players: [],
     endGame : false,
 
     initialize: function () {
@@ -71,14 +73,22 @@ atom.declare( 'BattleCity.Controller', {
             images: images,
             controller: this
         });
+        this.players.push(this.player);
+
+        this.enemy = new BattleCity.Enemy(this.units, {
+            size: this.size,
+            images: images,
+            controller: this
+        });
+        this.enemies.push(this.enemy);
 
         // координатная сетка (для дебага)
-//        for (var y = 0; y < 52; y++) {
-//            for (var x = 0; x < 52; x++) {
-//                this.foreground.ctx.fillStyle   = 'red'; // blue
-//                this.foreground.ctx.fillRect(x*8, y*8, 1, 1);
-//            }
-//        }
+        for (var y = 0; y < 52; y++) {
+            for (var x = 0; x < 52; x++) {
+                this.foreground.ctx.fillStyle   = 'red'; // blue
+                this.foreground.ctx.fillRect(x*8, y*8, 1, 1);
+            }
+        }
 
         // построение уровня
         var data = this.constructor.levels[0];
@@ -155,8 +165,8 @@ atom.declare( 'BattleCity.Controller', {
             "  ==  ==  ==  ==  ==  ==  ",
             "  ==  ==          ==  ==  ",
             "  ==  ==          ==  ==  ",
-            "          ==  ==          ",
-            "          ==  ==          ",
+            "                          ",
+            "                          ",
             "==  ====          ====  ==",
             "##  ====          ====  ##",
             "          ==  ==          ",

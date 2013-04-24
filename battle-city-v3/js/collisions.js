@@ -44,6 +44,40 @@ atom.declare('BattleCity.Collisions', {
 
         return false;
     },
+
+    checkCollisionWithEnemies : function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemies.length; i--;) {
+            enemy = this.controller.enemies[i];
+
+            if (enemy.shape.intersect(shape)) {
+
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    checkCollisionWithPlayers : function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemies.length; i--;) {
+            player = this.controller.players[i];
+
+            if (player.shape.intersect(shape)) {
+
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+
     // рушим стены
     destroyWalls : function(shape, point, angle) {
         var shape = shape.clone();
@@ -106,6 +140,9 @@ atom.declare('BattleCity.Collisions', {
                                 size: new Size(64, 40)}
                         )
                     });
+                } else if (field instanceof BattleCity.Enemy) {
+                    this.controller.textures.erase(field);
+                    field.destroy();
                 }
             }
         }
