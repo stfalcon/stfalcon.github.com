@@ -90,6 +90,22 @@ atom.declare('BattleCity.Collisions', {
                     field.destroy();
                     this.controller.parted.erase(this.controller.parted[i]);
                     this.controller.parted[i] = 0;
+                } else if (field instanceof BattleCity.Base) {
+                    var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
+
+                    this.controller.textures[i]= new BattleCity.BaseDestroyed(this.controller.foreground, {
+                        shape: baseRectangle
+                    });
+
+                    this.controller.endGame = true;
+
+                    var gameOverMessage = new BattleCity.GameOverMessage(this.controller.foreground, {
+                        controller: this.controller,
+                        shape: new Rectangle({
+                                center: new Point(0, 0),
+                                size: new Size(16, 16)}
+                        )
+                    });
                 }
             }
         }
