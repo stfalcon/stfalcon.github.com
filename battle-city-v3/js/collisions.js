@@ -140,9 +140,6 @@ atom.declare('BattleCity.Collisions', {
                                 size: new Size(64, 40)}
                         )
                     });
-                } else if (field instanceof BattleCity.Enemy) {
-                    this.controller.textures.erase(field);
-                    field.destroy();
                 }
             }
         }
