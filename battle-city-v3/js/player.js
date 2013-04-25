@@ -22,7 +22,7 @@ atom.declare('BattleCity.Player', App.Element, {
 
         // задаем стартовые координаты танка
         this.shape = new Rectangle(
-            128, this.size.height-32, 32, 32
+            96, this.size.height-32, 32, 32
         );
     },
 
@@ -137,12 +137,11 @@ atom.declare('BattleCity.Player', App.Element, {
             this.shape.moveTo(new Point(posX, posY));
         }
 
-//        console.log(posY);
 
         // можно ехать
         if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
             && !this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            && !this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y))) {
+            && !this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y), this)) {
             this.shape.move(new Point(x, y));
         }
 

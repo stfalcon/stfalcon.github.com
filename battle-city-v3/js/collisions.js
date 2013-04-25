@@ -45,15 +45,14 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
-    checkCollisionWithEnemies : function(shape, point) {
+    checkCollisionWithEnemies : function(shape, point, obj) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
         for (i = this.controller.enemies.length; i--;) {
             enemy = this.controller.enemies[i];
 
-            if (enemy.shape.intersect(shape)) {
-
+            if (enemy.shape.intersect(shape) && obj != enemy) {
                 return true;
             }
         }

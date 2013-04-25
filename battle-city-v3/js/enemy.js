@@ -39,9 +39,21 @@ atom.declare('BattleCity.Enemy', App.Element, {
     },
 
     onUpdate: function (time) {
-        this.move(-this.speed*time, 0);
+        var angle = this.settings.get('angle');
 
+        if (angle == 270) {
+            this.move(-this.speed*time, 0);
+        } else if (angle == 90) {
+            this.move(this.speed*time, 0);
+        } else if (angle == 0) {
+            this.move(0, -this.speed*time);
+        } else if (angle == 180) {
+            this.move(0, this.speed*time);
+        }
+
+        if(!this.controller.endGame) {
         this.shot(time);
+        }
     },
 
     // стреляем
@@ -119,7 +131,9 @@ atom.declare('BattleCity.Enemy', App.Element, {
         // можно ехать
         if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
             && !this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            && !this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))) {
+            && !this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))
+            && !this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y), this)
+            ) {
             this.shape.move(new Point(x, y));
         } else {
             var now = Date.now();
