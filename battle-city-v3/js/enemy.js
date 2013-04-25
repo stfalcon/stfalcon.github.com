@@ -4,6 +4,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
     bullets: 0,
     rateOfFire: 1,
     lastShot: 0,
+    reverseTime: 0,
 
     configure: function () {
         // анимация движения гусениц танка
@@ -19,12 +20,6 @@ atom.declare('BattleCity.Enemy', App.Element, {
 
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
-        this.angle = 270;
-
-        // задаем стартовые координаты танка
-        this.shape = new Rectangle(
-            192, 176, 32, 32
-        );
     },
 
     get controller () {
@@ -45,42 +40,15 @@ atom.declare('BattleCity.Enemy', App.Element, {
 
     onUpdate: function (time) {
         this.move(-this.speed*time, 0);
-//        var
-//            keyboard = atom.Keyboard(),
-//            controls = this.settings.get('controls');
-//
-//        if(!this.controller.endGame) {
-//            // проверяем нажатия клавиш и двигаем/поворачиваем танк
-//            if (keyboard.key(controls.up)) {
-//                this.move(0, -this.speed*time);
-//            } else if (keyboard.key(controls.down)) {
-//                this.move(0, this.speed*time);
-//            } else if (keyboard.key(controls.left)) {
-//                this.move(-this.speed*time, 0);
-//            } else if (keyboard.key(controls.right)) {
-//                this.move(this.speed*time, 0);
-//            }
-//
-//            if (keyboard.key(controls.fire)) {
-//                this.shot(time);
-//            }
-//        } else {
-//            if (keyboard.key('enter')) {
-//                this.controller.game.gameRestart();
-//            }
-//
-//            var thisGame = this;
-//            setInterval(function(){
-//                thisGame.controller.game.gameRestart();
-//            },10000);
-//        }
+
+        this.shot(time);
     },
 
     // стреляем
     shot: function (time) {
         var now = Date.now();
 
-        if (now > this.lastShot + this.rateOfFire * 1000 && !this.bullets) { // пока стреляем по одной пуле
+        if (now > this.lastShot + this.rateOfFire * 3000 && !this.bullets) { // пока стреляем по одной пуле
             this.lastShot = now;
 
             var x = this.angle == 90 ? this.shape.center.x + 16
@@ -154,7 +122,12 @@ atom.declare('BattleCity.Enemy', App.Element, {
             && !this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))) {
             this.shape.move(new Point(x, y));
         } else {
-            this.speed = -this.speed;
+            var now = Date.now();
+
+            if (now > this.reverseTime + 1000) {
+                this.reverseTime = now;
+                this.speed = -this.speed;
+            }
         }
 
         // повернуть танк

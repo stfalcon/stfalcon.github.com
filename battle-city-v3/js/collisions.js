@@ -68,7 +68,7 @@ atom.declare('BattleCity.Collisions', {
         for (i = this.controller.enemies.length; i--;) {
             player = this.controller.players[i];
 
-            if (player.shape.intersect(shape)) {
+            if (player && player.shape.intersect(shape)) {
 
                 return true;
             }
@@ -77,11 +77,41 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
+    destroyEnemies : function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemies.length; i--;) {
+            enemy = this.controller.enemies[i];
+
+            if (enemy.shape.intersect(shape)) {
+                enemy.animation.stop();
+                this.controller.enemies.erase(enemy);
+                enemy.destroy();
+            }
+        }
+    },
+
+    destroyPlayers : function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.players.length; i--;) {
+            player = this.controller.players[i];
+
+            if (player.shape.intersect(shape)) {
+                this.controller.endGame = true;
+                this.controller.game.endGameMessage();
+                player.animation.stop();
+                this.controller.players.erase(player);
+                player.destroy();
+            }
+        }
+    },
 
     // рушим стены
     destroyWalls : function(shape, point, angle) {
         var shape = shape.clone();
-//        console.log(angle);
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
         for (i = this.controller.textures.length; i--;) {
@@ -133,13 +163,7 @@ atom.declare('BattleCity.Collisions', {
 
                     this.controller.endGame = true;
 
-                    var gameOverMessage = new BattleCity.GameOverMessage(this.controller.info, {
-                        controller: this.controller,
-                        shape: new Rectangle({
-                                from: new Point(175, 350),
-                                size: new Size(64, 40)}
-                        )
-                    });
+                    this.controller.game.endGameMessage();
                 }
             }
         }

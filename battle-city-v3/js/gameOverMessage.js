@@ -19,8 +19,17 @@ atom.declare('BattleCity.GameOverMessage', App.Element, {
         if (this.shape.center.y > 225) {
             this.shape.move(new Point(0, -y));
             this.redraw();
-        } else {
-            this.controller.info.stop();
         }
+
+        var keyboard = atom.Keyboard();
+
+        if (keyboard.key('enter')) {
+            this.controller.game.gameRestart();
+        }
+
+        var thisGame = this;
+        setInterval(function(){
+            thisGame.controller.game.gameRestart();
+        },10000);
     }
 });

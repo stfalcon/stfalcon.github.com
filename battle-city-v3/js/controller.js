@@ -78,6 +78,17 @@ atom.declare( 'BattleCity.Controller', {
         this.enemy = new BattleCity.Enemy(this.units, {
             size: this.size,
             images: images,
+            shape: new Rectangle(192, 176, 32, 32),
+            angle: 270,
+            controller: this
+        });
+        this.enemies.push(this.enemy);
+
+        this.enemy = new BattleCity.Enemy(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(128, 240, 32, 32),
+            angle: 270,
             controller: this
         });
         this.enemies.push(this.enemy);

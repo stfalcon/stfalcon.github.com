@@ -8,6 +8,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         this.angle = this.settings.get('angle');
         this.image = this.settings.get('images').get('bullet');
+        this.source = this.settings.get('player');
     },
 
     get controller() {
@@ -36,14 +37,21 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         // считаем коллизию с пределами поля
         if (this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+            || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
+            || this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y))
+            || this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))) {
             this.controller.collisions.destroyWalls(this.shape, new Point(x, y), this.angle);
+
+            if (this.source instanceof BattleCity.Player) {
+                this.controller.collisions.destroyEnemies(this.shape, new Point(x, y));
+            } else if (this.source instanceof BattleCity.Enemy) {
+                this.controller.collisions.destroyPlayers(this.shape, new Point(x, y));
+            }
 
             this.settings.get('player').bullets--;
 
             // создаем инстанс взрыва
             new BattleCity.Explosion(this.controller.units, {
-                // @todo координаты центра взрыва нужно подвигать немного вперед
                 shape : new LibCanvas.Shapes.Circle(this.shape.center.x, this.shape.center.y, 32),
                 animationSheet : this.animationSheet,
                 animation : this.animation,

@@ -62,15 +62,6 @@ atom.declare('BattleCity.Player', App.Element, {
             if (keyboard.key(controls.fire)) {
                 this.shot(time);
             }
-        } else {
-            if (keyboard.key('enter')) {
-               this.controller.game.gameRestart();
-            }
-
-            var thisGame = this;
-            setInterval(function(){
-                thisGame.controller.game.gameRestart();
-            },10000);
         }
     },
 
@@ -146,7 +137,7 @@ atom.declare('BattleCity.Player', App.Element, {
             this.shape.moveTo(new Point(posX, posY));
         }
 
-        console.log(posY);
+//        console.log(posY);
 
         // можно ехать
         if (!this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
