@@ -40,7 +40,8 @@ atom.declare('BattleCity.Bullet', App.Element, {
             || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
             || this.controller.collisions.checkCollisionWithEnemies(this.shape, new Point(x, y))
             || this.controller.collisions.checkCollisionWithPlayers(this.shape, new Point(x, y))
-            || this.controller.collisions.checkCollisionWithBullets(this.shape, new Point(x, y), this)) {
+            || this.controller.collisions.checkCollisionWithBullets(this.shape, new Point(x, y), this)
+            ) {
             this.controller.collisions.destroyWalls(this.shape, new Point(x, y), this.angle);
 
             if (this.source instanceof BattleCity.Player) {

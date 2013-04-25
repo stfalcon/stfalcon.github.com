@@ -81,6 +81,8 @@ atom.declare('BattleCity.Enemy', App.Element, {
                 images: this.settings.get('images')
             });
 
+            this.controller.enemyBullets.push(bullet);
+
             this.controller.game.add(bullet);
 
             this.bullets++;

@@ -5,6 +5,7 @@ atom.declare( 'BattleCity.Controller', {
     parted: [],
     enemies: [],
     players: [],
+    enemyBullets: [],
     endGame : false,
 
     initialize: function () {

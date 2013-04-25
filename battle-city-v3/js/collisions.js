@@ -80,18 +80,21 @@ atom.declare('BattleCity.Collisions', {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.game.bullets.length; i--;) {
-            bullet = this.controller.game.bullets[i];
+        for (i = this.controller.enemyBullets.length; i--;) {
+            bullet = this.controller.enemyBullets[i];
 
-            if (bullet && bullet.shape.intersect(shape) && obj != bullet) {
-                this.controller.game.bullets.erase(bullet);
+            if (bullet && bullet.shape.intersect(shape) && obj.source instanceof BattleCity.Player
+                && bullet.source instanceof BattleCity.Enemy) {
+                console.log(obj.source);
+                console.log(bullet.source);
+                this.controller.enemyBullets.erase(bullet);
+                bullet.destroy();
                 return true;
             }
         }
 
         return false;
     },
-
 
     destroyEnemies : function(shape, point) {
         var shape = shape.clone();
