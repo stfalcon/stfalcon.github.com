@@ -1,16 +1,15 @@
 /** @class BattleCity.Collisions */
 atom.declare('BattleCity.Collisions', {
 
-        initialize : function(controller) {
-
-            this.controller = controller;
-            this.players = [];
-            this.textures = [];
-            this.bullets = [];
-        },
+    initialize: function (controller) {
+        this.controller = controller;
+        this.players = [];
+        this.textures = [];
+        this.bullets = [];
+    },
 
     // проверяем выезд за границы игрового поля
-    checkOutOfTheField : function(shape, point) {
+    checkOutOfTheField: function (shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -25,8 +24,9 @@ atom.declare('BattleCity.Collisions', {
 
         return false;
     },
+
     // проверяем колизии с текстурами
-    checkCollisionWithTextures : function(shape, point) {
+    checkCollisionWithTextures: function (shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -44,8 +44,9 @@ atom.declare('BattleCity.Collisions', {
 
         return false;
     },
+
     // рушим стены
-    destroyWalls : function(shape, point, angle) {
+    destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
 //        console.log(angle);
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
@@ -60,22 +61,22 @@ atom.declare('BattleCity.Collisions', {
                     switch (angle) {
                         case 90:
                             this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 270:
                             this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 0:
                             this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 180:
                             this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                     }

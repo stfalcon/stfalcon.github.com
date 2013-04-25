@@ -55,6 +55,13 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 2
         });
 
+        // слой для координатной сетки
+        this.debug = this.app.createLayer({
+            name: 'debug',
+            intersection: 'manual',
+            zIndex: 100
+        });
+
         // игрок
         this.player = new BattleCity.Player(this.units, {
             size: this.size,
@@ -63,11 +70,11 @@ atom.declare( 'BattleCity.Controller', {
             controller: this
         });
 
-        // координатная сетка (для дебага)
+//        // координатная сетка (для дебага)
 //        for (var y = 0; y < 52; y++) {
 //            for (var x = 0; x < 52; x++) {
-//                this.foreground.ctx.fillStyle   = 'red'; // blue
-//                this.foreground.ctx.fillRect(x*8, y*8, 1, 1);
+//                this.debug.ctx.fillStyle   = 'red'; // blue
+//                this.debug.ctx.fillRect(x*8, y*8, 1, 1);
 //            }
 //        }
 

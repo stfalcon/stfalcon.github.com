@@ -6,11 +6,11 @@ atom.declare('BattleCity.BreaksPartedAbstract', App.Element, {
 atom.declare('BattleCity.BreaksWest', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('textures').sprite(
+            image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop : [8, 0, 8, 16],
-            draw : [this.shape.from.x + 8, this.shape.from.y, 8, 16],
+            crop: [8, 0, 8, 16],
+            draw: [this.shape.from.x + 8, this.shape.from.y, 8, 16],
             center: this.shape.center
         });
     }
@@ -19,11 +19,11 @@ atom.declare('BattleCity.BreaksWest', BattleCity.BreaksPartedAbstract, {
 atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('textures').sprite(
+            image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop : [0, 0, 8, 16],
-            draw : [this.shape.from.x, this.shape.from.y, 8, 16],
+            crop: [0, 0, 8, 16],
+            draw: [this.shape.from.x, this.shape.from.y, 8, 16],
             center: this.shape.center
         });
     }
@@ -32,11 +32,11 @@ atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
 atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('textures').sprite(
+            image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop : [0, 0, 16, 8],
-            draw : [this.shape.from.x, this.shape.from.y, 16, 8],
+            crop: [0, 0, 16, 8],
+            draw: [this.shape.from.x, this.shape.from.y, 16, 8],
             center: this.shape.center
         });
     }
@@ -45,11 +45,11 @@ atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
 atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('textures').sprite(
+            image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop : [0, 8, 16 , 8],
-            draw : [this.shape.from.x, this.shape.from.y + 8, 16, 8],
+            crop: [0, 8, 16 , 8],
+            draw: [this.shape.from.x, this.shape.from.y + 8, 16, 8],
             center: this.shape.center
         });
     }
@@ -61,7 +61,7 @@ atom.declare('BattleCity.Wall', App.Element, {
 
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('textures').sprite(
+            image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
             center: this.shape.center
@@ -92,7 +92,7 @@ atom.declare('BattleCity.Asphalt', BattleCity.Wall, {
 atom.declare('BattleCity.Base', App.Element, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
-            image : resources.get('images').get('base'),
+            image: resources.get('images').get('base'),
             center: this.shape.center
         });
     }
