@@ -76,6 +76,23 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
+    checkCollisionWithBullets : function(shape, point, obj) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.game.bullets.length; i--;) {
+            bullet = this.controller.game.bullets[i];
+
+            if (bullet && bullet.shape.intersect(shape) && obj != bullet) {
+                this.controller.game.bullets.erase(bullet);
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+
     destroyEnemies : function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
