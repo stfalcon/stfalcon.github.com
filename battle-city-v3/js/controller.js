@@ -97,8 +97,8 @@ atom.declare( 'BattleCity.Controller', {
         // координатная сетка (для дебага)
         for (var y = 0; y < 52; y++) {
             for (var x = 0; x < 52; x++) {
-                this.foreground.ctx.fillStyle   = 'red'; // blue
-                this.foreground.ctx.fillRect(x*8, y*8, 1, 1);
+                this.info.ctx.fillStyle   = 'red'; // blue
+                this.info.ctx.fillRect(x*8, y*8, 1, 1);
             }
         }
 

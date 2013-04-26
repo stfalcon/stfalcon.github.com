@@ -45,12 +45,11 @@ atom.declare('BattleCity.Bullet', App.Element, {
             this.controller.collisions.destroyWalls(this.shape, new Point(x, y), this.angle);
 
             if (this.source instanceof BattleCity.Player) {
+                this.settings.get('player').bullets--;
                 this.controller.collisions.destroyEnemies(this.shape, new Point(x, y));
             } else if (this.source instanceof BattleCity.Enemy) {
                 this.controller.collisions.destroyPlayers(this.shape, new Point(x, y));
             }
-
-            this.settings.get('player').bullets--;
 
             // создаем инстанс взрыва
             new BattleCity.Explosion(this.controller.units, {

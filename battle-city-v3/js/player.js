@@ -22,7 +22,7 @@ atom.declare('BattleCity.Player', App.Element, {
 
         // задаем стартовые координаты танка
         this.shape = new Rectangle(
-            96, this.size.height-32, 32, 32
+            64, this.size.height-96, 32, 32
         );
     },
 

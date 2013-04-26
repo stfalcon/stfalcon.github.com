@@ -53,6 +53,11 @@ atom.declare('BattleCity.Collisions', {
             enemy = this.controller.enemies[i];
 
             if (enemy.shape.intersect(shape) && obj != enemy) {
+                if (obj && obj.collideWithCharacters === false) {
+                    console.log(obj.collideWithCharacters);
+                    return false;
+                }
+
                 return true;
             }
         }

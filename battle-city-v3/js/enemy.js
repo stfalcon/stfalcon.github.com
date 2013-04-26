@@ -5,6 +5,10 @@ atom.declare('BattleCity.Enemy', App.Element, {
     rateOfFire: 1,
     lastShot: 0,
     reverseTime: 0,
+    chaoticReverseTime: 0,
+    spawnNewEnemyTime: 0,
+    canShot: true,
+    collideWithCharacters: true,
 
     configure: function () {
         // анимация движения гусениц танка
@@ -20,6 +24,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
 
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
+        this.modifier = -1;
     },
 
     get controller () {
@@ -39,7 +44,11 @@ atom.declare('BattleCity.Enemy', App.Element, {
     },
 
     onUpdate: function (time) {
-        var angle = this.settings.get('angle');
+        var angle = parseInt(this.settings.get('angle'));
+
+        if (this.modifier >= 0 ) {
+            angle = this.modifier;
+        }
 
         if (angle == 270) {
             this.move(-this.speed*time, 0);
@@ -51,8 +60,31 @@ atom.declare('BattleCity.Enemy', App.Element, {
             this.move(0, this.speed*time);
         }
 
-        if(!this.controller.endGame) {
-        this.shot(time);
+        if(!this.controller.endGame && this.canShot) {
+            this.shot(time);
+        }
+
+//        var randomTime = 2000;
+//        var now = Date.now();
+//        if () {
+//            this.collideWithCharacters = true;
+//        }
+
+        var randomTime = 30000;
+        this.spawnNewEnemyTime = Date.now() - randomTime;
+        var nowA = Date.now();
+
+        if (nowA > this.spawnNewEnemyTime + randomTime) {
+            this.spawnNewEnemyTime = nowA;
+            var enemy = new BattleCity.Enemy(this.controller.units, {
+                size : this.size,
+                images : this.settings.get('images'),
+                shape : new Rectangle(256, 176, 32, 32),
+                angle : 270,
+                controller : this.controller
+            });
+
+            this.controller.enemies.push(enemy);
         }
     },
 
@@ -60,7 +92,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
     shot: function (time) {
         var now = Date.now();
 
-        if (now > this.lastShot + this.rateOfFire * 3000 && !this.bullets) { // пока стреляем по одной пуле
+        if (now > this.lastShot + this.rateOfFire * 3000) { // пока стреляем по одной пуле
             this.lastShot = now;
 
             var x = this.angle == 90 ? this.shape.center.x + 16
@@ -82,10 +114,6 @@ atom.declare('BattleCity.Enemy', App.Element, {
             });
 
             this.controller.enemyBullets.push(bullet);
-
-            this.controller.game.add(bullet);
-
-            this.bullets++;
         }
     },
 
@@ -106,6 +134,19 @@ atom.declare('BattleCity.Enemy', App.Element, {
 
         var posX = 128;
         var posY = this.size.height-32;
+
+        var now = Date.now();
+
+        var randomTime = (Math.floor(Math.random() * 5) + 2) * 1000;
+
+        if (now > this.chaoticReverseTime + randomTime) {
+            this.canShot = false;
+            this.chaoticReverseTime = now;
+            var angles = [0, 90, 180, 270];
+            var rand = angles[Math.floor(Math.random() * angles.length)];
+            this.modifier = rand;
+            this.canShot = true;
+        }
 
         // пытаемся выровнять координаты при заходе в поворот
         if (this.angle == 0 && (angle == 270 || angle == 90)) {
@@ -141,8 +182,12 @@ atom.declare('BattleCity.Enemy', App.Element, {
             var now = Date.now();
 
             if (now > this.reverseTime + 1000) {
+                this.canShot = false;
                 this.reverseTime = now;
-                this.speed = -this.speed;
+                var angles = [0, 90, 180, 270];
+                var rand = angles[Math.floor(Math.random() * angles.length)];
+                this.modifier = rand;
+                this.canShot = false;
             }
         }
 
