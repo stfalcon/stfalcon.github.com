@@ -60,6 +60,9 @@ atom.declare('BattleCity.Bullet', App.Element, {
             });
 
             // уничтожаем инстанс пули
+            if (this.source instanceof BattleCity.Enemy) {
+                this.controller.enemyBullets.erase(this);
+            }
             this.destroy();
         }
     }

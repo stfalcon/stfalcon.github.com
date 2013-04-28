@@ -54,7 +54,10 @@ atom.declare('BattleCity.Collisions', {
 
             if (enemy.shape.intersect(shape) && obj != enemy) {
                 if (obj && obj.collideWithCharacters === false) {
-                    console.log(obj.collideWithCharacters);
+                    return false;
+                }
+
+                if (obj && obj.shape.x == enemy.shape.x && obj.shape.y == enemy.shape.y) {
                     return false;
                 }
 
@@ -90,9 +93,10 @@ atom.declare('BattleCity.Collisions', {
 
             if (bullet && bullet.shape.intersect(shape) && obj.source instanceof BattleCity.Player
                 && bullet.source instanceof BattleCity.Enemy) {
-                console.log(obj.source);
-                console.log(bullet.source);
+//                console.log(obj.source);
+//                console.log(bullet.source);
                 this.controller.enemyBullets.erase(bullet);
+                console.log('lol');
                 bullet.destroy();
                 return true;
             }
@@ -108,7 +112,8 @@ atom.declare('BattleCity.Collisions', {
         for (i = this.controller.enemies.length; i--;) {
             enemy = this.controller.enemies[i];
 
-            if (enemy.shape.intersect(shape)) {
+            if (enemy && shape.intersect(enemy.shape)) {
+                console.log('enemies: '+this.controller.enemies.length);
                 enemy.animation.stop();
                 this.controller.enemies.erase(enemy);
                 enemy.destroy();
