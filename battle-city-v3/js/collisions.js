@@ -1,16 +1,16 @@
 /** @class BattleCity.Collisions */
 atom.declare('BattleCity.Collisions', {
 
-        initialize : function(controller) {
+    initialize: function(controller) {
 
-            this.controller = controller;
-            this.players = [];
-            this.textures = [];
-            this.bullets = [];
-        },
+        this.controller = controller;
+        this.players = [];
+        this.textures = [];
+        this.bullets = [];
+    },
 
     // проверяем выезд за границы игрового поля
-    checkOutOfTheField : function(shape, point) {
+    checkOutOfTheField: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -26,7 +26,7 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
     // проверяем колизии с текстурами
-    checkCollisionWithTextures : function(shape, point) {
+    checkCollisionWithTextures: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -45,7 +45,7 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
-    checkCollisionWithEnemies : function(shape, point, obj) {
+    checkCollisionWithEnemies: function(shape, point, obj) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -68,7 +68,7 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
-    checkCollisionWithPlayers : function(shape, point) {
+    checkCollisionWithPlayers: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -84,7 +84,7 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
-    checkCollisionWithBullets : function(shape, point, obj) {
+    checkCollisionWithBullets: function(shape, point, obj) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -105,7 +105,7 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
-    destroyEnemies : function(shape, point) {
+    destroyEnemies: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -113,15 +113,18 @@ atom.declare('BattleCity.Collisions', {
             enemy = this.controller.enemies[i];
 
             if (enemy && shape.intersect(enemy.shape)) {
-                console.log('enemies: '+this.controller.enemies.length);
+                console.log('enemies: ' + this.controller.enemies.length);
                 enemy.animation.stop();
+                enemy.spawn.isUsed = false;
                 this.controller.enemies.erase(enemy);
                 enemy.destroy();
+                this.controller.score += 100;
+                console.log('score: ' + this.controller.score);
             }
         }
     },
 
-    destroyPlayers : function(shape, point) {
+    destroyPlayers: function(shape, point) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -129,17 +132,26 @@ atom.declare('BattleCity.Collisions', {
             player = this.controller.players[i];
 
             if (player.shape.intersect(shape)) {
-                this.controller.endGame = true;
-                this.controller.game.endGameMessage();
                 player.animation.stop();
                 this.controller.players.erase(player);
+                this.controller.playerLives--;
                 player.destroy();
+
+                if (this.controller.playerLives > 0) {
+                    var thisObj = this;
+                    setTimeout(function() {
+                        thisObj.controller.spawnPlayer();
+                    }, 2000);
+                } else {
+                    this.controller.endGame = true;
+                    this.controller.game.endGameMessage();
+                }
             }
         }
     },
 
     // рушим стены
-    destroyWalls : function(shape, point, angle) {
+    destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
@@ -153,22 +165,22 @@ atom.declare('BattleCity.Collisions', {
                     switch (angle) {
                         case 90:
                             this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 270:
                             this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 0:
                             this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                         case 180:
                             this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
-                                shape : rectangle
+                                shape: rectangle
                             });
                             break;
                     }
@@ -186,7 +198,7 @@ atom.declare('BattleCity.Collisions', {
                 } else if (field instanceof BattleCity.Base) {
                     var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
 
-                    this.controller.textures[i]= new BattleCity.BaseDestroyed(this.controller.foreground, {
+                    this.controller.textures[i] = new BattleCity.BaseDestroyed(this.controller.foreground, {
                         shape: baseRectangle
                     });
 

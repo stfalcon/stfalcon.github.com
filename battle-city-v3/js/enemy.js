@@ -1,5 +1,5 @@
 atom.declare('BattleCity.Enemy', App.Element, {
-    speed: 0.09, // скорость перемещения
+    speed: 0.05, // скорость перемещения
     angle: 0, // угол поворота спрайта
     bullets: 0,
     rateOfFire: 1,
@@ -25,6 +25,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
         this.modifier = -1;
+        this.spawn = this.settings.get('spawn');
 //        this.collideWithCharactersTime = Date.now();
 //        this.parent = this.settings.get('parent');
 //        this.collideWithCharacters = this.settings.get('collideWithCharacters');
@@ -110,7 +111,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
     shot: function (time) {
         var now = Date.now();
 
-        if (now > this.lastShot + this.rateOfFire * 3000) { // пока стреляем по одной пуле
+        if (now > this.lastShot + this.rateOfFire * 1000) { // пока стреляем по одной пуле
             this.lastShot = now;
 
             var x = this.angle == 90 ? this.shape.center.x + 16

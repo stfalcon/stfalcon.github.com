@@ -1,5 +1,5 @@
 atom.declare('BattleCity.Player', App.Element, {
-    speed: 0.09, // скорость перемещения игрока
+    speed: 0.1, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
     bullets: 0,
     rateOfFire: 1,

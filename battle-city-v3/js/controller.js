@@ -7,6 +7,8 @@ atom.declare( 'BattleCity.Controller', {
     players: [],
     enemyBullets: [],
     endGame : false,
+    playerLives: 3,
+    score: 0,
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -35,6 +37,7 @@ atom.declare( 'BattleCity.Controller', {
 
         // images ready
         this.app.resources.set('images', images);
+        this.images = images;
 
         this.sounds = new BattleCity.Sounds('sounds/');
 
@@ -67,14 +70,7 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 2
         });
 
-        // игрок
-        this.player = new BattleCity.Player(this.units, {
-            size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
-            images: images,
-            controller: this
-        });
-        this.players.push(this.player);
+        this.spawnPlayer();
 
         this.spawn = new BattleCity.Spawn(this.units, {
             size: this.size,
@@ -167,6 +163,17 @@ atom.declare( 'BattleCity.Controller', {
                 }
             }
         }
+    },
+
+    spawnPlayer: function () {
+        // игрок
+        this.player = new BattleCity.Player(this.units, {
+            size: this.size,
+            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
+            images: this.images,
+            controller: this
+        });
+        this.players.push(this.player);
     },
 
     fpsMeter: function () {
