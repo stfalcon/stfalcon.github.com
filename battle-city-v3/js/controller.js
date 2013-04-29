@@ -76,25 +76,41 @@ atom.declare( 'BattleCity.Controller', {
         });
         this.players.push(this.player);
 
-        this.enemy = new BattleCity.Enemy(this.units, {
+        this.spawn = new BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
-            shape: new Rectangle(192, 176, 32, 32),
+            shape: new Rectangle(192, 0, 32, 32),
             angle: 270,
             controller: this,
-            collideWithCharacters: true
+            spawnTimeOut: 0
         });
-        this.enemies.push(this.enemy);
 
-        this.enemy = new BattleCity.Enemy(this.units, {
+        this.spawn = new BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
-            shape: new Rectangle(128, 240, 32, 32),
+            shape: new Rectangle(64, 0, 32, 32),
             angle: 0,
             controller: this,
-            collideWithCharacters: true
+            spawnTimeOut: 5000
         });
-        this.enemies.push(this.enemy);
+
+        this.spawn = new BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(128, 0, 32, 32),
+            angle: 90,
+            controller: this,
+            spawnTimeOut: 10000
+        });
+
+        this.spawn = new BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(32, 0, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 15000
+        });
 
         // координатная сетка (для дебага)
         for (var y = 0; y < 52; y++) {

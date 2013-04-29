@@ -8,7 +8,7 @@ atom.declare('BattleCity.Enemy', App.Element, {
     chaoticReverseTime: 0,
     spawnNewEnemyTime: 0,
     canShot: true,
-    collideWithCharacters: false,
+    collideWithCharacters: true,
 
     configure: function () {
         // анимация движения гусениц танка
@@ -25,9 +25,9 @@ atom.declare('BattleCity.Enemy', App.Element, {
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
         this.modifier = -1;
-        this.collideWithCharactersTime = Date.now();
-        this.parent = this.settings.get('parent');
-        this.collideWithCharacters = this.settings.get('collideWithCharacters');
+//        this.collideWithCharactersTime = Date.now();
+//        this.parent = this.settings.get('parent');
+//        this.collideWithCharacters = this.settings.get('collideWithCharacters');
     },
 
     get controller () {
@@ -75,35 +75,35 @@ atom.declare('BattleCity.Enemy', App.Element, {
 //            this.collideWithCharacters = true;
 //        }
 
-        if (this.parent && !this.collideWithCharacters) {
-            var diffX = this.parent.shape.x - this.shape.x;
-            var diffY = this.parent.shape.y - this.shape.y;
+//        if (this.parent && !this.collideWithCharacters) {
+//            var diffX = this.parent.shape.x - this.shape.x;
+//            var diffY = this.parent.shape.y - this.shape.y;
+//
+//            if (Math.abs(diffX) > 48 || Math.abs(diffY) > 48) {
+//                this.collideWithCharacters = true;
+//            }
+//        }
 
-            if (Math.abs(diffX) > 48 || Math.abs(diffY) > 48) {
-                this.collideWithCharacters = true;
-            }
-        }
-
-        var randomTime = 30000;
-        this.spawnNewEnemyTime = Date.now() - randomTime;
-        var nowA = Date.now();
-        var enemiesAmount = this.controller.enemies.length
-
-        if (nowA > this.spawnNewEnemyTime + randomTime && enemiesAmount <= 10) {
-            this.spawnNewEnemyTime = nowA;
-            console.log(this.controller.enemies.length);
-            var enemy = new BattleCity.Enemy(this.controller.units, {
-                size : this.size,
-                images : this.settings.get('images'),
-                shape : new Rectangle(this.shape.x, this.shape.y, 32, 32),
-                angle : 270,
-                controller : this.controller,
-                collideWithCharacters: false,
-                parent: this
-            });
-
-            this.controller.enemies.push(enemy);
-        }
+//        var randomTime = 30000;
+//        this.spawnNewEnemyTime = Date.now() - randomTime;
+//        var nowA = Date.now();
+//        var enemiesAmount = this.controller.enemies.length
+//
+//        if (nowA > this.spawnNewEnemyTime + randomTime && enemiesAmount <= 4) {
+//            this.spawnNewEnemyTime = nowA;
+//            console.log(this.controller.enemies.length);
+//            var enemy = new BattleCity.Enemy(this.controller.units, {
+//                size : this.size,
+//                images : this.settings.get('images'),
+//                shape : new Rectangle(this.shape.x, this.shape.y, 32, 32),
+//                angle : 270,
+//                controller : this.controller,
+//                collideWithCharacters: false,
+//                parent: this
+//            });
+//
+//            this.controller.enemies.push(enemy);
+//        }
     },
 
     // стреляем
