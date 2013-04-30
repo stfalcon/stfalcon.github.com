@@ -1,16 +1,16 @@
 /** @class BattleCity.Controller */
-atom.declare( 'BattleCity.Controller', {
+atom.declare('BattleCity.Controller', {
 
     textures: [],
     parted: [],
     enemies: [],
     players: [],
     enemyBullets: [],
-    endGame : false,
+    endGame: false,
     playerLives: 3,
     score: 0,
 
-    initialize: function () {
+    initialize: function() {
         atom.ImagePreloader.run({
             player: 'images/tank.png [64:32]{0:0}',
             player2: 'images/tank.png [64:32]{1:0}',
@@ -26,7 +26,7 @@ atom.declare( 'BattleCity.Controller', {
         this.fpsMeter();
     },
 
-    start: function (images) {
+    start: function(images) {
         this.game = new BattleCity.Game(this);
         this.collisions = new BattleCity.Collisions(this);
         atom.frame.add(this.game.update);
@@ -70,49 +70,61 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 2
         });
 
-        this.spawnPlayer();
+        BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(64, this.size.height-96, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 1000,
+            type: 'player'
+        });
 
-        this.spawn = new BattleCity.Spawn(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
             shape: new Rectangle(192, 0, 32, 32),
             angle: 270,
             controller: this,
-            spawnTimeOut: 0
+            spawnTimeOut: 0,
+            type: 'enemy'
         });
 
-        this.spawn = new BattleCity.Spawn(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
             shape: new Rectangle(64, 0, 32, 32),
             angle: 0,
             controller: this,
-            spawnTimeOut: 5000
+            spawnTimeOut: 5000,
+            type: 'enemy'
         });
 
-        this.spawn = new BattleCity.Spawn(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
             shape: new Rectangle(128, 0, 32, 32),
             angle: 90,
             controller: this,
-            spawnTimeOut: 10000
+            spawnTimeOut: 10000,
+            type: 'enemy'
         });
 
-        this.spawn = new BattleCity.Spawn(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
             images: images,
             shape: new Rectangle(32, 0, 32, 32),
             angle: 270,
             controller: this,
-            spawnTimeOut: 15000
+            spawnTimeOut: 15000,
+            type: 'enemy'
         });
 
         // координатная сетка (для дебага)
         for (var y = 0; y < 52; y++) {
             for (var x = 0; x < 52; x++) {
-                this.info.ctx.fillStyle   = 'red'; // blue
-                this.info.ctx.fillRect(x*8, y*8, 1, 1);
+                this.foreground.ctx.fillStyle = 'red'; // blue
+                this.foreground.ctx.fillRect(x * 8, y * 8, 1, 1);
             }
         }
 
@@ -122,10 +134,10 @@ atom.declare( 'BattleCity.Controller', {
             s = data[y];
             for (var x = 0; x < 26; x++) {
                 var field = null;
-                var rectangle = new Rectangle(x*16, y*16, 16, 16);
-                var baseRectangle = new Rectangle(x*16, y*16, 32, 32);
+                var rectangle = new Rectangle(x * 16, y * 16, 16, 16);
+                var baseRectangle = new Rectangle(x * 16, y * 16, 32, 32);
 
-                switch(s.charAt(x)) {
+                switch (s.charAt(x)) {
                     case '#':
                         field = new BattleCity.Wall(this.foreground, {
                             shape: rectangle
@@ -165,58 +177,47 @@ atom.declare( 'BattleCity.Controller', {
         }
     },
 
-    spawnPlayer: function () {
-        // игрок
-        this.player = new BattleCity.Player(this.units, {
-            size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
-            images: this.images,
-            controller: this
-        });
-        this.players.push(this.player);
-    },
-
-    fpsMeter: function () {
+    fpsMeter: function() {
         var fps = atom.trace(), time = [], last = Date.now();
 
-        atom.frame.add(function () {
+        atom.frame.add(function() {
             if (time.length > 5) time.shift();
 
-            time.push( Date.now() - last );
+            time.push(Date.now() - last);
             last = Date.now();
 
             fps.value = Math.ceil(1000 / time.average()) + " FPS";
         });
     }
 }).own({
-    levels: [
-        [
-            "**          **          **",
-            "**          **          **",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "                          ",
-            "                          ",
-            "==  ====          ====  ==",
-            "##  ====          ====  ##",
-            "          ==  ==          ",
-            "          ======          ",
-            "  ==  ==  ======  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==   ====   ==  ==  ",
-            "           =B =           ",
-            "           =  =           "
+        levels: [
+            [
+                "**          **          **",
+                "**          **          **",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "                          ",
+                "                          ",
+                "==  ====          ====  ==",
+                "##  ====          ====  ##",
+                "          ==  ==          ",
+                "          ======          ",
+                "  ==  ==  ======  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==   ====   ==  ==  ",
+                "           =B =           ",
+                "           =  =           "
+            ]
         ]
-    ]
-});
+    });

@@ -19,11 +19,7 @@ atom.declare('BattleCity.Player', App.Element, {
 
         // для первой отрисовки танка берем нулевой кадр анимации
         this.image = this.animation.get(0);
-
-        // задаем стартовые координаты танка
-        this.shape = new Rectangle(
-            64, this.size.height-96, 32, 32
-        );
+        this.spawn = this.settings.get('spawn');
     },
 
     get controller () {

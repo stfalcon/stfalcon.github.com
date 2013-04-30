@@ -114,6 +114,16 @@ atom.declare('BattleCity.Collisions', {
 
             if (enemy && shape.intersect(enemy.shape)) {
                 console.log('enemies: ' + this.controller.enemies.length);
+                var x = enemy.shape.x;
+                var y = enemy.shape.y;
+                BattleCity.Message(this.controller.info, {
+                    controller: this.controller,
+                    shape: new Rectangle({
+                            from: new Point(x, y),
+                            size: new Size(64, 64)}
+                    ),
+                    value: '100'
+                });
                 enemy.animation.stop();
                 enemy.spawn.isUsed = false;
                 this.controller.enemies.erase(enemy);
@@ -133,16 +143,12 @@ atom.declare('BattleCity.Collisions', {
 
             if (player.shape.intersect(shape)) {
                 player.animation.stop();
+                player.spawn.isUsed = false;
                 this.controller.players.erase(player);
                 this.controller.playerLives--;
                 player.destroy();
 
-                if (this.controller.playerLives > 0) {
-                    var thisObj = this;
-                    setTimeout(function() {
-                        thisObj.controller.spawnPlayer();
-                    }, 2000);
-                } else {
+                if (this.controller.playerLives == 0) {
                     this.controller.endGame = true;
                     this.controller.game.endGameMessage();
                 }
