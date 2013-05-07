@@ -64,9 +64,9 @@ atom.declare('BattleCity.Enemy', App.Element, {
             this.move(0, this.speed*time);
         }
 
-        if(!this.controller.endGame && this.canShot) {
-            this.shot(time);
-        }
+//        if(!this.controller.endGame && this.canShot) {
+//            this.shot(time);
+//        }
 
 //        var randomTime = 2000;
 //        var now = Date.now();

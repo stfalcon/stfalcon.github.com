@@ -16,6 +16,32 @@ atom.declare('BattleCity.BreaksWest', BattleCity.BreaksPartedAbstract, {
     }
 });
 
+atom.declare('BattleCity.BreaksWestNorthPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [8, 0, 8, 8],
+            draw: [this.shape.from.x + 8, this.shape.from.y + 8, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksWestSouthPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [8, 0, 8, 8],
+            draw: [this.shape.from.x + 8, this.shape.from.y, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
 atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -24,6 +50,32 @@ atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
             ),
             crop: [0, 0, 8, 16],
             draw: [this.shape.from.x, this.shape.from.y, 8, 16],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksEastNorthPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 0, 8, 8],
+            draw: [this.shape.from.x, this.shape.from.y + 8, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksEastSouthPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 0, 8, 8],
+            draw: [this.shape.from.x, this.shape.from.y, 8, 8],
             center: this.shape.center
         });
     }
@@ -42,6 +94,32 @@ atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
     }
 });
 
+atom.declare('BattleCity.BreaksNorthWestPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 0, 8, 8],
+            draw: [this.shape.from.x + 8, this.shape.from.y, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksNorthEastPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 0, 8, 8],
+            draw: [this.shape.from.x, this.shape.from.y, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
 atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -50,6 +128,32 @@ atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
             ),
             crop: [0, 8, 16 , 8],
             draw: [this.shape.from.x, this.shape.from.y + 8, 16, 8],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksSouthWestPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 8, 8 , 8],
+            draw: [this.shape.from.x + 8, this.shape.from.y + 8, 8, 8],
+            center: this.shape.center
+        });
+    }
+});
+
+atom.declare('BattleCity.BreaksSouthEastPart', BattleCity.BreaksPartedAbstract, {
+    renderTo: function (ctx, resources) {
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [0, 8, 8 , 8],
+            draw: [this.shape.from.x, this.shape.from.y + 8, 8, 8],
             center: this.shape.center
         });
     }

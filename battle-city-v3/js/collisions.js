@@ -161,13 +161,23 @@ atom.declare('BattleCity.Collisions', {
     destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+        var destroyedAmount = 0;
 
         for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
             if (this.controller.textures[i].shape.intersect(shape)) {
+                destroyedAmount++;
+                console.log(destroyedAmount);
+
+                var rectangle = new Rectangle(
+                    this.controller.textures[i].shape.from.x,
+                    this.controller.textures[i].shape.from.y,
+                    16,
+                    16
+                );
+
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) {
-                    var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
 
                     switch (angle) {
                         case 90:
@@ -193,15 +203,66 @@ atom.declare('BattleCity.Collisions', {
                     }
 
                     this.controller.parted[i] = i;
-                } else if (field instanceof BattleCity.BreaksWest ||
-                    field instanceof BattleCity.BreaksEast ||
-                    field instanceof BattleCity.BreaksNorth ||
-                    field instanceof BattleCity.BreaksSouth) {
-
-                    this.controller.textures.erase(field);
-                    field.destroy();
-                    this.controller.parted.erase(this.controller.parted[i]);
-                    this.controller.parted[i] = 0;
+                } else if (field instanceof BattleCity.BreaksWest) {
+                    if (angle == 0) {
+                        this.controller.textures[i] = new BattleCity.BreaksWestSouthPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else if (angle == 180) {
+                        this.controller.textures[i] = new BattleCity.BreaksWestNorthPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else {
+                        this.controller.textures.erase(field);
+                        field.destroy();
+                        this.controller.parted.erase(this.controller.parted[i]);
+                        this.controller.parted[i] = 0;
+                    }
+                } else if (field instanceof BattleCity.BreaksEast) {
+                    if (angle == 0) {
+                        this.controller.textures[i] = new BattleCity.BreaksEastSouthPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else if (angle == 180) {
+                        this.controller.textures[i] = new BattleCity.BreaksEastNorthPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else {
+                        this.controller.textures.erase(field);
+                        field.destroy();
+                        this.controller.parted.erase(this.controller.parted[i]);
+                        this.controller.parted[i] = 0;
+                    }
+                } else if (field instanceof BattleCity.BreaksNorth) {
+                    if (angle == 90) {
+                        this.controller.textures[i] = new BattleCity.BreaksNorthWestPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else if (angle == 270) {
+                        this.controller.textures[i] = new BattleCity.BreaksNorthEastPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else {
+                        this.controller.textures.erase(field);
+                        field.destroy();
+                        this.controller.parted.erase(this.controller.parted[i]);
+                        this.controller.parted[i] = 0;
+                    }
+                } else if (field instanceof BattleCity.BreaksSouth) {
+                    if (angle == 90) {
+                        this.controller.textures[i] = new BattleCity.BreaksSouthWestPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else if (angle == 270) {
+                        this.controller.textures[i] = new BattleCity.BreaksSouthEastPart(this.controller.foreground, {
+                            shape: rectangle
+                        });
+                    } else {
+                        this.controller.textures.erase(field);
+                        field.destroy();
+                        this.controller.parted.erase(this.controller.parted[i]);
+                        this.controller.parted[i] = 0;
+                    }
                 } else if (field instanceof BattleCity.Base) {
                     var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
 
@@ -212,6 +273,12 @@ atom.declare('BattleCity.Collisions', {
                     this.controller.endGame = true;
 
                     this.controller.game.endGameMessage();
+                } else {
+                    this.controller.textures.erase(field);
+                    field.destroy();
+                    this.controller.parted.erase(this.controller.parted[i]);
+                    this.controller.parted[i] = 0;
+                    return;
                 }
             }
         }
