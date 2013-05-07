@@ -22,7 +22,7 @@ atom.declare('BattleCity.BreaksWestNorthPart', BattleCity.BreaksPartedAbstract, 
             image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop: [8, 0, 8, 8],
+            crop: [0, 0, 8, 8],
             draw: [this.shape.from.x + 8, this.shape.from.y + 8, 8, 8],
             center: this.shape.center
         });
@@ -61,7 +61,7 @@ atom.declare('BattleCity.BreaksEastNorthPart', BattleCity.BreaksPartedAbstract, 
             image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop: [0, 0, 8, 8],
+            crop: [8, 0, 8, 8],
             draw: [this.shape.from.x, this.shape.from.y + 8, 8, 8],
             center: this.shape.center
         });
@@ -100,7 +100,7 @@ atom.declare('BattleCity.BreaksNorthWestPart', BattleCity.BreaksPartedAbstract, 
             image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop: [0, 0, 8, 8],
+            crop: [0, 8, 8, 8],
             draw: [this.shape.from.x + 8, this.shape.from.y, 8, 8],
             center: this.shape.center
         });
@@ -139,7 +139,7 @@ atom.declare('BattleCity.BreaksSouthWestPart', BattleCity.BreaksPartedAbstract, 
             image: resources.get('images').get('textures').sprite(
                 new Rectangle(this.spriteX, this.spriteY, 16, 16)
             ),
-            crop: [0, 8, 8 , 8],
+            crop: [0, 0, 8 , 8],
             draw: [this.shape.from.x + 8, this.shape.from.y + 8, 8, 8],
             center: this.shape.center
         });

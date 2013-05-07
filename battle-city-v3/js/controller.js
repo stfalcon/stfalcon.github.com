@@ -60,6 +60,12 @@ atom.declare('BattleCity.Controller', {
             name: 'info',
             invoke: true,
             intersection: 'manual',
+            zIndex: 5
+        });
+
+        this.trees = this.app.createLayer({
+            name: 'trees',
+            intersection: 'manual',
             zIndex: 4
         });
 
@@ -149,7 +155,7 @@ atom.declare('BattleCity.Controller', {
                         });
                         break;
                     case '*':
-                        field = new BattleCity.Trees(this.foreground, {
+                        field = new BattleCity.Trees(this.trees, {
                             shape: rectangle
                         });
                         break;

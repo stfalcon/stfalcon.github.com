@@ -177,6 +177,10 @@ atom.declare('BattleCity.Collisions', {
                     16
                 );
 
+                if (this.controller.textures[i] instanceof BattleCity.Trees) {
+                    return;
+                }
+
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) {
 
                     switch (angle) {
