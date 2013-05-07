@@ -25,6 +25,7 @@ atom.declare('BattleCity.Collisions', {
 
         return false;
     },
+
     // проверяем колизии с текстурами
     checkCollisionWithTextures: function(shape, point) {
         var shape = shape.clone();

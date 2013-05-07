@@ -10,7 +10,7 @@ atom.declare('BattleCity.Controller', {
     playerLives: 3,
     score: 0,
 
-    initialize: function() {
+    initialize: function () {
         atom.ImagePreloader.run({
             player: 'images/tank.png [64:32]{0:0}',
             player2: 'images/tank.png [64:32]{1:0}',
@@ -26,7 +26,7 @@ atom.declare('BattleCity.Controller', {
         this.fpsMeter();
     },
 
-    start: function(images) {
+    start: function (images) {
         this.game = new BattleCity.Game(this);
         this.collisions = new BattleCity.Collisions(this);
         atom.frame.add(this.game.update);
@@ -177,13 +177,13 @@ atom.declare('BattleCity.Controller', {
         }
     },
 
-    fpsMeter: function() {
+    fpsMeter: function () {
         var fps = atom.trace(), time = [], last = Date.now();
 
-        atom.frame.add(function() {
+        atom.frame.add(function () {
             if (time.length > 5) time.shift();
 
-            time.push(Date.now() - last);
+            time.push( Date.now() - last );
             last = Date.now();
 
             fps.value = Math.ceil(1000 / time.average()) + " FPS";
