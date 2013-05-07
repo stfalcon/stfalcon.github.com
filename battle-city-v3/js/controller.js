@@ -53,7 +53,7 @@ atom.declare('BattleCity.Controller', {
         this.foreground = this.app.createLayer({
             name: 'foreground',
             intersection: 'manual',
-            zIndex: 3
+            zIndex: 2
         });
 
         this.info = this.app.createLayer({
@@ -67,7 +67,7 @@ atom.declare('BattleCity.Controller', {
         this.units = this.app.createLayer({
             name: 'units',
             invoke: true,
-            zIndex: 2
+            zIndex: 3
         });
 
         BattleCity.Spawn(this.units, {

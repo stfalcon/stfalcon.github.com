@@ -34,7 +34,7 @@ atom.declare('BattleCity.Spawn', App.Element, {
                 });
 
                 this.controller.enemies.push(enemy);
-                console.log('spwned!');
+//                console.log('spwned!');
 
             } else if (this.type == 'player' && !this.controller.endGame) {
                 var player = new BattleCity.Player(this.controller.units, {
