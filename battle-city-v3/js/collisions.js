@@ -94,10 +94,6 @@ atom.declare('BattleCity.Collisions', {
 
             if (bullet && bullet.shape.intersect(shape) && obj.source instanceof BattleCity.Player
                 && bullet.source instanceof BattleCity.Enemy) {
-//                console.log(obj.source);
-//                console.log(bullet.source);
-                this.controller.enemyBullets.erase(bullet);
-                console.log('lol');
                 bullet.destroy();
                 return true;
             }
@@ -176,10 +172,6 @@ atom.declare('BattleCity.Collisions', {
                     16,
                     16
                 );
-
-                if (this.controller.textures[i] instanceof BattleCity.Trees) {
-                    return;
-                }
 
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) {
 
@@ -277,7 +269,16 @@ atom.declare('BattleCity.Collisions', {
                     this.controller.endGame = true;
 
                     this.controller.game.endGameMessage();
-                } else {
+                } else  if (
+                    field instanceof BattleCity.BreaksWestSouthPart ||
+                    field instanceof BattleCity.BreaksWestNorthPart ||
+                    field instanceof BattleCity.BreaksEastSouthPart ||
+                    field instanceof BattleCity.BreaksEastNorthPart ||
+                    field instanceof BattleCity.BreaksNorthWestPart ||
+                    field instanceof BattleCity.BreaksNorthEastPart ||
+                    field instanceof BattleCity.BreaksSouthWestPart ||
+                    field instanceof BattleCity.BreaksSouthEastPart
+                    ){
                     this.controller.textures.erase(field);
                     field.destroy();
                     this.controller.parted.erase(this.controller.parted[i]);
