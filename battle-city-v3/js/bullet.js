@@ -30,6 +30,11 @@ atom.declare('BattleCity.Bullet', App.Element, {
             : this.angle == 180 ? this.speed*time
             : 0;
 
+        var explosionXOffset = this.angle == 90 ? 16
+            : this.angle == 270 ? -16 : 0;
+        var explosionYOffset = this.angle == 0 ? -16
+            : this.angle == 180 ? 16 : 0;
+
         // двигаем пулю
         this.shape.move(new Point(x, y));
         this.redraw();
@@ -43,8 +48,11 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
             // создаем инстанс взрыва
             new BattleCity.Explosion(this.controller.units, {
-                // @todo координаты центра взрыва нужно подвигать немного вперед
-                shape: new LibCanvas.Shapes.Circle(this.shape.center.x, this.shape.center.y, 32 ),
+                shape: new LibCanvas.Shapes.Circle(
+                    this.shape.center.x + explosionXOffset,
+                    this.shape.center.y + explosionYOffset,
+                    32
+                ),
                 animationSheet: this.animationSheet,
                 animation: this.animation,
                 images: this.settings.get('images')
