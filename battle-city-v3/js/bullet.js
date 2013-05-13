@@ -33,11 +33,9 @@ atom.declare('BattleCity.Bullet', App.Element, {
             : 0;
 
         // смещение по X
-        var explosionXOffset = this.angle == 90 ? this.offset
-            : this.angle == 270 ? -this.offset : 0;
+        var explosionXOffset = 0;
         // Смещение по Y
-        var explosionYOffset = this.angle == 0 ? -this.offset
-            : this.angle == 180 ? this.offset : 0;
+        var explosionYOffset = 0;
 
         // двигаем пулю
         this.shape.move(new Point(x, y));
@@ -46,6 +44,19 @@ atom.declare('BattleCity.Bullet', App.Element, {
         // считаем коллизию с пределами поля
         if (this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
             || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+
+            if (this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+                if (!(this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
+                    instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
+                    this.offset = 24;
+                }
+
+                explosionXOffset = this.angle == 90 ? this.offset
+                    : this.angle == 270 ? -this.offset : 0;
+                explosionYOffset = this.angle == 0 ? -this.offset
+                    : this.angle == 180 ? this.offset : 0;
+            }
+
             this.controller.collisions.destroyWalls(this.shape, new Point(x, y), this.angle);
 
             this.settings.get('player').bullets--;
