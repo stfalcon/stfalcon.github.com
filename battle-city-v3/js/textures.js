@@ -1,8 +1,10 @@
+// Абстракт разрушеной кирпичной стены
 atom.declare('BattleCity.BreaksPartedAbstract', App.Element, {
     spriteX: 32,
     spriteY: 0
 });
 
+// Кирпичная стена повреждена на половину с западной стороны
 atom.declare('BattleCity.BreaksWest', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -16,6 +18,8 @@ atom.declare('BattleCity.BreaksWest', BattleCity.BreaksPartedAbstract, {
     }
 });
 
+// Кирпичная стена повреждена на половину с западной стороны
+// и на четверть с северной стороны
 atom.declare('BattleCity.BreaksWestNorthPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -29,6 +33,8 @@ atom.declare('BattleCity.BreaksWestNorthPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
+// Кирпичная стена повреждена на половину с западной стороны
+// и на четверть с южной стороны
 atom.declare('BattleCity.BreaksWestSouthPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -42,6 +48,7 @@ atom.declare('BattleCity.BreaksWestSouthPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
+// Кирпичная стена повреждена на половину с восточной стороны
 atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -55,6 +62,8 @@ atom.declare('BattleCity.BreaksEast', BattleCity.BreaksPartedAbstract, {
     }
 });
 
+// Кирпичная стена повреждена на половину с восточной стороны
+// и на четверть с северной стороны
 atom.declare('BattleCity.BreaksEastNorthPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -68,6 +77,8 @@ atom.declare('BattleCity.BreaksEastNorthPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
+// Кирпичная стена повреждена на половину с восточной стороны
+// и на четверть с южной стороны
 atom.declare('BattleCity.BreaksEastSouthPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -81,7 +92,8 @@ atom.declare('BattleCity.BreaksEastSouthPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
-atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с южной стороны
+atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -94,7 +106,9 @@ atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
     }
 });
 
-atom.declare('BattleCity.BreaksNorthWestPart', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с южной стороны
+// и на четверть с западной стороны
+atom.declare('BattleCity.BreaksSouthWestPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -107,7 +121,9 @@ atom.declare('BattleCity.BreaksNorthWestPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
-atom.declare('BattleCity.BreaksNorthEastPart', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с южной стороны
+// и на четверть с восточной стороны
+atom.declare('BattleCity.BreaksSouthEastPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -120,7 +136,8 @@ atom.declare('BattleCity.BreaksNorthEastPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
-atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с северной стороны
+atom.declare('BattleCity.BreaksNorth', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -133,7 +150,9 @@ atom.declare('BattleCity.BreaksSouth', BattleCity.BreaksPartedAbstract, {
     }
 });
 
-atom.declare('BattleCity.BreaksSouthWestPart', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с северной стороны
+// и на четверть с западной стороны
+atom.declare('BattleCity.BreaksNorthWestPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -146,7 +165,9 @@ atom.declare('BattleCity.BreaksSouthWestPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
-atom.declare('BattleCity.BreaksSouthEastPart', BattleCity.BreaksPartedAbstract, {
+// Кирпичная стена повреждена на половину с северной стороны
+// и на четверть с восточной стороны
+atom.declare('BattleCity.BreaksNorthEastPart', BattleCity.BreaksPartedAbstract, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
             image: resources.get('images').get('textures').sprite(
@@ -159,6 +180,7 @@ atom.declare('BattleCity.BreaksSouthEastPart', BattleCity.BreaksPartedAbstract, 
     }
 });
 
+// Бетонная стена
 atom.declare('BattleCity.Wall', App.Element, {
     spriteX: 0,
     spriteY: 0,
@@ -173,26 +195,31 @@ atom.declare('BattleCity.Wall', App.Element, {
     }
 });
 
+// Целая кирпичная стена
 atom.declare('BattleCity.Breaks', BattleCity.Wall, {
     spriteX: 32,
     spriteY: 0
 });
 
+// Деревья
 atom.declare('BattleCity.Trees', BattleCity.Wall, {
     spriteX: 64,
     spriteY: 0
 });
 
+// Вода
 atom.declare('BattleCity.Water', BattleCity.Wall, {
     spriteX: 96,
     spriteY: 0
 });
 
+// Асфальт
 atom.declare('BattleCity.Asphalt', BattleCity.Wall, {
     spriteX: 128,
     spriteY: 0
 });
 
+// База
 atom.declare('BattleCity.Base', App.Element, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({
@@ -202,6 +229,7 @@ atom.declare('BattleCity.Base', App.Element, {
     }
 });
 
+// Разрушенная база
 atom.declare('BattleCity.BaseDestroyed', App.Element, {
     renderTo: function (ctx, resources) {
         ctx.drawImage({

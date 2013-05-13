@@ -8,6 +8,8 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         this.angle = this.settings.get('angle');
         this.image = this.settings.get('images').get('bullet');
+        // Смещение для взрыва
+        this.offset = 16;
     },
 
     get controller () {
@@ -30,10 +32,12 @@ atom.declare('BattleCity.Bullet', App.Element, {
             : this.angle == 180 ? this.speed*time
             : 0;
 
-        var explosionXOffset = this.angle == 90 ? 16
-            : this.angle == 270 ? -16 : 0;
-        var explosionYOffset = this.angle == 0 ? -16
-            : this.angle == 180 ? 16 : 0;
+        // смещение по X
+        var explosionXOffset = this.angle == 90 ? this.offset
+            : this.angle == 270 ? -this.offset : 0;
+        // Смещение по Y
+        var explosionYOffset = this.angle == 0 ? -this.offset
+            : this.angle == 180 ? this.offset : 0;
 
         // двигаем пулю
         this.shape.move(new Point(x, y));
