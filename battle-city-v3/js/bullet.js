@@ -42,10 +42,10 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.redraw();
 
         var collisionWithTextures = this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y));
+        var outOfTheField = this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y));
 
         // считаем коллизию с пределами поля
-        if (this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            || collisionWithTextures) {
+        if (outOfTheField || collisionWithTextures) {
 
             if (this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
                 if (!(collisionWithTextures instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
