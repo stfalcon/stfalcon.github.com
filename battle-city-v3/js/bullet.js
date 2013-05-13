@@ -41,13 +41,14 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.shape.move(new Point(x, y));
         this.redraw();
 
+        var collisionWithTextures = this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y));
+
         // считаем коллизию с пределами поля
         if (this.controller.collisions.checkOutOfTheField(this.shape, new Point(x, y))
-            || this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+            || collisionWithTextures) {
 
             if (this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
-                if (!(this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))
-                    instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
+                if (!(collisionWithTextures instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
                     this.offset = 24;
                 }
 

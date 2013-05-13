@@ -56,8 +56,6 @@ atom.declare('BattleCity.Collisions', {
 
             if (this.controller.textures[i].shape.intersect(shape)) {
                 destroyedAmount++;
-                console.log(destroyedAmount);
-//                console.log(field);
 
                 var rectangle = new Rectangle(
                     this.controller.textures[i].shape.from.x,
