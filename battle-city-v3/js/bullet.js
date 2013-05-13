@@ -47,7 +47,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
         // считаем коллизию с пределами поля
         if (outOfTheField || collisionWithTextures) {
 
-            if (this.controller.collisions.checkCollisionWithTextures(this.shape, new Point(x, y))) {
+            if (collisionWithTextures) {
                 if (!(collisionWithTextures instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
                     this.offset = 24;
                 }

@@ -50,6 +50,8 @@ atom.declare('BattleCity.Collisions', {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
         var destroyedAmount = 0;
+        var first = null;
+        var second = null;
 
         for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
@@ -63,6 +65,20 @@ atom.declare('BattleCity.Collisions', {
                     16,
                     16
                 );
+
+                if (destroyedAmount == 1) {
+                    first = field;
+                } else if (destroyedAmount == 2) {
+                    second = field;
+
+                    if (first.Constructor != second.Constructor) {
+                        return;
+                    }
+                }
+
+                console.log(destroyedAmount);
+                console.log(field);
+                console.log(field.shape.from);
 
                 // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) { // Рушим половину стены
