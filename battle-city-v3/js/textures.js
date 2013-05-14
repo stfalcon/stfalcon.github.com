@@ -198,7 +198,38 @@ atom.declare('BattleCity.Wall', App.Element, {
 // Целая кирпичная стена
 atom.declare('BattleCity.Breaks', BattleCity.Wall, {
     spriteX: 32,
-    spriteY: 0
+    spriteY: 0,
+
+    renderTo: function (ctx, resources) {
+        console.log(this);
+        var state = this.settings.values.state;
+
+        var from = 0;
+        var to = 0;
+        var width = 16;
+        var height = 16;
+
+        if (state === 'W') {
+            from += 8;
+            width -= 8;
+        } else if (state == 'E') {
+            width -= 8;
+        } else if (state == 'S') {
+            height -= 8;
+        } else if (state == 'N') {
+            to += 8;
+            height -= 8;
+        }
+
+        ctx.drawImage({
+            image: resources.get('images').get('textures').sprite(
+                new Rectangle(this.spriteX, this.spriteY, 16, 16)
+            ),
+            crop: [from, to, width, height],
+            draw: [this.shape.from.x + from, this.shape.from.y + to, width, height],
+            center: this.shape.center
+        });
+    }
 });
 
 // Деревья
