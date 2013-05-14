@@ -45,6 +45,62 @@ atom.declare('BattleCity.Collisions', {
         return false;
     },
 
+    checkCollisionWithEnemies: function(shape, point, obj) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemies.length; i--;) {
+            enemy = this.controller.enemies[i];
+
+            if (enemy.shape.intersect(shape) && obj != enemy) {
+                if (obj && obj.collideWithCharacters === false) {
+                    return false;
+                }
+
+                if (obj && obj.shape.x == enemy.shape.x && obj.shape.y == enemy.shape.y) {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    checkCollisionWithPlayers: function(shape, point) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemies.length; i--;) {
+            player = this.controller.players[i];
+
+            if (player && player.shape.intersect(shape)) {
+
+                return true;
+            }
+        }
+
+        return false;
+    },
+
+    checkCollisionWithBullets: function(shape, point, obj) {
+        var shape = shape.clone();
+        shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
+
+        for (i = this.controller.enemyBullets.length; i--;) {
+            bullet = this.controller.enemyBullets[i];
+
+            if (bullet && bullet.shape.intersect(shape) && obj.source instanceof BattleCity.Player
+                && bullet.source instanceof BattleCity.Enemy) {
+                bullet.destroy();
+                return true;
+            }
+        }
+
+        return false;
+    },
+
     // рушим стены
     destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
@@ -75,10 +131,6 @@ atom.declare('BattleCity.Collisions', {
                         return;
                     }
                 }
-
-                console.log(destroyedAmount);
-                console.log(field);
-                console.log(field.shape.from);
 
                 // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
                 if (this.controller.textures[i] instanceof BattleCity.Breaks) { // Рушим половину стены
@@ -171,6 +223,16 @@ atom.declare('BattleCity.Collisions', {
                         this.controller.parted.erase(this.controller.parted[i]);
                         this.controller.parted[i] = 0;
                     }
+                } else if (field instanceof BattleCity.Base) {
+                    var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
+
+                    this.controller.textures[i] = new BattleCity.BaseDestroyed(this.controller.walls, {
+                        shape: baseRectangle
+                    });
+
+                    this.controller.endGame = true;
+
+                    this.controller.game.endGameMessage();
                 } else  if (
                     field instanceof BattleCity.BreaksWestSouthPart ||
                         field instanceof BattleCity.BreaksWestNorthPart ||

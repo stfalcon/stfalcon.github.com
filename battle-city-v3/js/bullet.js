@@ -8,6 +8,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
         this.angle = this.settings.get('angle');
         this.image = this.settings.get('images').get('bullet');
+        this.source = this.settings.get('player');
         // Смещение для взрыва
         this.offset = 8;
     },
