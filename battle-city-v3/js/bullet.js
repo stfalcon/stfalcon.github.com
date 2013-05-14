@@ -9,7 +9,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
         this.angle = this.settings.get('angle');
         this.image = this.settings.get('images').get('bullet');
         // Смещение для взрыва
-        this.offset = 16;
+        this.offset = 8;
     },
 
     get controller () {
@@ -49,7 +49,7 @@ atom.declare('BattleCity.Bullet', App.Element, {
 
             if (collisionWithTextures) {
                 if (!(collisionWithTextures instanceof BattleCity.Breaks)) { //добавочное смещение для поврежденной стены
-                    this.offset = 24;
+                    this.offset = 16;
                 }
 
                 explosionXOffset = this.angle == 90 ? this.offset
