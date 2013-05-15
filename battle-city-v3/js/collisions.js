@@ -57,7 +57,6 @@ atom.declare('BattleCity.Collisions', {
             field = this.controller.textures[i];
 
             if (field.shape.intersect(shape)) {
-                destroyedAmount++;
 
                 var rectangle = new Rectangle(
                     field.shape.from.x,
@@ -68,6 +67,8 @@ atom.declare('BattleCity.Collisions', {
 
                 // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
                 if (field instanceof BattleCity.Breaks) {
+                    destroyedAmount++;
+                    console.log(destroyedAmount);
                     var state = field.settings.values.state;
                     var removed = false;
 
@@ -75,8 +76,18 @@ atom.declare('BattleCity.Collisions', {
                         firstState = state;
                     } else if (destroyedAmount == 2) {
                         secondState = state;
-                        if (firstState != secondState) {
+
+                        console.log(firstState);
+                        console.log(secondState);
+
+                        if (firstState != secondState) { // && firstState == 'intact'
+//                            return;
+                            if (firstState == 'intact') {
                             return;
+                            } else {
+                                //TODO
+
+                            }
                         }
                     }
 
@@ -145,14 +156,14 @@ atom.declare('BattleCity.Collisions', {
                         return;
                     }
 
-                    if (!removed) {
+                    if (removed) {
+                        this.controller.textures.erase(field);
+                        field.destroy();
+                    } else {
                         this.controller.textures[i] = new BattleCity.Breaks(this.controller.walls, {
                             shape: rectangle,
                             state: state
                         });
-                    } else {
-                        this.controller.textures.erase(field);
-                        field.destroy();
                     }
                 }
             }
