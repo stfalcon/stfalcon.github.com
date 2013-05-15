@@ -56,19 +56,19 @@ atom.declare('BattleCity.Collisions', {
         for (i = this.controller.textures.length; i--;) {
             field = this.controller.textures[i];
 
-            if (this.controller.textures[i].shape.intersect(shape)) {
+            if (field.shape.intersect(shape)) {
                 destroyedAmount++;
 
                 var rectangle = new Rectangle(
-                    this.controller.textures[i].shape.from.x,
-                    this.controller.textures[i].shape.from.y,
+                    field.shape.from.x,
+                    field.shape.from.y,
                     16,
                     16
                 );
 
                 // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
-                if (this.controller.textures[i] instanceof BattleCity.Breaks) {
-                    var state = this.controller.textures[i].settings.values.state;
+                if (field instanceof BattleCity.Breaks) {
+                    var state = field.settings.values.state;
                     var removed = false;
 
                     if (destroyedAmount == 1) {
@@ -104,8 +104,6 @@ atom.declare('BattleCity.Collisions', {
                                 state = 'WN';
                                 break;
                             default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
                                 removed = true;
                         }
                     } else if (state === 'E') {
@@ -117,8 +115,6 @@ atom.declare('BattleCity.Collisions', {
                                 state = 'EN';
                                 break;
                             default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
                                 removed = true;
                         }
                     } else if (state === 'S') {
@@ -130,8 +126,6 @@ atom.declare('BattleCity.Collisions', {
                                 state = 'SE';
                                 break;
                             default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
                                 removed = true;
                         }
                     } else if (state === 'N') {
@@ -143,14 +137,11 @@ atom.declare('BattleCity.Collisions', {
                                 state = 'NE';
                                 break;
                             default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
                                 removed = true;
                         }
                     } else {
                         this.controller.textures.erase(field);
                         field.destroy();
-                        removed = true;
                         return;
                     }
 
@@ -159,6 +150,9 @@ atom.declare('BattleCity.Collisions', {
                             shape: rectangle,
                             state: state
                         });
+                    } else {
+                        this.controller.textures.erase(field);
+                        field.destroy();
                     }
                 }
             }
