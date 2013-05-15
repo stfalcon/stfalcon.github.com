@@ -216,6 +216,16 @@ atom.declare('BattleCity.Collisions', {
                             state: state
                         });
                     }
+                } else if (field instanceof BattleCity.Base) {
+                    var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
+
+                    this.controller.textures[i] = new BattleCity.BaseDestroyed(this.controller.walls, {
+                        shape: baseRectangle
+                    });
+
+                    this.controller.endGame = true;
+
+                    this.controller.game.endGameMessage();
                 }
             }
         }
