@@ -2,7 +2,6 @@
 atom.declare( 'BattleCity.Controller', {
 
     textures: [],
-    parted: [],
     players: [],
     endGame: false,
     playerLives: 3,
@@ -111,12 +110,14 @@ atom.declare( 'BattleCity.Controller', {
                 switch (s.charAt(x)) {
                     case '#':
                         field = new BattleCity.Wall(this.walls, {
-                            shape: rectangle
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '=':
                         field = new BattleCity.Breaks(this.walls, {
-                            shape: rectangle
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '*':
