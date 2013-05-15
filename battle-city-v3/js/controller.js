@@ -2,7 +2,6 @@
 atom.declare( 'BattleCity.Controller', {
 
     textures: [],
-    parted: [],
 
     initialize: function () {
         atom.ImagePreloader.run({
