@@ -67,7 +67,7 @@ atom.declare('BattleCity.Collisions', {
                 );
 
                 // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
-                if (this.controller.textures[i] instanceof BattleCity.Breaks) { // Рушим половину стены
+                if (this.controller.textures[i] instanceof BattleCity.Breaks) {
                     var state = this.controller.textures[i].settings.values.state;
                     var removed = false;
 
