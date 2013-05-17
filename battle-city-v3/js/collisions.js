@@ -70,7 +70,7 @@ atom.declare('BattleCity.Collisions', {
 
         if (intersected.length > 0) {
             if (intersected.length == 1) {
-                var firstPosition = intersected[0];
+                firstPosition = intersected[0];
                 this.wallState(firstPosition, angle);
             } else if (intersected.length == 2) {
                 firstPosition = intersected[0];
