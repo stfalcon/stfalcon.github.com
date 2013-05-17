@@ -49,61 +49,47 @@ atom.declare('BattleCity.Collisions', {
     destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-        var destroyedAmount = 0;
+
         var firstState = null;
         var secondState = null;
-        var firstPart = 0;
-        var secondPart = 0;
+        var firstPart = null;
+        var secondPart = null;
+        var firstPosition = 0;
+        var secondPosition = 0;
 
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
+        var intersected = [];
 
-            if (field.shape.intersect(shape)) {
+        for (var i = this.controller.textures.length; i--;) {
+            var field = this.controller.textures[i];
 
-                // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
-                if (field instanceof BattleCity.Breaks) {
-                    destroyedAmount++;
-                    console.log(destroyedAmount);
-                    var state = field.settings.values.state;
+            if (field.shape.intersect(shape) &&
+                field instanceof BattleCity.Breaks) {
+                intersected.push(i);
+            }
+        }
 
-                    var rectangle = new Rectangle(
-                        field.shape.from.x,
-                        field.shape.from.y,
-                        16,
-                        16
-                    );
+        if (intersected.length > 0) {
+            if (intersected.length == 1) {
+                var firstPosition = intersected[0];
+                this.wallState(firstPosition, angle);
+            } else if (intersected.length == 2) {
+                firstPosition = intersected[0];
+                secondPosition = intersected[1];
 
-                    if (destroyedAmount == 1) {
-                        firstState = state;
-                        firstPart = i;
-                        this.wallState(i, angle);
-                        console.log(i);
-                        console.log(this.controller.textures.length);
-                    } else if (destroyedAmount == 2) {
-                        secondState = state;
-                        secondPart = i;
-//                        console.log(firstState);
-//                        console.log(secondState);
+                firstPart = this.controller.textures[firstPosition];
+                secondPart = this.controller.textures[secondPosition];
 
-                        if (firstState != secondState) { // && firstState == 'intact'
-//                            return;
-                            if (firstState == 'intact') {
-                            return;
-                            } else {
-//                                this.wallState(firstPart, angle);
-//                                this.wallState(secondPart, angle);
-                                field = new BattleCity.Breaks(this.controller.walls, {
-                                    shape: rectangle,
-                                    state: firstState
-                                });
+                firstState = firstPart.settings.values.state;
+                secondState = secondPart.settings.values.state;
 
-                                this.controller.textures.push(field);
-                                console.log(firstPart);
-                                console.log(this.controller.textures.length);
-                            }
-                        } else {
-                            this.wallState(i, angle);
-                        }
+                if (firstState == secondState) {
+                    this.wallState(firstPosition, angle);
+                    this.wallState(secondPosition, angle);
+                } else {
+                    if (firstState == 'intact') {
+                        this.wallState(firstPosition, angle);
+                    } else {
+                        this.wallState(secondPosition, angle);
                     }
                 }
             }
