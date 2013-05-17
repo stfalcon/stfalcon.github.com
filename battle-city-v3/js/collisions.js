@@ -105,116 +105,47 @@ atom.declare('BattleCity.Collisions', {
     destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
-        var destroyedAmount = 0;
+
         var firstState = null;
         var secondState = null;
+        var firstPart = null;
+        var secondPart = null;
+        var firstPosition = 0;
+        var secondPosition = 0;
 
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
+        var intersected = [];
 
-            if (this.controller.textures[i].shape.intersect(shape)) {
-                destroyedAmount++;
+        for (var i = this.controller.textures.length; i--;) {
+            var field = this.controller.textures[i];
 
-                var rectangle = new Rectangle(
-                    this.controller.textures[i].shape.from.x,
-                    this.controller.textures[i].shape.from.y,
-                    16,
-                    16
-                );
+            if (field.shape.intersect(shape) &&
+                field instanceof BattleCity.Breaks) {
+                intersected.push(i);
+            }
+        }
 
-                // Рушим часть стены в зависимости от её текущего состояния и от направления полета пули
-                if (this.controller.textures[i] instanceof BattleCity.Breaks) { // Рушим половину стены
-                    var state = this.controller.textures[i].settings.values.state;
-                    var removed = false;
+        if (intersected.length > 0) {
+            if (intersected.length == 1) {
+                firstPosition = intersected[0];
+                this.wallState(firstPosition, angle);
+            } else if (intersected.length == 2) {
+                firstPosition = intersected[0];
+                secondPosition = intersected[1];
 
-                    if (destroyedAmount == 1) {
-                        firstState = state;
-                    } else if (destroyedAmount == 2) {
-                        secondState = state;
-                        if (firstState != secondState) {
-                            return;
-                        }
-                    }
+                firstPart = this.controller.textures[firstPosition];
+                secondPart = this.controller.textures[secondPosition];
 
-                    if (state === 'intact') {
-                        switch (angle) {
-                            case 90:
-                                state = 'W';
-                                break;
-                            case 270:
-                                state = 'E';
-                                break;
-                            case 0:
-                                state = 'S';
-                                break;
-                            case 180:
-                                state = 'N';
-                                break;
-                        }
-                    } else if (state === 'W') {
-                        switch (angle) {
-                            case 0:
-                                state = 'WS';
-                                break;
-                            case 180:
-                                state = 'WN';
-                                break;
-                            default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
-                                removed = true;
-                        }
-                    } else if (state === 'E') {
-                        switch (angle) {
-                            case 0:
-                                state = 'ES';
-                                break;
-                            case 180:
-                                state = 'EN';
-                                break;
-                            default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
-                                removed = true;
-                        }
-                    } else if (state === 'S') {
-                        switch (angle) {
-                            case 90:
-                                state = 'SW';
-                                break;
-                            case 270:
-                                state = 'SE';
-                                break;
-                            default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
-                                removed = true;
-                        }
-                    } else if (state === 'N') {
-                        switch (angle) {
-                            case 90:
-                                state = 'NW';
-                                break;
-                            case 270:
-                                state = 'NE';
-                                break;
-                            default:
-                                this.controller.textures.erase(field);
-                                field.destroy();
-                                removed = true;
-                        }
+                firstState = firstPart.settings.values.state;
+                secondState = secondPart.settings.values.state;
+
+                if (firstState == secondState) {
+                    this.wallState(firstPosition, angle);
+                    this.wallState(secondPosition, angle);
+                } else {
+                    if (firstState == 'intact') {
+                        this.wallState(firstPosition, angle);
                     } else {
-                        this.controller.textures.erase(field);
-                        field.destroy();
-                        removed = true;
-                        return;
-                    }
-
-                    if (!removed) {
-                        this.controller.textures[i] = new BattleCity.Breaks(this.controller.walls, {
-                            shape: rectangle,
-                            state: state
-                        });
+                        this.wallState(secondPosition, angle);
                     }
                 } else if (field instanceof BattleCity.Base) {
                     var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
@@ -229,5 +160,97 @@ atom.declare('BattleCity.Collisions', {
                 }
             }
         }
+    },
+
+    wallState: function(i, angle) {
+        var field = this.controller.textures[i];
+
+        var removed = false;
+
+        var state = field.settings.values.state;
+
+        var rectangle = new Rectangle(
+            field.shape.from.x,
+            field.shape.from.y,
+            16,
+            16
+        );
+
+        if (state === 'intact') {
+            switch (angle) {
+                case 90:
+                    state = 'W';
+                    break;
+                case 270:
+                    state = 'E';
+                    break;
+                case 0:
+                    state = 'S';
+                    break;
+                case 180:
+                    state = 'N';
+                    break;
+            }
+        } else if (state === 'W') {
+            switch (angle) {
+                case 0:
+                    state = 'WS';
+                    break;
+                case 180:
+                    state = 'WN';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'E') {
+            switch (angle) {
+                case 0:
+                    state = 'ES';
+                    break;
+                case 180:
+                    state = 'EN';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'S') {
+            switch (angle) {
+                case 90:
+                    state = 'SW';
+                    break;
+                case 270:
+                    state = 'SE';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'N') {
+            switch (angle) {
+                case 90:
+                    state = 'NW';
+                    break;
+                case 270:
+                    state = 'NE';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else {
+            this.controller.textures.erase(field);
+            field.destroy();
+            return;
+        }
+
+        if (removed) {
+            this.controller.textures.erase(field);
+            field.destroy();
+            return;
+        }
+
+        this.controller.textures[i] = new BattleCity.Breaks(this.controller.walls, {
+            shape: rectangle,
+            state: state
+        });
+        return;
     }
 });

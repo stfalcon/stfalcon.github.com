@@ -28,6 +28,7 @@ atom.declare('BattleCity.Breaks', BattleCity.Wall, {
         var width = 16;
         var height = 16;
 
+        // Отрисовываем нужную часть изображения
         switch (state) {
             case 'W':
                 cropFrom = drawFrom = width = 8;
