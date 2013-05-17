@@ -118,9 +118,20 @@ atom.declare('BattleCity.Collisions', {
         for (var i = this.controller.textures.length; i--;) {
             var field = this.controller.textures[i];
 
-            if (field.shape.intersect(shape) &&
-                field instanceof BattleCity.Breaks) {
+            if (field.shape.intersect(shape)) {
+                if (field instanceof BattleCity.Breaks) {
                 intersected.push(i);
+            } else if (field instanceof BattleCity.Base) {
+                    var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
+
+                    this.controller.textures[i] = new BattleCity.BaseDestroyed(this.controller.walls, {
+                        shape: baseRectangle
+                    });
+
+                    this.controller.endGame = true;
+
+                    this.controller.game.endGameMessage();
+                }
             }
         }
 
@@ -147,16 +158,6 @@ atom.declare('BattleCity.Collisions', {
                     } else {
                         this.wallState(secondPosition, angle);
                     }
-                } else if (field instanceof BattleCity.Base) {
-                    var baseRectangle = new Rectangle(field.shape.from.x, field.shape.from.y, 32, 32);
-
-                    this.controller.textures[i] = new BattleCity.BaseDestroyed(this.controller.walls, {
-                        shape: baseRectangle
-                    });
-
-                    this.controller.endGame = true;
-
-                    this.controller.game.endGameMessage();
                 }
             }
         }
