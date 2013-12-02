@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Розмісти стрічку з символікою України і ЄС на своєму сайті!</title>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+	<link rel="stylesheet" href="style.css">
+	<script type="text/javascript" src="https://apis.google.com/js/platform.js">
+	  {lang: 'uk'}
+	</script>
+</head>
+<body>
+	<a href="#" class="em-ribbon" style="position: absolute; left:0; top:0; width: 90px; height: 90px; background: url('img/em-ribbon.png');"></a>
+	<div class="container">
+		<h1>Розмісти стрічку з символікою України і ЄС на своєму сайті!</h1>
+		<div class="instruction clearfix">
+			<div class="preview">
+				<img src="http://stfalcon.github.io/euromaidan/img/preview.png" alt="" width="254" height="250">
+			</div>
+			<div class="text-content">Тобі небайдуже майбутнє України і ти за вступ України до Євросоюзу? Тоді розмісти цю стрічку на своєму сайті! Просто скопіюй код, який наведений нижче, і встав його в код свого сайту.</div>
+		</div>
+		<div class="code">
+			<textarea name="code" id="code"><a href="http://stfalcon.github.io/euromaidan/" class="em-ribbon" style="position: absolute; left:0; top:0; width: 90px; height: 90px; background: url('http://stfalcon.github.io/euromaidan/img/em-ribbon.png');"></a></textarea>
+		</div>
+		<table class="social">
+			<tr>
+				<td>
+					<div id="fb-root"></div>
+
+					<script>(function(d, s, id) {
+					  var js, fjs = d.getElementsByTagName(s)[0];
+					  if (d.getElementById(id)) {return;}
+					  js = d.createElement(s); js.id = id;
+					  js.src = "//connect.facebook.net/en_US/all.js#appId=147663055321186&xfbml=1";
+					  fjs.parentNode.insertBefore(js, fjs);
+					}(document, 'script', 'facebook-jssdk'));</script>
+				</td>
+				<td><a href="https://twitter.com/share" class="twitter-share-button" data-lang="uk" data-hashtags="євромайдан">Твіт</a>
+				<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script></td>
+				<td>
+					<!-- Put this script tag to the <head> of your page -->
+					<script type="text/javascript" src="//vk.com/js/api/openapi.js?105"></script>
+
+					<script type="text/javascript">
+					  VK.init({apiId: API_ID, onlyWidgets: true});
+					</script>
+
+					<!-- Put this div tag to the place, where the Like block will be -->
+					<div id="vk_like"></div>
+					<script type="text/javascript">
+					VK.Widgets.Like("vk_like", {type: "mini"});
+					</script>
+				</td>
+				<td><div class="g-plusone" data-size="medium" data-width="300" data-href="http://stfalcon-studio.github.io"></div></td>
+			</tr>
+		</div>
+	</div>
+
+</body>
+</html>
