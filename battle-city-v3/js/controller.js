@@ -2,7 +2,6 @@
 atom.declare( 'BattleCity.Controller', {
 
     textures: [],
-    parted: [],
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -41,18 +40,25 @@ atom.declare( 'BattleCity.Controller', {
         });
         this.background.ctx.fillAll('black');
 
-        // слой для верхних текстур
-        this.foreground = this.app.createLayer({
-            name: 'foreground',
+        // слой для стен
+        this.walls = this.app.createLayer({
+            name: 'walls',
             intersection: 'manual',
-            zIndex: 3
+            zIndex: 2
         });
 
         // слой для юнитов, перерисовываем постоянно
         this.units = this.app.createLayer({
             name: 'units',
             invoke: true,
-            zIndex: 2
+            zIndex: 3
+        });
+
+        // слой для верхних текстур (деревья)
+        this.foreground = this.app.createLayer({
+            name: 'foreground',
+            intersection: 'manual',
+            zIndex: 4
         });
 
         // слой для координатной сетки
@@ -87,13 +93,15 @@ atom.declare( 'BattleCity.Controller', {
                 var rectangle = new Rectangle(x*16, y*16, 16, 16);
                 switch(s.charAt(x)) {
                     case '#':
-                        field = new BattleCity.Wall(this.foreground, {
-                            shape: rectangle
+                        field = new BattleCity.Wall(this.walls, {
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '=':
-                        field = new BattleCity.Breaks(this.foreground, {
-                            shape: rectangle
+                        field = new BattleCity.Breaks(this.walls, {
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '*':

@@ -38,7 +38,7 @@ atom.declare('BattleCity.Collisions', {
                     return false;
                 }
 
-                return true;
+                return field;
             }
         }
 
@@ -48,51 +48,143 @@ atom.declare('BattleCity.Collisions', {
     // рушим стены
     destroyWalls: function(shape, point, angle) {
         var shape = shape.clone();
-//        console.log(angle);
         shape.move(point); // сначала двигаем клонированный объект, а потом ищем столкновения
 
-        for (i = this.controller.textures.length; i--;) {
-            field = this.controller.textures[i];
+        var firstState = null;
+        var secondState = null;
+        var firstPart = null;
+        var secondPart = null;
+        var firstPosition = 0;
+        var secondPosition = 0;
 
-            if (this.controller.textures[i].shape.intersect(shape)) {
-                if (this.controller.textures[i] instanceof BattleCity.Breaks) {
-                    var rectangle = new Rectangle(this.controller.textures[i].shape.from.x, this.controller.textures[i].shape.from.y, 16, 16);
+        var intersected = [];
 
-                    switch (angle) {
-                        case 90:
-                            this.controller.textures[i] = new BattleCity.BreaksWest(this.controller.foreground, {
-                                shape: rectangle
-                            });
-                            break;
-                        case 270:
-                            this.controller.textures[i] = new BattleCity.BreaksEast(this.controller.foreground, {
-                                shape: rectangle
-                            });
-                            break;
-                        case 0:
-                            this.controller.textures[i] = new BattleCity.BreaksNorth(this.controller.foreground, {
-                                shape: rectangle
-                            });
-                            break;
-                        case 180:
-                            this.controller.textures[i] = new BattleCity.BreaksSouth(this.controller.foreground, {
-                                shape: rectangle
-                            });
-                            break;
+        for (var i = this.controller.textures.length; i--;) {
+            var field = this.controller.textures[i];
+
+            if (field.shape.intersect(shape) &&
+                field instanceof BattleCity.Breaks) {
+                intersected.push(i);
+            }
+        }
+
+        if (intersected.length > 0) {
+            if (intersected.length == 1) {
+                firstPosition = intersected[0];
+                this.wallState(firstPosition, angle);
+            } else if (intersected.length == 2) {
+                firstPosition = intersected[0];
+                secondPosition = intersected[1];
+
+                firstPart = this.controller.textures[firstPosition];
+                secondPart = this.controller.textures[secondPosition];
+
+                firstState = firstPart.settings.values.state;
+                secondState = secondPart.settings.values.state;
+
+                if (firstState == secondState) {
+                    this.wallState(firstPosition, angle);
+                    this.wallState(secondPosition, angle);
+                } else {
+                    if (firstState == 'intact') {
+                        this.wallState(firstPosition, angle);
+                    } else {
+                        this.wallState(secondPosition, angle);
                     }
-
-                    this.controller.parted[i] = i;
-                } else if (field instanceof BattleCity.BreaksWest ||
-                    field instanceof BattleCity.BreaksEast ||
-                    field instanceof BattleCity.BreaksNorth ||
-                    field instanceof BattleCity.BreaksSouth) {
-
-                    this.controller.textures.erase(field);
-                    field.destroy();
-                    this.controller.parted.erase(this.controller.parted[i]);
-                    this.controller.parted[i] = 0;
                 }
             }
         }
+    },
+
+    wallState: function(i, angle) {
+        var field = this.controller.textures[i];
+
+        var removed = false;
+
+        var state = field.settings.values.state;
+
+        var rectangle = new Rectangle(
+            field.shape.from.x,
+            field.shape.from.y,
+            16,
+            16
+        );
+
+        if (state === 'intact') {
+            switch (angle) {
+                case 90:
+                    state = 'W';
+                    break;
+                case 270:
+                    state = 'E';
+                    break;
+                case 0:
+                    state = 'S';
+                    break;
+                case 180:
+                    state = 'N';
+                    break;
+            }
+        } else if (state === 'W') {
+            switch (angle) {
+                case 0:
+                    state = 'WS';
+                    break;
+                case 180:
+                    state = 'WN';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'E') {
+            switch (angle) {
+                case 0:
+                    state = 'ES';
+                    break;
+                case 180:
+                    state = 'EN';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'S') {
+            switch (angle) {
+                case 90:
+                    state = 'SW';
+                    break;
+                case 270:
+                    state = 'SE';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else if (state === 'N') {
+            switch (angle) {
+                case 90:
+                    state = 'NW';
+                    break;
+                case 270:
+                    state = 'NE';
+                    break;
+                default:
+                    removed = true;
+            }
+        } else {
+            this.controller.textures.erase(field);
+            field.destroy();
+            return;
+        }
+
+        if (removed) {
+            this.controller.textures.erase(field);
+            field.destroy();
+            return;
+        }
+
+        this.controller.textures[i] = new BattleCity.Breaks(this.controller.walls, {
+            shape: rectangle,
+            state: state
+        });
+        return;
     }
 });
