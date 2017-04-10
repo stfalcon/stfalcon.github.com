@@ -8,7 +8,8 @@ atom.declare('BattleCity.Game', {
         this.players = [];
         this.textures = [];
         this.bullets = [];
-//        this.enemies = [];
+        this.enemies = [];
+        this.players = [];
     },
 
     /** @private */
@@ -39,5 +40,17 @@ atom.declare('BattleCity.Game', {
 //        console.log(new Date().getTime());
 //        this.shipsAsteroids();
 //        this.bulletsAsteroids();
+    },
+    endGameMessage : function() {
+        var gameOverMessage = new BattleCity.GameOverMessage(this.controller.info, {
+            controller: this.controller,
+            shape: new Rectangle({
+                    from: new Point(175, 350),
+                    size: new Size(64, 40)}
+            )
+        });
+    },
+    gameRestart : function() {
+        location.reload();
     }
 });

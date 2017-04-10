@@ -1,8 +1,14 @@
 /** @class BattleCity.Controller */
-atom.declare( 'BattleCity.Controller', {
+atom.declare('BattleCity.Controller', {
 
     textures: [],
     parted: [],
+    enemies: [],
+    players: [],
+    enemyBullets: [],
+    endGame: false,
+    playerLives: 3,
+    score: 0,
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -12,6 +18,7 @@ atom.declare( 'BattleCity.Controller', {
             player4: 'images/tank.png [64:32]{3:0}',
             textures: 'images/textures.png',
             base: 'images/base.png',
+            baseDestroyed: 'images/base_destroyed.png',
             bullet: 'images/bullet.png',
             bang: 'images/bang.png'
         }, this.start.bind(this));
@@ -30,6 +37,7 @@ atom.declare( 'BattleCity.Controller', {
 
         // images ready
         this.app.resources.set('images', images);
+        this.images = images;
 
         this.sounds = new BattleCity.Sounds('sounds/');
 
@@ -45,38 +53,86 @@ atom.declare( 'BattleCity.Controller', {
         this.foreground = this.app.createLayer({
             name: 'foreground',
             intersection: 'manual',
-            zIndex: 3
+            zIndex: 2
+        });
+
+        this.info = this.app.createLayer({
+            name: 'info',
+            invoke: true,
+            intersection: 'manual',
+            zIndex: 5
+        });
+
+        this.trees = this.app.createLayer({
+            name: 'trees',
+            intersection: 'manual',
+            zIndex: 4
         });
 
         // слой для юнитов, перерисовываем постоянно
         this.units = this.app.createLayer({
             name: 'units',
             invoke: true,
-            zIndex: 2
+            zIndex: 3
         });
 
-        // слой для координатной сетки
-        this.debug = this.app.createLayer({
-            name: 'debug',
-            intersection: 'manual',
-            zIndex: 100
-        });
-
-        // игрок
-        this.player = new BattleCity.Player(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
             images: images,
-            controller: this
+            shape: new Rectangle(64, this.size.height-96, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 1000,
+            type: 'player'
         });
 
-//        // координатная сетка (для дебага)
-//        for (var y = 0; y < 52; y++) {
-//            for (var x = 0; x < 52; x++) {
-//                this.debug.ctx.fillStyle   = 'red'; // blue
-//                this.debug.ctx.fillRect(x*8, y*8, 1, 1);
-//            }
-//        }
+        BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(192, 0, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 0,
+            type: 'enemy'
+        });
+
+        BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(64, 0, 32, 32),
+            angle: 0,
+            controller: this,
+            spawnTimeOut: 5000,
+            type: 'enemy'
+        });
+
+        BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(128, 0, 32, 32),
+            angle: 90,
+            controller: this,
+            spawnTimeOut: 10000,
+            type: 'enemy'
+        });
+
+        BattleCity.Spawn(this.units, {
+            size: this.size,
+            images: images,
+            shape: new Rectangle(32, 0, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 15000,
+            type: 'enemy'
+        });
+
+        // координатная сетка (для дебага)
+        for (var y = 0; y < 52; y++) {
+            for (var x = 0; x < 52; x++) {
+                this.foreground.ctx.fillStyle = 'red'; // blue
+                this.foreground.ctx.fillRect(x * 8, y * 8, 1, 1);
+            }
+        }
 
         // построение уровня
         var data = this.constructor.levels[0];
@@ -84,8 +140,10 @@ atom.declare( 'BattleCity.Controller', {
             s = data[y];
             for (var x = 0; x < 26; x++) {
                 var field = null;
-                var rectangle = new Rectangle(x*16, y*16, 16, 16);
-                switch(s.charAt(x)) {
+                var rectangle = new Rectangle(x * 16, y * 16, 16, 16);
+                var baseRectangle = new Rectangle(x * 16, y * 16, 32, 32);
+
+                switch (s.charAt(x)) {
                     case '#':
                         field = new BattleCity.Wall(this.foreground, {
                             shape: rectangle
@@ -97,7 +155,7 @@ atom.declare( 'BattleCity.Controller', {
                         });
                         break;
                     case '*':
-                        field = new BattleCity.Trees(this.foreground, {
+                        field = new BattleCity.Trees(this.trees, {
                             shape: rectangle
                         });
                         break;
@@ -111,17 +169,17 @@ atom.declare( 'BattleCity.Controller', {
                             shape: rectangle
                         });
                         break;
+                    case 'B':
+                        field = new BattleCity.Base(this.foreground, {
+                            shape: baseRectangle
+                        });
+                        break;
                 }
 
                 if (field) {
                     this.textures.push(field);
                 }
             }
-
-            // орёл
-            new BattleCity.Base(this.foreground, {
-                shape: new Rectangle(6*32, 12*32, 32, 32)
-            });
         }
     },
 
@@ -138,34 +196,34 @@ atom.declare( 'BattleCity.Controller', {
         });
     }
 }).own({
-    levels: [
-        [
-            "**          **          **",
-            "**          **          **",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "          ==  ==          ",
-            "          ==  ==          ",
-            "==  ====          ====  ==",
-            "##  ====          ====  ##",
-            "          ==  ==          ",
-            "          ======          ",
-            "  ==  ==  ======  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==   ====   ==  ==  ",
-            "           =  =           ",
-            "           =  =           "
+        levels: [
+            [
+                "**          **          **",
+                "**          **          **",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "                          ",
+                "                          ",
+                "==  ====          ====  ==",
+                "##  ====          ====  ##",
+                "          ==  ==          ",
+                "          ======          ",
+                "  ==  ==  ======  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==   ====   ==  ==  ",
+                "           =B =           ",
+                "           =  =           "
+            ]
         ]
-    ]
-});
+    });
