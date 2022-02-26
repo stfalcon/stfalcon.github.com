@@ -1,0 +1,81 @@
+/*--- CSS Reset ---*/
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+button, input, select, textarea {margin: 0;}
+
+/*--------------- Clearfix ---------------*/
+.clearfix:after {
+    content: "."; 
+    display: block; 
+    height: 0; 
+    clear: both; 
+    visibility: hidden;
+}
+.clearfix {display: inline-block;}
+* html .clearfix {height: 1%;}
+.clearfix {display: block;}	
+
+
+
+body {
+	background: #fff;
+	color: #000;
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
+	text-align: center;
+}
+.container {
+	width:800px;
+	margin: 0 auto;
+}
+h1 {
+	margin: 1em 0 1em 0;
+	font-size: 54px;
+	font-weight: 300;
+}
+.instruction {
+	margin-bottom: 1.5em;
+}
+.preview {
+	width: 260px;
+	float: left;
+}
+.text-content {
+	width: 500px;
+	margin-left: 40px;
+	float: left;
+	text-align: left;
+}
+#code {
+	width: 500px;
+	height: 120px;
+	padding: 12px;
+	border-radius: 12px;
+	border: 1px solid #ccc;
+	font-size: 1.2em;
+}
+.code {
+	margin-bottom: 2em;
+}
+.social {
+	width: 500px;
+	margin: 0 auto;
+}
+.social td {
+	width: 25%;
+	text-align: center;
+}
