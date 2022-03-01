@@ -24,19 +24,17 @@
 		</div>
 		<div class="code">
 			<textarea name="code" id="code"><script>
-    const match = /(?:^|; )__RUSSIA_GO_HOME(?:=([^;]*))?(?:;|$)/.exec(document.cookie);
-    const savedValue = match === null ? null : match[1];
-    const banner = '<div style=\"margin-top: 5%; background-color: #c6c6c6; color: #c12c2c; font-size: 50px\"><span style=\"margin-left: 20px;\">BANNER_TEXT</span></div>';
-    const image = `<img
-        src=\"https://bank.gov.ua/frontend/content/logo-en.png\"
-        onload=\"document.cookie=\'__RUSSIA_GO_HOME=true;\';document.body.innerHTML=\'${banner.replace(/\"/g, "\\'")}\';\"
-        onerror=\"document.cookie = \'__RUSSIA_GO_HOME=false;\'\"
-        width=\"1px\"
-        height=\"1px\"
-        style=\"position: absolute;\"
-    />`;
-    null===savedValue?(document.body.innerHTML += image):"true"===savedValue&&(document.body.innerHTML = banner);
-</script></textarea>
+            const URL="https://detect-country.stfalcon.com/detect_country",TEXT="Text";
+            const setCookie=e=>{document.cookie=`__RUSSIA_GO_HOME=${e};`},showBanner=()=>{setTimeout(() => document.body.innerHTML="<div style='margin-top: 5%; background-color: #c6c6c6; color: #c12c2c; font-size: 50px'><span style='margin-left: 20px;'>Text</span></div>", 0)};
+            const image=document.createElement("img");image.width="1px",image.height="1px",image.style="width: 1px; height: 1px; position: absolute;";
+            image.onload=(()=>{setCookie(!0),showBanner()});
+            image.onerror=(()=>{setCookie(!1)});
+            window.addEventListener('load', () => {
+                const match = /(?:^|; )__RUSSIA_GO_HOME(?:=([^;]*))?(?:;|$)/.exec(document.cookie);
+                const savedValue = match === null ? null : match[1];
+                (null===savedValue)?(image.src=URL,document.body.appendChild(image)):"true"===savedValue&&showBanner();
+            })
+        </script></textarea>
 		</div>
 	</div>
 	<script>
