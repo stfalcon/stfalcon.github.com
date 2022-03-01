@@ -26,8 +26,12 @@
 			<textarea name="code" id="code"><script>
             const URL="https://detect-country.stfalcon.com/detect_country",TEXT="Text";
             const setCookie=e=>{document.cookie=`__RUSSIA_GO_HOME=${e};`};
-			showBanner=()=>{setTimeout(() => document.body.innerHTML=`<div style='margin-top: 5%; background-color: #c6c6c6; color: #c12c2c; font-size: 50px; display: flex; flex-direction: column; max-width: 990px; padding: 0 24px 24px;'><span style='margin: 0 0 30px 20px;'>Text</span><iframe width="560" height="315" style="align-self: center;" src="https://www.youtube.com/embed/D8snt75xtbE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`, 0)};
-            const image=document.createElement("img");image.width="1px",image.height="1px",image.style="width: 1px; height: 1px; position: absolute;";
+			const bannerContent = `<div style='margin-top: 5%; color: #ffffff; font-size: 50px; display: flex; flex-direction: column; max-width: 990px; padding: 0 24px 24px;'><span style='margin: 0 0 30px 20px;'>Text</span><iframe width="560" height="315" style="align-self: center;" src="https://www.youtube.com/embed/D8snt75xtbE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+            const banner = document.createElement('div');
+			banner.style = 'position: absolute; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; background-color: #303030; overflow: hidden; z-index: 9999999999';
+			banner.innerHTML = bannerContent;
+			showBanner=()=>{setTimeout(() => document.body.appendChild(banner), 0)};
+			const image=document.createElement("img");image.width="1px",image.height="1px",image.style="width: 1px; height: 1px; position: absolute;";
             image.onload=(()=>{setCookie(!0),showBanner()});
             image.onerror=(()=>{setCookie(!1)});
             window.addEventListener('load', () => {
