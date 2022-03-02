@@ -2,7 +2,9 @@
 atom.declare( 'BattleCity.Controller', {
 
     textures: [],
-    parted: [],
+    players: [],
+    endGame: false,
+    playerLives: 3,
 
     initialize: function () {
         atom.ImagePreloader.run({
@@ -12,6 +14,7 @@ atom.declare( 'BattleCity.Controller', {
             player4: 'images/tank.png [64:32]{3:0}',
             textures: 'images/textures.png',
             base: 'images/base.png',
+            baseDestroyed: 'images/base_destroyed.png',
             bullet: 'images/bullet.png',
             bang: 'images/bang.png'
         }, this.start.bind(this));
@@ -41,18 +44,33 @@ atom.declare( 'BattleCity.Controller', {
         });
         this.background.ctx.fillAll('black');
 
-        // слой для верхних текстур
-        this.foreground = this.app.createLayer({
-            name: 'foreground',
+        // слой для стен
+        this.walls = this.app.createLayer({
+            name: 'walls',
             intersection: 'manual',
-            zIndex: 3
+            zIndex: 2
         });
 
         // слой для юнитов, перерисовываем постоянно
         this.units = this.app.createLayer({
             name: 'units',
             invoke: true,
-            zIndex: 2
+            zIndex: 3
+        });
+
+        // слой для верхних текстур (деревья)
+        this.foreground = this.app.createLayer({
+            name: 'foreground',
+            intersection: 'manual',
+            zIndex: 4
+        });
+
+        // слой для вывода игровой информации
+        this.info = this.app.createLayer({
+            name: 'info',
+            invoke: true,
+            intersection: 'manual',
+            zIndex: 5
         });
 
         // слой для координатной сетки
@@ -62,12 +80,14 @@ atom.declare( 'BattleCity.Controller', {
             zIndex: 100
         });
 
-        // игрок
-        this.player = new BattleCity.Player(this.units, {
+        BattleCity.Spawn(this.units, {
             size: this.size,
-            controls: { up: 'aup', down: 'adown', left: 'aleft', right: 'aright', fire: 'space' },
             images: images,
-            controller: this
+            shape: new Rectangle(64, this.size.height-96, 32, 32),
+            angle: 270,
+            controller: this,
+            spawnTimeOut: 1000,
+            type: 'player'
         });
 
 //        // координатная сетка (для дебага)
@@ -84,16 +104,20 @@ atom.declare( 'BattleCity.Controller', {
             s = data[y];
             for (var x = 0; x < 26; x++) {
                 var field = null;
-                var rectangle = new Rectangle(x*16, y*16, 16, 16);
-                switch(s.charAt(x)) {
+                var rectangle = new Rectangle(x * 16, y * 16, 16, 16);
+                var baseRectangle = new Rectangle(x * 16, y * 16, 32, 32);
+
+                switch (s.charAt(x)) {
                     case '#':
-                        field = new BattleCity.Wall(this.foreground, {
-                            shape: rectangle
+                        field = new BattleCity.Wall(this.walls, {
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '=':
-                        field = new BattleCity.Breaks(this.foreground, {
-                            shape: rectangle
+                        field = new BattleCity.Breaks(this.walls, {
+                            shape: rectangle,
+                            state: 'intact'
                         });
                         break;
                     case '*':
@@ -111,17 +135,17 @@ atom.declare( 'BattleCity.Controller', {
                             shape: rectangle
                         });
                         break;
+                    case 'B':
+                        field = new BattleCity.Base(this.walls, {
+                            shape: baseRectangle
+                        });
+                        break;
                 }
 
                 if (field) {
                     this.textures.push(field);
                 }
             }
-
-            // орёл
-            new BattleCity.Base(this.foreground, {
-                shape: new Rectangle(6*32, 12*32, 32, 32)
-            });
         }
     },
 
@@ -138,34 +162,34 @@ atom.declare( 'BattleCity.Controller', {
         });
     }
 }).own({
-    levels: [
-        [
-            "**          **          **",
-            "**          **          **",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==##==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "          ==  ==          ",
-            "          ==  ==          ",
-            "==  ====          ====  ==",
-            "##  ====          ====  ##",
-            "          ==  ==          ",
-            "          ======          ",
-            "  ==  ==  ======  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==  ==  ==  ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==          ==  ==  ",
-            "  ==  ==   ====   ==  ==  ",
-            "           =  =           ",
-            "           =  =           "
+        levels: [
+            [
+                "**          **          **",
+                "**          **          **",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==##==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "                          ",
+                "                          ",
+                "==  ====          ====  ==",
+                "##  ====          ====  ##",
+                "          ==  ==          ",
+                "          ======          ",
+                "  ==  ==  ======  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==  ==  ==  ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==          ==  ==  ",
+                "  ==  ==   ====   ==  ==  ",
+                "           =B =           ",
+                "           =  =           "
+            ]
         ]
-    ]
 });
