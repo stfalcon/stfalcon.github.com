@@ -1,8 +1,8 @@
 atom.declare('BattleCity.Player', App.Element, {
-    speed: 0.09, // скорость перемещения игрока
+    speed: 0.1, // скорость перемещения игрока
     angle: 0, // угол поворота спрайта
     bullets: 0, // кол-во пуль, которые остались
-    rateOfFire: 0.3, // относительная частота выстрелов
+    rateOfFire: 1, // относительная частота выстрелов
     lastShot: 0, // время последнего выстрела
 
     configure: function () {
@@ -24,6 +24,8 @@ atom.declare('BattleCity.Player', App.Element, {
         this.shape = new Rectangle(
             128, this.size.height-32, 32, 32
         );
+
+        this.halfWidth = this.shape.width * 0.5;
     },
 
     get controller () {
@@ -35,7 +37,6 @@ atom.declare('BattleCity.Player', App.Element, {
     },
 
     renderTo: function (ctx, resources) {
-//        ctx.fill(this.shape, 'indigo');
         ctx.drawImage({
             image : this.image,
             center: this.shape.center,
@@ -73,11 +74,11 @@ atom.declare('BattleCity.Player', App.Element, {
 
             this.lastShot = now;
 
-            var x = this.angle == 90 ? this.shape.center.x + 16
-                : this.angle == 270 ? this.shape.center.x - 16
+            var x = this.angle == 90 ? this.shape.center.x + this.halfWidth
+                : this.angle == 270 ? this.shape.center.x - this.halfWidth
                 : this.shape.center.x;
-            var y = this.angle == 0 ? this.shape.center.y - 16
-                : this.angle == 180 ? this.shape.center.y + 16
+            var y = this.angle == 0 ? this.shape.center.y - this.halfWidth
+                : this.angle == 180 ? this.shape.center.y + this.halfWidth
                 : this.shape.center.y;
 
             var bullet = new BattleCity.Bullet(this.controller.units, {
