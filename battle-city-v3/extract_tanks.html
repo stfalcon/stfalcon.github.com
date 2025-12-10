@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Вирізання танків зі спрайта</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        canvas { border: 1px solid #ccc; margin: 10px; }
+        .tank-preview { display: inline-block; margin: 20px; text-align: center; }
+        button { padding: 10px; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Вирізання танків зі спрайта Battle City</h1>
+    <p>Відкрийте цю сторінку в браузері, завантажте sprite.png і натисніть кнопки для створення окремих файлів танків.</p>
+    
+    <input type="file" id="fileInput" accept="image/png">
+    <br><br>
+    
+    <div>
+        <label>X: <input type="number" id="offsetX" value="2" style="width:50px"></label>
+        <label>Y: <input type="number" id="offsetY" value="2" style="width:50px"></label>
+        <label>Розмір: <input type="number" id="tankSize" value="26" style="width:50px"></label>
+        <label>Відступ: <input type="number" id="spacing" value="32" style="width:50px"></label>
+        <button onclick="if(window.lastImg) extractTanks(window.lastImg)">Оновити</button>
+    </div>
+    <br>
+    
+    <div id="previews"></div>
+    
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var img = new Image();
+                img.onload = function() {
+                    window.lastImg = img;
+                    extractTanks(img);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        function extractTanks(img) {
+            var previews = document.getElementById('previews');
+            previews.innerHTML = '';
+            
+            // Беремо значення з полів
+            var offsetX = parseInt(document.getElementById('offsetX').value);
+            var offsetY = parseInt(document.getElementById('offsetY').value);
+            var tankSize = parseInt(document.getElementById('tankSize').value);
+            var spacing = parseInt(document.getElementById('spacing').value);
+            
+            // Координати танків у спрайт-листі 
+            var tanks = [
+                {name: 'enemy_basic', row: 0, desc: 'Жовтий базовий'},      
+                {name: 'enemy_fast', row: 2, desc: 'Сірий швидкий'},         
+                {name: 'enemy_power', row: 4, desc: 'Зелений броньований'},  
+                {name: 'enemy_bonus', row: 8, desc: 'Червоний бонусний'}     
+            ];
+            
+            tanks.forEach(function(tank) {
+                // Створюємо canvas 64x32 як у tank.png
+                var canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 32;
+                var ctx = canvas.getContext('2d');
+                
+                // Розраховуємо позицію танка
+                var y = offsetY + tank.row * spacing;
+                
+                // Вирізаємо два кадри анімації для танка (вгору)
+                // Перший кадр
+                ctx.drawImage(img, offsetX, y, tankSize, tankSize, 3, 3, 26, 26);
+                // Другий кадр  
+                ctx.drawImage(img, offsetX + spacing, y, tankSize, tankSize, 35, 3, 26, 26);
+                
+                // Створюємо превью
+                var div = document.createElement('div');
+                div.className = 'tank-preview';
+                div.innerHTML = '<h3>' + tank.desc + '</h3>';
+                div.appendChild(canvas);
+                
+                // Кнопка для завантаження
+                var btn = document.createElement('button');
+                btn.textContent = 'Зберегти ' + tank.name + '.png';
+                btn.onclick = function() {
+                    canvas.toBlob(function(blob) {
+                        var a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = tank.name + '.png';
+                        a.click();
+                    });
+                };
+                div.appendChild(btn);
+                
+                previews.appendChild(div);
+            });
+            
+            // Також створюємо спрайт-лист для всіх напрямків
+            var fullCanvas = document.createElement('canvas');
+            fullCanvas.width = 256;  // 8 кадрів × 32
+            fullCanvas.height = 128; // 4 напрямки × 32
+            var fullCtx = fullCanvas.getContext('2d');
+            
+            // Копіюємо всі 8 кадрів для першого типу танка
+            for (var i = 0; i < 8; i++) {
+                for (var j = 0; j < 4; j++) {
+                    fullCtx.drawImage(img, i * 32, j * 32, 32, 32, i * 32, j * 32, 32, 32);
+                }
+            }
+            
+            var fullDiv = document.createElement('div');
+            fullDiv.className = 'tank-preview';
+            fullDiv.innerHTML = '<h3>Повний спрайт-лист (8×4)</h3>';
+            fullDiv.appendChild(fullCanvas);
+            previews.appendChild(fullDiv);
+        }
+    </script>
+</body>
+</html>
