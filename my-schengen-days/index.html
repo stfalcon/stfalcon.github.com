@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Schengen Days - Support</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #888;
+            font-size: 18px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: #f39c12;
+        }
+        .card p {
+            line-height: 1.6;
+            color: #ccc;
+        }
+        .contact-btn {
+            display: inline-block;
+            background: #f39c12;
+            color: #1a1a2e;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 12px;
+            transition: transform 0.2s;
+        }
+        .contact-btn:hover {
+            transform: scale(1.05);
+        }
+        .features {
+            list-style: none;
+        }
+        .features li {
+            padding: 8px 0;
+            color: #ccc;
+        }
+        .features li::before {
+            content: "✓ ";
+            color: #f39c12;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">✈️</div>
+            <h1>My Schengen Days</h1>
+            <p class="subtitle">Track your 90/180 days in Schengen zone</p>
+        </div>
+
+        <div class="card">
+            <h2>About the App</h2>
+            <p>My Schengen Days helps travelers track their stays in the Schengen zone to ensure compliance with the 90/180 day rule. Never worry about overstaying again!</p>
+            <ul class="features">
+                <li>Track all your trips automatically</li>
+                <li>See remaining days at a glance</li>
+                <li>Get warnings before you exceed limits</li>
+                <li>Works offline - your data stays private</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Need Help?</h2>
+            <p>Have questions, suggestions, or found a bug? We'd love to hear from you!</p>
+            <a href="mailto:support@example.com" class="contact-btn">Contact Support</a>
+        </div>
+
+        <div class="card">
+            <h2>Privacy</h2>
+            <p>Your privacy matters. My Schengen Days stores all data locally on your device. We don't collect, store, or share any personal information.</p>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 My Schengen Days. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
